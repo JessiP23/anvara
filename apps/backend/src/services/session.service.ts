@@ -1,54 +1,43 @@
 import { prisma } from "../db";
 import type { AuthUser } from "../types/auth.types";
 
+const COOKIE_NAME = 'better-auth.session_token';
+
+/**
+ * Token format: "sessionId.signature" - we only need the sessionId part.
+ */
 export function extractSessionToken(cookieHeader: string | undefined): string | null {
     if (!cookieHeader) return null;
 
-    const cookies = cookieHeader.split(';').reduce(
-        (acc, cookie) => {
-            const [key, value] = cookie.trim().split('=');
-            if (key && value) {
-                acc[key] = decodeURIComponent(value);
-            }
-            return acc;
-        },
-        {} as Record<string, string>
-    );
+    const match = cookieHeader.match(new RegExp(`${COOKIE_NAME}=([^;]+)`));
+    if (!match) return null;
 
-    const fullToken = cookies['better-auth.session_token'] || null;
-    if (!fullToken) return null;
-    const sessionId = fullToken.split('.')[0];
-    
-    return sessionId;
+    const fullToken = decodeURIComponent(match[1]);
+    return fullToken.split('.')[0];
 }
 
+/**
+ * Validates session and returns authenticated user with role info.
+ */
 export async function validateSession(sessionToken: string): Promise<AuthUser | null> {
     try {
-        // Look up the session
-        const session = await prisma.$queryRaw<
-            Array<{
-                userId: string;
-                expiresAt: Date;
-                email: string;
-                name: string;
-            }>
-        >`
-        SELECT s."userId", s."expiresAt", u.email, u.name
-        FROM "session" s
-        JOIN "user" u ON s."userId" = u.id
-        WHERE s.token = ${sessionToken}
-        LIMIT 1
+        const sessions = await prisma.$queryRaw<Array<{
+            userId: string;
+            expiresAt: Date;
+            email: string;
+            name: string;
+        }>>`
+            SELECT s."userId", s."expiresAt", u.email, u.name
+            FROM "session" s
+            JOIN "user" u ON s."userId" = u.id
+            WHERE s.token = ${sessionToken}
+              AND s."expiresAt" > NOW()
+            LIMIT 1
         `;
 
-        if (!session.length) {
-            return null;
-        }
+        if (!sessions.length) return null;
 
-        if (new Date(session[0].expiresAt) < new Date()) {
-            return null;
-        }
-
-        const { userId, email, name } = session[0];
+        const { userId, email, name } = sessions[0];
 
         const [sponsor, publisher] = await Promise.all([
             prisma.sponsor.findUnique({ where: { userId }, select: { id: true } }),
