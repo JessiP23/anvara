@@ -1,11 +1,12 @@
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
 import { CampaignList } from './components/campaign-list';
 import { Suspense } from 'react';
-import { getCampaigns } from '@/lib/api';
 import type { Campaign } from '@/lib/types';
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export default async function SponsorDashboard() {
   const session = await auth.api.getSession({
@@ -30,17 +31,28 @@ export default async function SponsorDashboard() {
       </div>
 
       <Suspense fallback={<CampaignListSkeleton />}>
-        <CampaignListWrapper sponsorId={roleData.sponsorId} />
+        <CampaignListWrapper />
       </Suspense>
     </div>
   );
 }
 
-async function CampaignListWrapper({sponsorId}: {sponsorId: string}) {
+async function CampaignListWrapper() {
   let campaigns: Campaign[] = [];
   let error: string | undefined;
   try {
-    campaigns = (await getCampaigns(sponsorId)) as Campaign[]
+    const cookieStore = await cookies();
+    const cookieHeader = cookieStore.toString();
+
+    const response = await fetch(`${API_URL}/api/campaigns`, {
+      headers: {
+        Cookie: cookieHeader,
+      },
+      cache: 'no-store',
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch campaigns');
+    campaigns = await response.json();
   } catch {
     error = 'Failed to load campaigns. Please try again later.';
   }

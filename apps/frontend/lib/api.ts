@@ -10,6 +10,7 @@ const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export async function api<T>(endpoint: string, options?: globalThis.RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${endpoint}`, {
+    credentials: 'include',
     headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
   });
@@ -32,6 +33,9 @@ export const getAdSlot = <T = unknown>(id: string) => api<T>(`/api/ad-slots/${id
 export const createAdSlot = (data: Record<string, unknown>) =>
   api('/api/ad-slots', { method: 'POST', body: JSON.stringify(data) });
 // TODO: Add updateAdSlot, deleteAdSlot functions
+export const bookAdSlot = (id: string, message?: string) => api(`/api/ad-slots/${id}/book`, { method: 'POST', body: JSON.stringify({message})});
+export const unbookAdSlot = (id: string) => api(`/api/ad-slots/${id}/unbook`, { method: 'POST' });
+
 
 // Placements
 export const getPlacements = <T = unknown[]>() => api<T>('/api/placements');
