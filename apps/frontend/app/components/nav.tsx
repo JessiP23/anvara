@@ -6,7 +6,7 @@ import { authClient } from '@/auth-client';
 
 type UserRole = 'sponsor' | 'publisher' | null;
 const env = globalThis.process?.env;
-const API_URL = env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export function Nav() {
   const { data: session, isPending } = authClient.useSession();

@@ -6,7 +6,7 @@
 // Hint: Include credentials: 'include' for cookie-based auth, or
 // add Authorization header for token-based auth
 const env = globalThis.process?.env;
-const API_URL = env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export async function api<T>(endpoint: string, options?: globalThis.RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${endpoint}`, {

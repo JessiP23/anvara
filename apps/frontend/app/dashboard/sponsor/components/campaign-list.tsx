@@ -7,7 +7,7 @@ import { CampaignCard } from './campaign-card';
 import type { Campaign } from '@/lib/types';
 
 const env = globalThis.process?.env;
-const API_URL = env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 // FIXME: This component fetches data client-side - should use Server Components
 // See Challenge 2 in CHALLENGES.md for proper implementation
