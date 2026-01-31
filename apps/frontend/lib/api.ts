@@ -1,10 +1,3 @@
-// Simple API client
-// FIXME: This client has no error response parsing - when API returns { error: "..." },
-// we should extract and throw that message instead of generic "API request failed"
-
-// TODO: Add authentication token to requests
-// Hint: Include credentials: 'include' for cookie-based auth, or
-// add Authorization header for token-based auth
 const env = globalThis.process?.env;
 const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
@@ -24,15 +17,17 @@ export const getCampaigns = <T = unknown[]>(sponsorId?: string) =>
 export const getCampaign = <T = unknown>(id: string) => api<T>(`/api/campaigns/${id}`);
 export const createCampaign = (data: Record<string, unknown>) =>
   api('/api/campaigns', { method: 'POST', body: JSON.stringify(data) });
-// TODO: Add updateCampaign and deleteCampaign functions
+export const updateCampaign = <T = unknown>(id: string, data: Record<string, unknown>) => api<T>(`/api/campaigns/${id}`, { method: 'PUT', body: JSON.stringify(data)});
+export const deleteCampaign = (id: string) => api(`/api/campaigns/${id}`, {  method: 'DELETE' });
 
-// Ad Slots
+// Ad Slots 
 export const getAdSlots = <T = unknown[]>(publisherId?: string) =>
   api<T>(publisherId ? `/api/ad-slots?publisherId=${publisherId}` : '/api/ad-slots');
 export const getAdSlot = <T = unknown>(id: string) => api<T>(`/api/ad-slots/${id}`);
 export const createAdSlot = (data: Record<string, unknown>) =>
   api('/api/ad-slots', { method: 'POST', body: JSON.stringify(data) });
-// TODO: Add updateAdSlot, deleteAdSlot functions
+export const updateAdSlot = <T = unknown>(id: string, data: Record<string, unknown>) => api<T>(`/api/ad-alots/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const deleteAdSlot = (id: string) => api(`/api/ad-slots/${id}`, { method: 'DELETE' });
 export const bookAdSlot = (id: string, message?: string) => api(`/api/ad-slots/${id}/book`, { method: 'POST', body: JSON.stringify({message})});
 export const unbookAdSlot = (id: string) => api(`/api/ad-slots/${id}/unbook`, { method: 'POST' });
 

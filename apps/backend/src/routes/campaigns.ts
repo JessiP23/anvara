@@ -1,9 +1,10 @@
 import { Router, type Response, type IRouter } from 'express';
-import { prisma } from '../db.js';
+import { prisma, CampaignStatus } from '../db.js';
 import { getParam } from '../utils/helpers.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
 import { requireSponsor } from '../middleware/role.middleware.js';
 import type { AuthRequest } from '../types/auth.types.js';
+import { Prisma } from '../generated/prisma/client.js';
 
 const router: IRouter = Router();
 
@@ -108,7 +109,65 @@ router.post('/', requireAuth, requireSponsor, async (req: AuthRequest, res: Resp
   }
 });
 
-// TODO: Add PUT /api/campaigns/:id endpoint
+const campaignInclude = {
+  sponsor: { select: { id: true, name: true } },
+  _count: { select: { creatives: true, placements: true } },
+} as const;
+
+const pickDefined = <T extends Record<string, unknown>>(obj: T): Partial<T> => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
+
 // Update campaign details (name, budget, dates, status, etc.)
+router.put('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Response) => {
+  try {
+    const { status, budget, startDate, endDate } = req.body;
+
+    if (status && !Object.values(CampaignStatus).includes(status)) {
+      res.status(400).json({ error: 'Invalid campaign status' });
+      return;
+    }
+
+    if (budget !== undefined && (typeof budget !== 'number' || budget < 0)) {
+      res.status(400).json({ error: 'Budget must be a non-negative number' });
+      return;
+    }
+
+    const data = pickDefined({
+      ...req.body,
+      startDate: startDate ? new Date(startDate) : undefined,
+      endDate: endDate ? new Date(endDate) : undefined,
+    })
+
+    const campaign = await prisma.campaign.update({
+      where: { id: getParam(req.params.id), sponsorId: req.user!.sponsorId! },
+      data,
+      include: campaignInclude,
+    })
+    res.json(campaign);
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      res.status(404).json({ error: 'Campaign not found' });
+      return;
+    }
+    console.error('Error updating campaign:', error);
+    res.status(500).json({ error: 'Failed to update campaign' });
+  }
+})
+
+router.delete('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Response) => {
+  try {
+    await prisma.campaign.delete({
+      where: { id: getParam(req.params.id), sponsorId: req.user!.sponsorId! },
+    });
+    res.status(204).send();
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+      res.status(404).json({ error: 'Campaign not found' });
+      return;
+    }
+    console.error('Error deleting campaign:', error);
+    res.status(500).json({ error: 'Failed to delete campaign' });
+  }
+});
+
 
 export default router;
