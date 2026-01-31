@@ -6,7 +6,7 @@ import { authClient } from '@/auth-client';
 import { AdSlotCard } from './ad-slot-card';
 import type { AdSlot } from '@/lib/types';
 
-const API_URL = globalThis.process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export function AdSlotList() {
   const [adSlots, setAdSlots] = useState<AdSlot[]>([]);

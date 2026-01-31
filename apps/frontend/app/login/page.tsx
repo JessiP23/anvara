@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { authClient } from '@/auth-client';
 
 const env = globalThis.process?.env;
-const API_URL = env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export default function LoginPage() {
   const router = useRouter();
