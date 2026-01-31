@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAdSlots } from '@/lib/api';
+import type { AdSlot } from '@/lib/types';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -12,12 +13,12 @@ const typeColors: Record<string, string> = {
 };
 
 export function AdSlotGrid() {
-  const [adSlots, setAdSlots] = useState<any[]>([]);
+  const [adSlots, setAdSlots] = useState<AdSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    getAdSlots()
+    getAdSlots<AdSlot[]>()
       .then(setAdSlots)
       .catch(() => setError('Failed to load ad slots'))
       .finally(() => setLoading(false));

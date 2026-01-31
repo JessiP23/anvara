@@ -5,6 +5,8 @@ import { useEffect, useState } from 'react';
 import { authClient } from '@/auth-client';
 
 type UserRole = 'sponsor' | 'publisher' | null;
+const env = globalThis.process?.env;
+const API_URL = env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export function Nav() {
   const { data: session, isPending } = authClient.useSession();
@@ -14,16 +16,16 @@ export function Nav() {
   // TODO: Convert to server component and fetch role server-side
   // Fetch user role from backend when user is logged in
   useEffect(() => {
-    if (user?.id) {
-      fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/role/${user.id}`
-      )
-        .then((res) => res.json())
-        .then((data) => setRole(data.role))
-        .catch(() => setRole(null));
-    } else {
-      setRole(null);
+    if (!user?.id) {
+      return;
     }
+
+    fetch(
+      `${API_URL}/api/auth/role/${user.id}`
+    )
+      .then((res) => res.json())
+      .then((data) => setRole(data.role))
+      .catch(() => setRole(null));
   }, [user?.id]);
 
   // TODO: Add active link styling using usePathname() from next/navigation

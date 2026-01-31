@@ -2,6 +2,33 @@
 
 export type UserRole = 'sponsor' | 'publisher';
 
+export interface AdSlot {
+  id: string;
+  name: string;
+  description?: string;
+  type: string;
+  basePrice: number;
+  isAvailable: boolean;
+  publisher?: {
+    id: string;
+    name: string;
+    website?: string;
+  }
+}
+
+export interface RoleInfo {
+  role: 'sponsor' | 'publisher' | null;
+  sponsorId?: string;
+  publisherId?: string;
+  name?: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
 export interface Campaign {
   id: string;
   name: string;
@@ -13,17 +40,6 @@ export interface Campaign {
   endDate: string;
   sponsorId: string;
   sponsor?: { id: string; name: string };
-}
-
-export interface AdSlot {
-  id: string;
-  name: string;
-  description?: string;
-  type: 'DISPLAY' | 'VIDEO' | 'NEWSLETTER' | 'PODCAST';
-  basePrice: number;
-  isAvailable: boolean;
-  publisherId: string;
-  publisher?: { id: string; name: string };
 }
 
 export interface Placement {

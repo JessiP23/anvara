@@ -4,33 +4,10 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAdSlot } from '@/lib/api';
 import { authClient } from '@/auth-client';
+import type { AdSlot, User, RoleInfo } from '@/lib/types';
 
-interface AdSlot {
-  id: string;
-  name: string;
-  description?: string;
-  type: string;
-  basePrice: number;
-  isAvailable: boolean;
-  publisher?: {
-    id: string;
-    name: string;
-    website?: string;
-  };
-}
-
-interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
-interface RoleInfo {
-  role: 'sponsor' | 'publisher' | null;
-  sponsorId?: string;
-  publisherId?: string;
-  name?: string;
-}
+const env = globalThis.process?.env;
+const API_URL = env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -57,8 +34,8 @@ export function AdSlotDetail({ id }: Props) {
 
   useEffect(() => {
     // Fetch ad slot
-    getAdSlot(id)
-      .then(setAdSlot)
+    getAdSlot<AdSlot>(id)
+      .then((data) => setAdSlot(data))
       .catch(() => setError('Failed to load ad slot details'))
       .finally(() => setLoading(false));
 
@@ -72,7 +49,7 @@ export function AdSlotDetail({ id }: Props) {
 
           // Fetch role info from backend
           fetch(
-            `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/auth/role/${sessionUser.id}`
+            `${API_URL}/api/auth/role/${sessionUser.id}`
           )
             .then((res) => res.json())
             .then((data) => setRoleInfo(data))
@@ -93,7 +70,7 @@ export function AdSlotDetail({ id }: Props) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/ad-slots/${adSlot.id}/book`,
+        `${API_URL}/api/ad-slots/${adSlot.id}/book`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -123,7 +100,7 @@ export function AdSlotDetail({ id }: Props) {
 
     try {
       const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'}/api/ad-slots/${adSlot.id}/unbook`,
+        `${API_URL}/api/ad-slots/${adSlot.id}/unbook`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -138,6 +115,7 @@ export function AdSlotDetail({ id }: Props) {
       setAdSlot({ ...adSlot, isAvailable: true });
       setMessage('');
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.error('Failed to unbook:', err);
     }
   };

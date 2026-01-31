@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import React from 'react';
 import { Nav } from './components/nav';
 
 // TODO: Add ErrorBoundary wrapper for graceful error handling
