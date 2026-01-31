@@ -1,11 +1,14 @@
 import { Router, type Request, type Response, type IRouter } from 'express';
 import { prisma } from '../db.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
+import { requireSponsor } from '../middleware/role.middleware.js';
+import type { AuthRequest } from '../types/auth.types.js';
+import { getParam } from '../utils/helpers.js';
 
 const router: IRouter = Router();
 
 // GET /api/sponsors - List all sponsors
-router.get('/', requireAuth, async (_req: Request, res: Response) => {
+router.get('/', requireAuth, requireSponsor, async (_req: Request, res: Response) => {
   try {
     const sponsors = await prisma.sponsor.findMany({
       include: {
@@ -23,7 +26,7 @@ router.get('/', requireAuth, async (_req: Request, res: Response) => {
 });
 
 // GET /api/sponsors/:id - Get single sponsor with campaigns
-router.get('/:id', requireAuth, async (req: Request, res: Response) => {
+router.get('/:id', requireAuth, requireSponsor, async (req: Request, res: Response) => {
   try {
     const id = Array.isArray(req.params.id) ? req.params.id[0] : req.params.id;
     const sponsor = await prisma.sponsor.findUnique({

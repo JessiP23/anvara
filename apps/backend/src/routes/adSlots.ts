@@ -45,8 +45,8 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const id = getParam(req.params.id);
 
-    const adSlot = await prisma.adSlot.findUnique({
-      where: { id },
+    const adSlot = await prisma.adSlot.findFirst({
+      where: { id, ...(req.user!.role === 'PUBLISHER' && {publisherId: req.user!.publisherId!}) },
       include: {
         publisher: true,
         placements: {
@@ -74,7 +74,7 @@ router.get('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
 // BUG: No input validation for basePrice (could be negative or zero)
 router.post('/', requireAuth, requirePublisher, async (req: AuthRequest, res: Response) => {
   try {
-    const { name, description, type, basePrice } = req.body;
+    const { name, type, basePrice, description, position, width, height, cpmFloor, isAvailable } = req.body;
 
     if (!name || !type || !basePrice) {
       res.status(400).json({
@@ -88,23 +88,22 @@ router.post('/', requireAuth, requirePublisher, async (req: AuthRequest, res: Re
       return;
     }
 
-    const validTypes = ['DISPLAY', 'VIDEO', 'NATIVE', 'NEWSLETTER', 'PODCAST'];
-    if (!validTypes.includes(type)) {
-      res.status(400).json({ error: `type must be one of: ${validTypes.join(', ')}` });
+    if (!Object.values(AdSlotType).includes(type)) {
+      res.status(400).json({ error: 'Invalid ad slot type' });
       return;
     }
-// Use authenticated user's publisherId
+
+    const data: Prisma.AdSlotUncheckedCreateInput = {
+      name,
+      type,
+      basePrice,
+      publisherId: req.user!.publisherId!,
+      ...pickDefined({ description, position, width, height, cpmFloor, isAvailable }),
+    }
+
     const adSlot = await prisma.adSlot.create({
-      data: {
-        name,
-        description,
-        type,
-        basePrice,
-        publisherId: req.user!.publisherId!,
-      },
-      include: {
-        publisher: { select: { id: true, name: true } },
-      },
+      data,
+      include: adSlotInclude,
     });
 
     res.status(201).json(adSlot);
@@ -145,9 +144,7 @@ router.post('/:id/book', requireAuth, async (req: AuthRequest, res: Response) =>
     const updatedSlot = await prisma.adSlot.update({
       where: { id },
       data: { isAvailable: false },
-      include: {
-        publisher: { select: { id: true, name: true } },
-      },
+      include: adSlotInclude,
     });
 
     console.log(`Ad slot ${id} booked by sponsor ${req.user!.sponsorId}. Message: ${message || 'None'}`);
@@ -186,9 +183,7 @@ router.post('/:id/unbook', requireAuth, requirePublisher, async (req: AuthReques
     const updatedSlot = await prisma.adSlot.update({
       where: { id },
       data: { isAvailable: true },
-      include: {
-        publisher: { select: { id: true, name: true } },
-      },
+      include: adSlotInclude
     });
 
     res.json({
