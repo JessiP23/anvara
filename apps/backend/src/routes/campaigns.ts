@@ -38,8 +38,8 @@ router.get('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Re
   try {
     const id = getParam(req.params.id);
 
-    const campaign = await prisma.campaign.findUnique({
-      where: { id },
+    const campaign = await prisma.campaign.findFirst({
+      where: { id, sponsorId: req.user!.sponsorId! },
       include: {
         sponsor: true,
         creatives: true,
@@ -54,12 +54,6 @@ router.get('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Re
 
     if (!campaign) {
       res.status(404).json({ error: 'Campaign not found' });
-      return;
-    }
-
-    // Ownership check: Does this campaign belong to the authenticated user?
-    if (campaign.sponsorId !== req.user!.sponsorId) {
-      res.status(403).json({ error: 'Access denied' });
       return;
     }
 

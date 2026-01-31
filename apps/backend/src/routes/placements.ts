@@ -1,11 +1,12 @@
 import { Router, type Request, type Response, type IRouter } from 'express';
 import { prisma } from '../db.js';
 import { getParam } from '../utils/helpers.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
 
 const router: IRouter = Router();
 
 // GET /api/placements - List placements
-router.get('/', async (req: Request, res: Response) => {
+router.get('/', requireAuth, async (req: Request, res: Response) => {
   try {
     const { campaignId, publisherId, status } = req.query;
 
@@ -40,7 +41,7 @@ router.get('/', async (req: Request, res: Response) => {
 });
 
 // POST /api/placements - Create new placement
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', requireAuth, async (req: Request, res: Response) => {
   try {
     const {
       campaignId,

@@ -2,7 +2,7 @@ import { Router, type Response, type IRouter } from 'express';
 import { AdSlotType, prisma } from '../db.js';
 import { getParam } from '../utils/helpers.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
-import { optionalAuth } from '../middleware/auth.middleware.js';
+// import { optionalAuth } from '../middleware/auth.middleware.js';
 import { requirePublisher } from '../middleware/role.middleware.js';
 import type { AuthRequest } from '../types/auth.types.js';
 import { Prisma } from '../generated/prisma/client.js';
@@ -10,7 +10,8 @@ import { Prisma } from '../generated/prisma/client.js';
 const router: IRouter = Router();
 
 // GET /api/ad-slots - List available ad slots
-router.get('/', optionalAuth, async (req: AuthRequest, res: Response) => {
+// IMPORTANT: If needed to be public just switch to OptionalAuth
+router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const { publisherId, type, available } = req.query;
 
@@ -39,7 +40,8 @@ router.get('/', optionalAuth, async (req: AuthRequest, res: Response) => {
 });
 
 // GET /api/ad-slots/:id - Get single ad slot with details
-router.get('/:id', optionalAuth, async (req: AuthRequest, res: Response) => {
+// IMPORTANT: If needed to be public just switch to OptionalAuth
+router.get('/:id', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const id = getParam(req.params.id);
 
