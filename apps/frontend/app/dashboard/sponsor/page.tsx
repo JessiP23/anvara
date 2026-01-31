@@ -6,7 +6,7 @@ import { CampaignList } from './components/campaign-list';
 import { Suspense } from 'react';
 import type { Campaign } from '@/lib/types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
 export default async function SponsorDashboard() {
   const session = await auth.api.getSession({
