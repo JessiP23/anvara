@@ -1,17 +1,4 @@
-'use client';
-
-interface CampaignCardProps {
-  campaign: {
-    id: string;
-    name: string;
-    description?: string;
-    budget: number;
-    spent: number;
-    status: string;
-    startDate: string;
-    endDate: string;
-  };
-}
+import type { Campaign } from "@/lib/types";
 
 const statusColors: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-600',
@@ -19,6 +6,10 @@ const statusColors: Record<string, string> = {
   PAUSED: 'bg-yellow-100 text-yellow-700',
   COMPLETED: 'bg-blue-100 text-blue-700',
 };
+
+interface CampaignCardProps {
+  campaign: Campaign;
+}
 
 export function CampaignCard({ campaign }: CampaignCardProps) {
   const progress =

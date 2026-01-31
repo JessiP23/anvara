@@ -7,7 +7,7 @@ import { authClient } from '@/auth-client';
 import type { AdSlot, User, RoleInfo } from '@/lib/types';
 
 const env = globalThis.process?.env;
-const API_URL = env.NEXT_PUBLIC_API_URL || 'http://localhost:4291'
+const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291'
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
