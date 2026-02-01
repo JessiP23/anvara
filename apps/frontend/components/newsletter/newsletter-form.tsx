@@ -3,7 +3,6 @@
 import { useActionState, useEffect, useRef } from "react";
 import { subscribeNewsletter } from "./actions";
 import { initialActionState, type ActionState } from "@/lib/actions/types";
-import { FormField } from "../ui/form/form-field";
 import { SubmitButton } from "../ui/form/submit-button";
 import { useToast } from "../notification/toast";
 
@@ -31,16 +30,22 @@ export function NewsletterForm() {
 
     return (
         <form ref={formRef} action={formAction} className="space-y-3">
-            <FormField id="email" label="Email" error={state.fieldErrors?.email}>
-                <input 
+            <div>
+                <label htmlFor="email" className="sr-only">Email address</label>
+                <input
                     type="email"
                     id="email"
                     name="email"
-                    placeholder="you@example.com"
-                    className="mt-1 w-full rounded border px-3 py-2 text-sm"
+                    placeholder="Enter your email"
+                    className="w-full text-black rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm shadow-sm transition-all placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
                 />
-            </FormField>
-            <SubmitButton pendintText="Subscribing...">Subscribe</SubmitButton>
+                {state.fieldErrors?.email && (
+                    <p className="mt-1.5 text-xs text-red-600">{state.fieldErrors.email}</p>
+                )}
+            </div>
+            <SubmitButton pendintText="Subscriting..">
+                Subscribe →
+            </SubmitButton>
         </form>
     )
 }
