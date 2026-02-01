@@ -43,6 +43,10 @@ export function CampaignList() {
     loadCampaigns();
   }
 
+  const handleCampaignDeleted = (campaignId: string) => {
+    setCampaigns(prev => prev.filter(c => c.id !== campaignId));
+  }
+
   if (loading) {
     return <div className="py-8 text-center text-[--color-muted]">Loading campaigns...</div>;
   }
@@ -89,7 +93,7 @@ export function CampaignList() {
                 />
               </div>
             ) : (
-              <CampaignCard key={campaign.id} campaign={campaign} onEdit={() => setEditingCampaign(campaign)} />
+              <CampaignCard key={campaign.id} campaign={campaign} onEdit={() => setEditingCampaign(campaign)} onDeleted={() => handleCampaignDeleted(campaign.id)} />
             )
           )}
         </div>

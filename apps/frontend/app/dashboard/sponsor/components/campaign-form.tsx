@@ -20,12 +20,9 @@ export function CampaignForm({ campaign, onSuccess, onCancel }: CampaignFormProp
     const prevSuccess = useRef(false);
 
     useEffect(() => {
-        if (state.success) {
+        if (state.success && !prevSuccess.current) {
             prevSuccess.current = true;
-            const timer = setTimeout(() => {
-                onSuccess?.();
-            }, 1500);
-            return () => clearTimeout(timer);
+            onSuccess?.();
         }
         if (!state.success) {
             prevSuccess.current = false;
@@ -45,7 +42,7 @@ export function CampaignForm({ campaign, onSuccess, onCancel }: CampaignFormProp
                 <div className="rounded bg-red-100 p-3 text-sm text-red-700">{state.error}</div>
             )}
 
-            {state.error && (
+            {state.success && (
                 <div className="rounded bg-green-100 p-3 text-sm text-green-700">
                     {isEditing ? 'Campaign updated!' : 'Campaign created!'}
                 </div>

@@ -7,6 +7,7 @@ import type { AdSlot } from "@/lib/types";
 interface AdSlotCardProps {
   adSlot: AdSlot;
   onEdit?: () => void;
+  onDeleted?: () => void;
 }
 
 const typeColors: Record<string, string> = {
@@ -16,7 +17,7 @@ const typeColors: Record<string, string> = {
   PODCAST: 'bg-orange-100 text-orange-700',
 };
 
-export function AdSlotCard({ adSlot, onEdit }: AdSlotCardProps) {
+export function AdSlotCard({ adSlot, onEdit, onDeleted }: AdSlotCardProps) {
   return (
     <div className="rounded-lg border border-[--color-border] p-4">
       <div className="mb-2 flex items-start justify-between">
@@ -52,7 +53,7 @@ export function AdSlotCard({ adSlot, onEdit }: AdSlotCardProps) {
             Edit
           </button>
         )}
-        <DeleteButton id={adSlot.id} name={adSlot.name} action={deleteAdSlot} />
+        <DeleteButton id={adSlot.id} name={adSlot.name} action={deleteAdSlot} onDeleted={onDeleted} />
       </div>
     </div>
   );

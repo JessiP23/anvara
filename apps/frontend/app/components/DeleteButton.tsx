@@ -1,20 +1,27 @@
 'use client';
 
-import { useActionState, useState } from 'react';
+import { useActionState, useEffect, useState } from 'react';
 import { initialActionState, type ActionState } from '@/lib/actions/types';
 
 type DeleteButtonProps = {
     id: string;
     name: string;
     action: (prevState: ActionState, formData: FormData) => Promise<ActionState>;
+    onDeleted?: () => void;
 };
 
-export function DeleteButton({ id, name, action }: DeleteButtonProps) {
+export function DeleteButton({ id, name, action, onDeleted }: DeleteButtonProps) {
     const [showConfirm, setShowConfirm] = useState(false);
     const [state, formAction, isPending] = useActionState<ActionState, FormData>(
         action,
         initialActionState
     );
+
+    useEffect(() => {
+        if (state.success && onDeleted) {
+            onDeleted?.();
+        }
+    }, [state.success, onDeleted]);
 
     if (!showConfirm) {
         return (

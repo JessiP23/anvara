@@ -52,6 +52,10 @@ export function AdSlotList() {
     loadAdSlots();
   }
 
+  const handleSlotDeleted = (adSlotId: string) => {
+    setAdSlots(prev => prev.filter(s => s.id !== adSlotId));
+  }
+
   if (loading) {
     return <div className="py-8 text-center text-[--color-muted]">Loading ad slots...</div>;
   }
@@ -97,7 +101,7 @@ export function AdSlotList() {
                 />
               </div>
             ) : (
-              <AdSlotCard key={slot.id} adSlot={slot} onEdit={() => setEditingSlot(slot)} />
+              <AdSlotCard key={slot.id} adSlot={slot} onEdit={() => setEditingSlot(slot)} onDeleted={() => handleSlotDeleted(slot.id)} />
             )
           )}
         </div>

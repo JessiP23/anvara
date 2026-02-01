@@ -14,9 +14,10 @@ const statusColors: Record<string, string> = {
 interface CampaignCardProps {
   campaign: Campaign;
   onEdit?: () => void;
+  onDeleted?: () => void;
 }
 
-export function CampaignCard({ campaign, onEdit }: CampaignCardProps) {
+export function CampaignCard({ campaign, onEdit, onDeleted }: CampaignCardProps) {
   const formatDate = (date: string | Date) => {
     return new Date(date).toLocaleDateString();
   }
@@ -64,7 +65,7 @@ export function CampaignCard({ campaign, onEdit }: CampaignCardProps) {
             Edit
           </button>
         )}
-        <DeleteButton id={campaign.id} name={campaign.name} action={deleteCampaign} />
+        <DeleteButton id={campaign.id} name={campaign.name} action={deleteCampaign} onDeleted={onDeleted} />
       </div>
     </div>
   );
