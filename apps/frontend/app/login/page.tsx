@@ -4,9 +4,7 @@ import React from 'react';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { authClient } from '@/auth-client';
-
-const env = globalThis.process?.env;
-const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+import { API_URL } from '@/lib/utils';
 
 export default function LoginPage() {
   const router = useRouter();

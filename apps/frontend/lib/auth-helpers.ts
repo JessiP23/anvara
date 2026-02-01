@@ -1,5 +1,4 @@
-const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
-
+import { API_URL } from "./utils";
 import type { RoleInfo } from "./types";
 
 /**

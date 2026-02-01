@@ -1,7 +1,6 @@
 "use server"
 import { cookies } from "next/headers";
-import { getApiUrl } from "../auth-helpers";
-const API_URL = getApiUrl();
+import { API_URL } from "../utils";
 
 export async function getAuthHeaders(): Promise<Record<string, string>> {
     const cookieStore = await cookies();

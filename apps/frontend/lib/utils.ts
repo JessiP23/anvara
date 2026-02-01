@@ -51,9 +51,18 @@ export function deepClone<T>(obj: T): T {
 }
 
 const env = globalThis.process?.env;
+
+export const config = {
+  apiUrl: env?.NEXT_PUBLIC_API_URL || "http://localhost:4291",
+  isDev: env?.NODE_ENV === 'development',
+  isProd: env?.NODE_ENV === 'production'
+} as const;
+
+export const API_URL = config.apiUrl;
+
 export const logger = {
   log: (...args: unknown[]) => {
-    if (env.NODE_ENV === 'development') {
+    if (config.isDev) {
       // eslint-disable-next-line no-console
       console.log('[App]', ...args);
     }

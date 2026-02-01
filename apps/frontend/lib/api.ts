@@ -1,5 +1,4 @@
-const env = globalThis.process?.env;
-const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+import { API_URL } from "./utils";
 
 export async function api<T>(endpoint: string, options?: globalThis.RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${endpoint}`, {

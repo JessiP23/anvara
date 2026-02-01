@@ -1,8 +1,7 @@
 'use server';
 
 import type { ActionState } from '@/lib/types';
-
-const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+import { API_URL } from '@/lib/utils';
 
 function getValues(formData: FormData) {
   return {

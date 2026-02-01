@@ -1,7 +1,6 @@
 import { cookies } from "next/headers";
 import type { Campaign, AdSlot } from "../types";
-
-const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || "http://localhost:4291";
+import { API_URL } from "../utils";
 
 async function serverFetch<T>(endpoint: string): Promise<T | null> {
     const cookieStore = await cookies();
