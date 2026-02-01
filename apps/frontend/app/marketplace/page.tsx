@@ -19,7 +19,7 @@ export default function MarketplacePage() {
         <div className='flex-1 max-h-[calc(100vh-200px)] overflow-y-auto pr-2'>
           <AdSlotGrid />
         </div>
-        <div className='hidden w-80 shrink-0 lg:block'>
+        <div className='hidden w-64 shrink-0 lg:block'>
           <NewsletterSidebar />
         </div>
       </div>
