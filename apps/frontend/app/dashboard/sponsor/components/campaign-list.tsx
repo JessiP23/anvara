@@ -10,6 +10,7 @@ import { useToast } from '@/components/notification/toast';
 import { LoadingState } from '@/components/state/loading';
 import { ErrorState } from '@/components/state/error';
 import { EmptyState } from '@/components/state/empty';
+import { Modal } from '@/components/ui/modal/genericModal';
 
 export function CampaignList() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);

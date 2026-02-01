@@ -11,12 +11,13 @@ import { useToast } from '@/components/notification/toast';
 import { LoadingState } from '@/components/state/loading';
 import { ErrorState } from '@/components/state/error';
 import { EmptyState } from '@/components/state/empty';
+import { Modal } from '@/components/ui/modal/genericModal';
 
 export function AdSlotList() {
   const [adSlots, setAdSlots] = useState<AdSlot[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingSlot, setEditingSlot] = useState<AdSlot | null>(null);
   const { data: session } = authClient.useSession();
   const {show} = useToast();
@@ -47,7 +48,7 @@ export function AdSlotList() {
   }, [loadAdSlots]);
 
   const handleCreateSuccess = () => {
-    setShowCreateForm(false);
+    setShowCreateModal(false);
     loadAdSlots();
     show('Ad Slot Created!', 'success');
   }
@@ -76,43 +77,54 @@ export function AdSlotList() {
       <div className="flex justify-end">
         <button
           type="button"
-          onClick={() => setShowCreateForm(!showCreateForm)}
+          onClick={() => setShowCreateModal(true)}
           className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
-          {showCreateForm ? 'Cancel' : 'Create Ad Slot'}
+          Create Ad Slot
         </button>
       </div>
 
-      {showCreateForm && (
-        <div className="rounded-lg border bg-white p-4 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold text-black">Create New Ad Slot</h2>
-          <AdSlotForm onSuccess={handleCreateSuccess} onCancel={() => setShowCreateForm(false)} />
-        </div>
-      )}
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title='Create New Ad Slot'
+      >
+        <AdSlotForm 
+          onSuccess={handleCreateSuccess}
+          onCancel={() => setShowCreateModal(false)}
+        />
+      </Modal>
 
-      {adSlots.length === 0 && !showCreateForm && (
+      <Modal
+        isOpen={!!editingSlot}
+        onClose={() => setEditingSlot(null)}
+        title='Edit Ad Slot'
+      >
+        {editingSlot && (
+          <AdSlotForm
+            adSlot={editingSlot}
+            onSuccess={handleEditSuccess}
+            onCancel={() => setEditingSlot(null)}
+          />
+        )}
+      </Modal>
+      {adSlots.length === 0 && (
         <EmptyState 
-          title='No ad slots yet'
-          message='Create your first ad slot to start earning.'
-          action={{ label: 'Create Ad Slot', onClick: () => setShowCreateForm(true)}}
+          title='No ad slots found'
+          message='Create your first ad slot'
+          action={{ label: 'Create Ad Slot', onClick: () => setShowCreateModal(true) }}
         />
       )}
       {adSlots.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {adSlots.map((slot) =>
-            editingSlot?.id === slot.id ? (
-              <div key={slot.id} className="rounded-lg border bg-white p-4 shadow-sm">
-                <h3 className="mb-4 text-lg font-semibold text-black">Edit Ad Slot</h3>
-                <AdSlotForm
-                  adSlot={slot}
-                  onSuccess={handleEditSuccess}
-                  onCancel={() => setEditingSlot(null)}
-                />
-              </div>
-            ) : (
-              <AdSlotCard key={slot.id} adSlot={slot} onEdit={() => setEditingSlot(slot)} onDeleted={() => handleSlotDeleted(slot.id)} />
-            )
-          )}
+        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+          {adSlots.map((slot) => (
+            <AdSlotCard
+              key={slot.id}
+              adSlot={slot}
+              onEdit={() => setEditingSlot(slot)}
+              onDeleted={() => handleSlotDeleted(slot.id)}
+            />
+          ))}
         </div>
       )}
     </div>
