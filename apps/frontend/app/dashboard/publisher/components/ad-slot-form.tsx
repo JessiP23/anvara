@@ -19,7 +19,7 @@ type AdSlotFormProps = {
 export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
     const isEditing = !!adSlot;
     const action = isEditing ? updateAdSlot : createAdSlot;
-    const [state, formAction, isPending] = useActionState<ActionState, FormData>(action, initialActionState);
+    const [state, formAction] = useActionState<ActionState, FormData>(action, initialActionState);
     const prevSuccess = useRef(false);
 
     useEffect(() => {
@@ -44,7 +44,7 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
             </FormField>
 
             <FormField id='type' label='Type' required error={state.fieldErrors?.type}>
-                <select id='type' name='Type' defaultValue={adSlot?.type || 'DISPLAY'} className='mt-1 w-full rounded border p-2'>
+                <select id='type' name='type' defaultValue={adSlot?.type || 'DISPLAY'} className='mt-1 w-full rounded border p-2'>
                     {AD_SLOT_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
                 </select>
             </FormField>

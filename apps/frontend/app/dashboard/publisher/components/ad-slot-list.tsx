@@ -6,6 +6,7 @@ import { authClient } from '@/auth-client';
 import { AdSlotCard } from './ad-slot-card';
 import type { AdSlot } from '@/lib/types';
 import { AdSlotForm } from './ad-slot-form';
+import { useToast } from '@/components/notification/toast';
 
 const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 
@@ -16,6 +17,7 @@ export function AdSlotList() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingSlot, setEditingSlot] = useState<AdSlot | null>(null);
   const { data: session } = authClient.useSession();
+  const {show} = useToast();
 
   const loadAdSlots = useCallback(async () => {
     if (!session?.user?.id) return;
@@ -45,15 +47,18 @@ export function AdSlotList() {
   const handleCreateSuccess = () => {
     setShowCreateForm(false);
     loadAdSlots();
+    show('Ad Slot Created!', 'success');
   }
 
   const handleEditSuccess = () => {
     setEditingSlot(null);
     loadAdSlots();
+    show('Ad Slot Updated!', 'success');
   }
 
   const handleSlotDeleted = (adSlotId: string) => {
     setAdSlots(prev => prev.filter(s => s.id !== adSlotId));
+    show('Ad Slot Deleted!', 'success');
   }
 
   if (loading) {

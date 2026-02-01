@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import React from 'react';
 import { Nav } from './components/nav';
+import { ToastProvider } from '@/components/notification/toast';
 
 // TODO: Add ErrorBoundary wrapper for graceful error handling
 // TODO: Consider adding a loading.tsx for Suspense boundaries
@@ -21,8 +22,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="min-h-screen antialiased">
-        <Nav />
-        <main className="mx-auto max-w-6xl p-4">{children}</main>
+        <ToastProvider>
+          <Nav />
+          <main className="mx-auto max-w-6xl p-4">{children}</main>
+        </ToastProvider>
       </body>
     </html>
   );

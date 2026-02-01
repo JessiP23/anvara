@@ -19,6 +19,7 @@ function parseCampaignForm(formData: FormData) {
 function validateCampaignForm(data: ReturnType<typeof parseCampaignForm>) {
     const fieldErrors: Record<string, string> = {};
     if (!data.name) fieldErrors.name = 'Name is required';
+    if (!data.description) fieldErrors.description = 'Description is required'
     if (!data.budget || isNaN(Number(data.budget)) || Number(data.budget) <= 0) {
         fieldErrors.budget = 'Budget must be a positive number';
     }
@@ -44,7 +45,16 @@ function buildCampaignPayload(data: ReturnType<typeof parseCampaignForm>) {
 export async function createCampaign(_prevState: ActionState, formData: FormData): Promise<ActionState> {
     const data = parseCampaignForm(formData);
     const fieldErrors = validateCampaignForm(data);
-    if (fieldErrors) return { fieldErrors };
+
+    const values = {
+        name: data.name || '',
+        description: data.description || '',
+        budget: data.budget || '',
+        startDate: data.startDate || '',
+        endDate: data.endDate || '',
+    }
+
+    if (fieldErrors) return { fieldErrors, values };
 
     const { error } = await apiRequest('/api/campaigns', {
         method: 'POST',

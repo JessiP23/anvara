@@ -6,6 +6,7 @@ import { authClient } from '@/auth-client';
 import { CampaignForm } from './campaign-form';
 import { CampaignCard } from './campaign-card';
 import type { Campaign } from '@/lib/types';
+import { useToast } from '@/components/notification/toast';
 
 export function CampaignList() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -14,6 +15,7 @@ export function CampaignList() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const { data: session } = authClient.useSession();
+  const { show } = useToast();
 
   const loadCampaigns = useCallback(async () => {
     if (!session?.user?.id) return;
@@ -36,15 +38,18 @@ export function CampaignList() {
   const handleCreateSuccess = () => {
     setShowCreateForm(false);
     loadCampaigns();
+    show('Campaign Created!', 'success');
   }
 
   const handleEditSuccess = () => {
     setEditingCampaign(null);
     loadCampaigns();
+    show('Campaign Updated!', 'success');
   }
 
   const handleCampaignDeleted = (campaignId: string) => {
     setCampaigns(prev => prev.filter(c => c.id !== campaignId));
+    show('Campaign Deleted!', 'success');
   }
 
   if (loading) {
