@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { getAdSlot, bookAdSlot, unbookAdSlot } from '@/lib/api';
 import { authClient } from '@/auth-client';
 import type { AdSlot, User, RoleInfo } from '@/lib/types';
+import { QuoteButton } from '@/components/quote/quote-button';
 
 const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291'
 
@@ -208,6 +209,11 @@ export function AdSlotDetail({ id }: Props) {
                 >
                   {booking ? 'Booking...' : 'Book This Placement'}
                 </button>
+                <QuoteButton 
+                  adSlotId={adSlot.id}
+                  adSlotName={adSlot.name}
+                  basePrice={adSlot.basePrice}
+                />
               </div>
             ) : (
               <div>
