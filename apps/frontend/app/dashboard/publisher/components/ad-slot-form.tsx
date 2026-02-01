@@ -3,6 +3,9 @@
 import { useActionState, useEffect, useRef } from 'react';
 import { createAdSlot, updateAdSlot } from '../actions';
 import { initialActionState, type ActionState } from '@/lib/actions/types';
+import { FormField } from '@/components/ui/form/form-field';
+import { SubmitButton } from '@/components/ui/form/submit-button';
+import { FormAlert } from '@/components/ui/form/form-alerts';
 import type { AdSlot } from '@/lib/types';
 
 const AD_SLOT_TYPES = ['DISPLAY', 'VIDEO', 'NATIVE', 'NEWSLETTER', 'PODCAST'] as const;
@@ -20,13 +23,10 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
     const prevSuccess = useRef(false);
 
     useEffect(() => {
-        if (state.success) {
+        if (state.success && !prevSuccess.current) {
             // current val
             prevSuccess.current = true;
-            const times = setTimeout(() => {
-                onSuccess?.();
-            }, 1500);
-            return () => clearTimeout(times);
+            onSuccess?.();
         }
         if (!state.success) {
             prevSuccess.current = false;
@@ -37,163 +37,51 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
         <form action={formAction} className="space-y-4 text-black">
             {isEditing && <input type="hidden" name="id" value={adSlot.id} />}
 
-            {state.error && (
-                <div className="rounded bg-red-100 p-3 text-sm text-red-700">{state.error}</div>
-            )}
+            <FormAlert error={state.error} success={state.success} successMessage={isEditing ? "Ad Slot updated!" : 'Ad slot created!'} />
 
-            {state.success && (
-                <div className="rounded bg-green-100 p-3 text-sm text-green-700">
-                    {isEditing ? 'Ad slot updated!' : 'Ad slot created!'}
-                </div>
-            )}
+            <FormField id='name' label='Name' required error={state.fieldErrors?.name}>
+                <input type='text' id='name' name='name' defaultValue={adSlot?.name} className='mt-1 w-full rounded border p-2' required />
+            </FormField>
 
-            <div>
-                <label htmlFor="name" className="block text-sm font-medium">
-                    Name *
-                </label>
-                <input
-                    type="text"
-                    id="name"
-                    name="name"
-                    defaultValue={adSlot?.name}
-                    className="mt-1 w-full rounded border p-2"
-                    required
-                />
-                {state.fieldErrors?.name && (
-                    <p className="mt-1 text-sm text-red-600">{state.fieldErrors.name}</p>
-                )}
-            </div>
-
-            <div>
-                <label htmlFor="type" className="block text-sm font-medium">
-                    Type *
-                </label>
-                <select
-                    id="type"
-                    name="type"
-                    defaultValue={adSlot?.type || ''}
-                    className="mt-1 w-full rounded border p-2"
-                    required
-                >
-                    <option value="">Select type</option>
-                    {AD_SLOT_TYPES.map((type) => (
-                        <option key={type} value={type}>
-                            {type}
-                        </option>
-                    ))}
+            <FormField id='type' label='Type' required error={state.fieldErrors?.type}>
+                <select id='type' name='Type' defaultValue={adSlot?.type || 'DISPLAY'} className='mt-1 w-full rounded border p-2'>
+                    {AD_SLOT_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
                 </select>
-                {state.fieldErrors?.type && (
-                    <p className="mt-1 text-sm text-red-600">{state.fieldErrors.type}</p>
-                )}
-            </div>
+            </FormField>
 
-            <div>
-                <label htmlFor="basePrice" className="block text-sm font-medium">
-                    Base Price ($) *
-                </label>
-                <input
-                    type="number"
-                    id="basePrice"
-                    name="basePrice"
-                    defaultValue={adSlot?.basePrice}
-                    min="0.01"
-                    step="0.01"
-                    className="mt-1 w-full rounded border p-2"
-                    required
-                />
-                {state.fieldErrors?.basePrice && (
-                    <p className="mt-1 text-sm text-red-600">{state.fieldErrors.basePrice}</p>
-                )}
-            </div>
+            <FormField id='basePrice' label='Base Price ($/month)' required error={state.fieldErrors?.basePrice}>
+                <input type='number' id='basePrice' name='basePrice' defaultValue={adSlot?.basePrice} min='1' className='mt-1 w-full rounded border p-2' required />
+            </FormField>
 
-            <div>
-                <label htmlFor="description" className="block text-sm font-medium">
-                    Description
-                </label>
-                <textarea
-                    id="description"
-                    name="description"
-                    defaultValue={adSlot?.description || ''}
-                    rows={3}
-                    className="mt-1 w-full rounded border p-2"
-                />
-            </div>
+            <FormField id='description' label='Description' required error={state.fieldErrors?.description}>
+                <textarea id='description' name='description' defaultValue={adSlot?.description} rows={3} className='mt-1 w-full rounded border p-2' />
+            </FormField>
 
-            <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label htmlFor="width" className="block text-sm font-medium">
-                        Width (px)
-                    </label>
-                    <input
-                        type="number"
-                        id="width"
-                        name="width"
-                        defaultValue={adSlot?.width || ''}
-                        min="1"
-                        className="mt-1 w-full rounded border p-2"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="height" className="block text-sm font-medium">
-                        Height (px)
-                    </label>
-                    <input
-                        type="number"
-                        id="height"
-                        name="height"
-                        defaultValue={adSlot?.height || ''}
-                        min="1"
-                        className="mt-1 w-full rounded border p-2"
-                    />
-                </div>
-            </div>
+            <FormField id='position' label='Position' required error={state.fieldErrors?.position}>
+                <input type='text' id='position' name='position' defaultValue={adSlot?.position} placeholder='e.g., Header, Sidebar, Footer' className='mt-1 w-full rounded border p-2' />
+            </FormField>
 
-            <div>
-                <label htmlFor="position" className="block text-sm font-medium">
-                    Position
-                </label>
-                <input
-                    type="text"
-                    id="position"
-                    name="position"
-                    defaultValue={adSlot?.position || ''}
-                    placeholder="e.g., header, sidebar, footer"
-                    className="mt-1 w-full rounded border p-2"
-                />
+            <div className='grid grid-cols-2 gap-4'>
+                <FormField id='width' label='Width (px)'>
+                    <input type='number' id='width' name='width' defaultValue={adSlot?.width} min='1' className='mt-1 w-full rounded border p-2' />
+                </FormField>
+                <FormField id='height' label='Height (px)'>
+                    <input type='number' id='height' name='height'defaultValue={adSlot?.height} min='1' className='mt-1 w-full rounded border p-2' />
+                </FormField>
             </div>
 
             {isEditing && (
-                <div className="flex items-center gap-2">
-                    <input
-                        type="checkbox"
-                        id="isAvailable"
-                        name="isAvailable"
-                        value="true"
-                        defaultChecked={adSlot.isAvailable}
-                    />
-                    <label htmlFor="isAvailable" className="text-sm font-medium">
-                        Available for booking
-                    </label>
-                </div>
+                <FormField id='isAvailable' label='Availability'>
+                    <select id='isAvailable' name='isAvailable' defaultValue={adSlot.isAvailable ? 'true' : 'false'} className='mt-1 w-full rounded border p-2'>
+                        <option value='true'>Available</option>
+                        <option value='false'>Currently Booked</option>
+                    </select>
+                </FormField>
             )}
 
-            <div className="flex gap-3 pt-2">
-                <button
-                    type="submit"
-                    disabled={isPending}
-                    className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
-                >
-                    {isPending ? 'Saving...' : isEditing ? 'Update Ad Slot' : 'Create Ad Slot'}
-                </button>
-                {onCancel && (
-                    <button
-                        type="button"
-                        onClick={onCancel}
-                        className="rounded border px-4 py-2 hover:bg-gray-50"
-                    >
-                        Cancel
-                    </button>
-                )}
+            <div className='flex gap-3 pt-2'>
+                <SubmitButton>{isEditing ? 'Update Ad Slot' : 'Create Ad Slot'}</SubmitButton>
+                {onCancel && <button type='button' onClick={onCancel} className='rounded border px-4 py-2 hover:bg-gray-50'>Cancel</button>}
             </div>
         </form>
     );
