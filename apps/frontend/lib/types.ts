@@ -9,6 +9,9 @@ export interface AdSlot {
   type: string;
   basePrice: number;
   isAvailable: boolean;
+  width?: number;
+  height?: number;
+  position?: string;
   publisher?: {
     id: string;
     name: string;

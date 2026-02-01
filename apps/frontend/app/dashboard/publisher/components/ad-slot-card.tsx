@@ -1,14 +1,12 @@
 'use client';
 
+import { DeleteButton } from "@/app/components/DeleteButton";
+import { deleteAdSlot } from "../actions";
+import type { AdSlot } from "@/lib/types";
+
 interface AdSlotCardProps {
-  adSlot: {
-    id: string;
-    name: string;
-    description?: string;
-    type: string;
-    basePrice: number;
-    isAvailable: boolean;
-  };
+  adSlot: AdSlot;
+  onEdit?: () => void;
 }
 
 const typeColors: Record<string, string> = {
@@ -18,7 +16,7 @@ const typeColors: Record<string, string> = {
   PODCAST: 'bg-orange-100 text-orange-700',
 };
 
-export function AdSlotCard({ adSlot }: AdSlotCardProps) {
+export function AdSlotCard({ adSlot, onEdit }: AdSlotCardProps) {
   return (
     <div className="rounded-lg border border-[--color-border] p-4">
       <div className="mb-2 flex items-start justify-between">
@@ -44,6 +42,18 @@ export function AdSlotCard({ adSlot }: AdSlotCardProps) {
       </div>
 
       {/* TODO: Add edit/toggle availability buttons */}
+      <div className="flex items-center justify-between border-t pt-3">
+        {onEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            Edit
+          </button>
+        )}
+        <DeleteButton id={adSlot.id} name={adSlot.name} action={deleteAdSlot} />
+      </div>
     </div>
   );
 }

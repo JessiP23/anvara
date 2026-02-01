@@ -1,4 +1,8 @@
+'use client';
+
 import type { Campaign } from "@/lib/types";
+import { DeleteButton } from "@/app/components/DeleteButton";
+import { deleteCampaign } from "../actions";
 
 const statusColors: Record<string, string> = {
   DRAFT: 'bg-gray-100 text-gray-600',
@@ -9,11 +13,16 @@ const statusColors: Record<string, string> = {
 
 interface CampaignCardProps {
   campaign: Campaign;
+  onEdit?: () => void;
 }
 
-export function CampaignCard({ campaign }: CampaignCardProps) {
-  const progress =
-    campaign.budget > 0 ? (Number(campaign.spent) / Number(campaign.budget)) * 100 : 0;
+export function CampaignCard({ campaign, onEdit }: CampaignCardProps) {
+  const formatDate = (date: string | Date) => {
+    return new Date(date).toLocaleDateString();
+  }
+  const spent = Number(campaign.spent || 0);
+  const budget = Number(campaign.budget);
+  const progress = budget > 0 ? Math.min((spent / budget) * 100, 100): 0;
 
   return (
     <div className="rounded-lg border border-[--color-border] p-4">
@@ -30,27 +39,33 @@ export function CampaignCard({ campaign }: CampaignCardProps) {
         <p className="mb-3 text-sm text-[--color-muted] line-clamp-2">{campaign.description}</p>
       )}
 
-      <div className="mb-2">
-        <div className="flex justify-between text-sm">
-          <span className="text-[--color-muted]">Budget</span>
-          <span>
-            ${Number(campaign.spent).toLocaleString()} / ${Number(campaign.budget).toLocaleString()}
-          </span>
+      <div className="mb-3 space-y-1 text-sm text-[--color-muted]">
+        <p>
+          {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
+        </p>
+        <div className="flex items-center justify-between">
+          <span>Budget: ${budget.toLocaleString()}</span>
+          <span>Spent: ${spent.toLocaleString()}</span>
         </div>
         <div className="mt-1 h-1.5 rounded-full bg-gray-200">
           <div
-            className="h-1.5 rounded-full bg-[--color-primary]"
-            style={{ width: `${Math.min(progress, 100)}%` }}
+            className="h-2 rounded-full bg-blue-600"
+            style={{ width: `${progress}%` }}
           />
         </div>
       </div>
-
-      <div className="text-xs text-[--color-muted]">
-        {new Date(campaign.startDate).toLocaleDateString()} -{' '}
-        {new Date(campaign.endDate).toLocaleDateString()}
+      <div className="flex items-center justify-between border-t pt-3">
+        {onEdit && (
+          <button
+            type="button"
+            onClick={onEdit}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            Edit
+          </button>
+        )}
+        <DeleteButton id={campaign.id} name={campaign.name} action={deleteCampaign} />
       </div>
-
-      {/* TODO: Add edit/view buttons */}
     </div>
   );
 }

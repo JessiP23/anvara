@@ -2,8 +2,6 @@ import { Router, type Request, type Response, type IRouter } from 'express';
 import { prisma } from '../db.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
 import { requireSponsor } from '../middleware/role.middleware.js';
-import type { AuthRequest } from '../types/auth.types.js';
-import { getParam } from '../utils/helpers.js';
 
 const router: IRouter = Router();
 
