@@ -16,13 +16,11 @@ export default function MarketplacePage() {
       </div>
 
       <div className='flex gap-8'>
-        <div className='flex-1'>
+        <div className='flex-1 max-h-[calc(100vh-200px)] overflow-y-auto pr-2'>
           <AdSlotGrid />
         </div>
-        <div className='hidden w-72 shrink-0 lg:block'>
-          <div className='sticky top-24'>
-            <NewsletterSidebar />
-          </div>
+        <div className='hidden w-80 shrink-0 lg:block'>
+          <NewsletterSidebar />
         </div>
       </div>
     </div>
