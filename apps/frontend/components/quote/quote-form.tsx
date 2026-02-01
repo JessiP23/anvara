@@ -47,7 +47,7 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
   };
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} className="space-y-4 text-black">
       <input type="hidden" name="adSlotId" value={adSlotId} />
 
       <div className="rounded-lg bg-gray-50 p-3 text-sm">
@@ -74,7 +74,7 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
         </FormField>
 
         <FormField id="budget" label="Budget" required error={state.fieldErrors?.budget}>
-          <select id="budget" name="budget" defaultValue={getValue('budget')} className="mt-1 w-full rounded border px-3 py-2 text-sm">
+          <select key={`budget-${state.values?.budget}`} id="budget" name="budget" defaultValue={getValue('budget')} className="mt-1 w-full rounded border px-3 py-2 text-sm">
             <option value="">Select</option>
             {BUDGETS.map((b) => <option key={b} value={b}>{b}</option>)}
           </select>
@@ -82,7 +82,7 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
       </div>
 
       <FormField id="timeline" label="Timeline" required error={state.fieldErrors?.timeline}>
-        <select id="timeline" name="timeline" defaultValue={getValue('timeline')} className="mt-1 w-full rounded border px-3 py-2 text-sm">
+        <select key={`timeline-${state.values?.timeline}`} id="timeline" name="timeline" defaultValue={getValue('timeline')} className="mt-1 w-full rounded border px-3 py-2 text-sm">
           <option value="">Select</option>
           {TIMELINES.map((t) => <option key={t} value={t}>{t}</option>)}
         </select>

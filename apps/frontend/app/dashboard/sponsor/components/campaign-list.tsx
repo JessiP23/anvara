@@ -16,7 +16,7 @@ export function CampaignList() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [showCreateForm, setShowCreateForm] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const { data: session } = authClient.useSession();
   const { show } = useToast();
@@ -41,7 +41,7 @@ export function CampaignList() {
   }, [loadCampaigns]);
 
   const handleCreateSuccess = () => {
-    setShowCreateForm(false);
+    setShowCreateModal(false);
     loadCampaigns();
     show('Campaign Created!', 'success');
   }
@@ -70,43 +70,55 @@ export function CampaignList() {
       <div className='flex justify-end'>
         <button
           type='button'
-          onClick={() => setShowCreateForm(!showCreateForm)}
+          onClick={() => setShowCreateModal(true)}
           className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
         >
-          {showCreateForm ? 'Cancel' : 'Create New Campaign'}
+          Create New Campaign
         </button>
       </div>
 
-      {showCreateForm && (
-        <div className="rounded-lg border bg-white p-4 shadow-sm">
-          <h2 className="mb-4 text-lg font-semibold">Create New Campaign</h2>
-          <CampaignForm onSuccess={handleCreateSuccess} onCancel={() => setShowCreateForm(false)} />
-        </div>
-      )}
+      <Modal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        title='Create New Campaign'
+      >
+        <CampaignForm
+          onSuccess={handleCreateSuccess}
+          onCancel={() => setShowCreateModal(false)}
+        />
+      </Modal>
 
-      {campaigns.length === 0 && !showCreateForm && (
+      <Modal
+        isOpen={!!editingCampaign}
+        onClose={() => setEditingCampaign(null)}
+        title='Edit Campaign'
+      >
+        {editingCampaign && (
+          <CampaignForm
+            campaign={editingCampaign}
+            onSuccess={handleEditSuccess}
+            onCancel={() => setEditingCampaign(null)}
+          />
+        )}
+      </Modal>
+
+      {campaigns.length === 0 && (
         <EmptyState 
-          title='No campaigns yet'
-          message='Create your first campaign to start advertising'
-          action={{label: 'Create Campaign', onClick: () => setShowCreateForm(true)}}
+          title="No Campaigns yet"
+          message="Create your first campaign"
+          action={{ label: "Create Campaign", onClick: () => setShowCreateModal(true) }}
         />
       )}
 
       {campaigns.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {campaigns.map((campaign) =>
-            editingCampaign?.id === campaign.id ? (
-              <div key={campaign.id} className="rounded-lg border bg-white p-4 shadow-sm">
-                <h3 className="mb-4 text-lg font-semibold text-black">Edit Campaign</h3>
-                <CampaignForm
-                  campaign={campaign}
-                  onSuccess={handleEditSuccess}
-                  onCancel={() => setEditingCampaign(null)}
-                />
-              </div>
-            ) : (
-              <CampaignCard key={campaign.id} campaign={campaign} onEdit={() => setEditingCampaign(campaign)} onDeleted={() => handleCampaignDeleted(campaign.id)} />
-            )
+            <CampaignCard
+              key={campaign.id}
+              campaign={campaign}
+              onEdit={() => setEditingCampaign(campaign)}
+              onDeleted={() => handleCampaignDeleted(campaign.id)}
+            />
           )}
         </div>
       )}     
