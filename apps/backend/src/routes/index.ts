@@ -22,6 +22,6 @@ router.use('/placements', placementsRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/health', healthRoutes);
 router.use('/newsletter', newsletterRouter);
-router.use('/quotes', quotesRoutes);
+router.use('/quote', quotesRoutes);
 
 export default router;
