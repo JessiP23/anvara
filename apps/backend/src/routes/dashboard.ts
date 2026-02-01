@@ -1,10 +1,12 @@
 import { Router, type Request, type Response, type IRouter } from 'express';
 import { prisma } from '../db.js';
+import { requireAuth } from '../middleware/auth.middleware.js';
+import { AuthRequest } from '../auth.js';
 
 const router: IRouter = Router();
 
 // GET /api/dashboard/stats - Get overall platform stats
-router.get('/stats', async (_req: Request, res: Response) => {
+router.get('/stats', requireAuth, async (_req: AuthRequest, res: Response) => {
   try {
     const [sponsorCount, publisherCount, activeCampaigns, totalPlacements, placementMetrics] =
       await Promise.all([
