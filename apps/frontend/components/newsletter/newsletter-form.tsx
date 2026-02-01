@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from "react";
 import { subscribeNewsletter } from "./actions";
-import { initialActionState, type ActionState } from "@/lib/actions/types";
+import { initialActionState, type ActionState } from '@/lib/types';
 import { SubmitButton } from "../ui/form/submit-button";
 import { useToast } from "../notification/toast";
 

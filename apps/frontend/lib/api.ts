@@ -26,7 +26,7 @@ export const getAdSlots = <T = unknown[]>(publisherId?: string) =>
 export const getAdSlot = <T = unknown>(id: string) => api<T>(`/api/ad-slots/${id}`);
 export const createAdSlot = (data: Record<string, unknown>) =>
   api('/api/ad-slots', { method: 'POST', body: JSON.stringify(data) });
-export const updateAdSlot = <T = unknown>(id: string, data: Record<string, unknown>) => api<T>(`/api/ad-alots/${id}`, { method: 'PUT', body: JSON.stringify(data) });
+export const updateAdSlot = <T = unknown>(id: string, data: Record<string, unknown>) => api<T>(`/api/ad-slots/${id}`, { method: 'PUT', body: JSON.stringify(data) });
 export const deleteAdSlot = (id: string) => api(`/api/ad-slots/${id}`, { method: 'DELETE' });
 export const bookAdSlot = (id: string, message?: string) => api(`/api/ad-slots/${id}/book`, { method: 'POST', body: JSON.stringify({message})});
 export const unbookAdSlot = (id: string) => api(`/api/ad-slots/${id}/unbook`, { method: 'POST' });

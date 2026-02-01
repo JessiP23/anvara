@@ -2,13 +2,15 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { getAdSlots } from '@/lib/api';
+import { getUserRole } from '@/lib/auth-helpers';
 import { authClient } from '@/auth-client';
 import { AdSlotCard } from './ad-slot-card';
 import type { AdSlot } from '@/lib/types';
 import { AdSlotForm } from './ad-slot-form';
 import { useToast } from '@/components/notification/toast';
-
-const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+import { LoadingState } from '@/components/state/loading';
+import { ErrorState } from '@/components/state/error';
+import { EmptyState } from '@/components/state/empty';
 
 export function AdSlotList() {
   const [adSlots, setAdSlots] = useState<AdSlot[]>([]);
@@ -24,8 +26,8 @@ export function AdSlotList() {
 
     try {
       setLoading(true);
-      const roleResponse = await fetch(`${API_URL}/api/auth/role/${session.user.id}`);
-      const roleData = await roleResponse.json();
+      setError(null);
+      const roleData = await getUserRole(session.user.id);
 
       if (roleData.publisherId) {
         const data = await getAdSlots<AdSlot[]>(roleData.publisherId);
@@ -62,11 +64,11 @@ export function AdSlotList() {
   }
 
   if (loading) {
-    return <div className="py-8 text-center text-[--color-muted]">Loading ad slots...</div>;
+    return <LoadingState message='Loading ad slots...'/>;
   }
 
   if (error) {
-    return <div className="rounded border border-red-200 bg-red-50 p-4 text-red-600">{error}</div>;
+    return <ErrorState message={error} onRetry={loadAdSlots} />;
   }
 
   return (
@@ -89,9 +91,11 @@ export function AdSlotList() {
       )}
 
       {adSlots.length === 0 && !showCreateForm && (
-        <div className="rounded-lg border border-dashed border-[--color-border] p-8 text-center text-[--color-muted]">
-          No ad slots yet. Create your first ad slot to start earning.
-        </div>
+        <EmptyState 
+          title='No ad slots yet'
+          message='Create your first ad slot to start earning.'
+          action={{ label: 'Create Ad Slot', onClick: () => setShowCreateForm(true)}}
+        />
       )}
       {adSlots.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">

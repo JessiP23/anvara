@@ -1,7 +1,7 @@
 "use server"
 import { cookies } from "next/headers";
-
-const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+import { getApiUrl } from "../auth-helpers";
+const API_URL = getApiUrl();
 
 export async function getAuthHeaders(): Promise<Record<string, string>> {
     const cookieStore = await cookies();
@@ -12,6 +12,10 @@ export async function getAuthHeaders(): Promise<Record<string, string>> {
     }
 }
 
+export type ApiResponse<T> = 
+    | { data: T; error?: undefined }
+    | { data?: never; error: string };
+
 export async function apiRequest<T>(
     endpoint: string,
     options: {
@@ -19,7 +23,7 @@ export async function apiRequest<T>(
         body?: string;
         headers?: Record<string, string>;
     }
-): Promise<{ data?: T; error?: string }> {
+): Promise<ApiResponse<T>> {
     try{
         const headers = await getAuthHeaders();
         const response = await fetch(`${API_URL}${endpoint}`, {
@@ -37,7 +41,7 @@ export async function apiRequest<T>(
 
         if (response.status === 204) {
             return {
-                data: undefined,
+                data: undefined as T,
             }
         }
 

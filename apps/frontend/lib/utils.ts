@@ -1,8 +1,6 @@
 // Frontend utility functions
 
 // Format a price for display
-// FIXME: 'price' has implicit 'any' type - should be 'number'
-// BUG: unusedFormatter is declared but never used
 export function formatPrice(price: number, locale = 'en-US') {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
@@ -11,7 +9,6 @@ export function formatPrice(price: number, locale = 'en-US') {
 }
 
 // Debounce function for search inputs
-// FIXME: Multiple 'any' types - fn should be typed, return type should be specified
 export function debounce(fn: (...args: unknown[]) => void, delay: number) {
   let timeoutId: ReturnType<typeof setTimeout>;
   return (...args: unknown[]) => {
@@ -21,7 +18,6 @@ export function debounce(fn: (...args: unknown[]) => void, delay: number) {
 }
 
 // Parse query string parameters
-// FIXME: Return type uses 'any' - should be Record<string, string>
 export function parseQueryString(queryString: string): Record<string, string> {
   const params: Record<string, string> = {};
   const searchParams = new URLSearchParams(queryString);
@@ -37,31 +33,24 @@ export function parseQueryString(queryString: string): Record<string, string> {
 export const isClient = typeof window !== 'undefined';
 
 // Truncate text with ellipsis
-// BUG: unusedCheck is declared but never used
 export function truncate(text: string, maxLength: number): string {
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + '...';
 }
 
 // Class name helper (simple cn alternative)
-// FIXME: 'classes' should be typed more strictly
 export function cn(...classes: string[]): string {
   return classes.filter(Boolean).join(' ');
 }
 
 // Sleep utility for testing/debugging
-// BUG: Missing return type annotation
 export const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
-// Deep clone an object
-// NOTE: This doesn't handle circular references, dates, or functions
 export function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
 const env = globalThis.process?.env;
-// Logger that only logs in development
-// FIXME: Logger methods use 'any' - should be typed as 'unknown'
 export const logger = {
   log: (...args: unknown[]) => {
     if (env.NODE_ENV === 'development') {
@@ -79,8 +68,6 @@ export const logger = {
   },
 };
 
-// TODO: Add a proper date formatting utility
-// BUG: Doesn't handle timezone or invalid dates
 export function formatRelativeTime(date: Date): string {
   const now = new Date();
   const diff = now.getTime() - date.getTime();

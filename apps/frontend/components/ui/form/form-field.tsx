@@ -8,9 +8,10 @@ interface FormFieldProps {
     required?: boolean;
     error?: string;
     children: ReactNode;
+    className?: string;
 }
 
-export function FormField({ id, label, required, error, children }: FormFieldProps) {
+export function FormField({ id, label, required, error, children, }: FormFieldProps) {
     return (
         <div>
             <label htmlFor={id} className="block text-sm font-medium">

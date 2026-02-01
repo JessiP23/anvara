@@ -7,6 +7,9 @@ import { CampaignForm } from './campaign-form';
 import { CampaignCard } from './campaign-card';
 import type { Campaign } from '@/lib/types';
 import { useToast } from '@/components/notification/toast';
+import { LoadingState } from '@/components/state/loading';
+import { ErrorState } from '@/components/state/error';
+import { EmptyState } from '@/components/state/empty';
 
 export function CampaignList() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
@@ -22,6 +25,7 @@ export function CampaignList() {
 
     try {
       setLoading(true);
+      setError(null);
       const data = await getCampaigns<Campaign[]>();
       setCampaigns(data);
     } catch {
@@ -53,11 +57,11 @@ export function CampaignList() {
   }
 
   if (loading) {
-    return <div className="py-8 text-center text-[--color-muted]">Loading campaigns...</div>;
+    return <LoadingState message='Loading campaigns...' />;
   }
 
   if (error) {
-    return <div className="rounded border border-red-200 bg-red-50 p-4 text-red-600">{error}</div>;
+    return <ErrorState message={error} onRetry={loadCampaigns} />;
   }
 
   return (
@@ -80,9 +84,11 @@ export function CampaignList() {
       )}
 
       {campaigns.length === 0 && !showCreateForm && (
-        <div className="rounded-lg border border-dashed border-[--color-border] p-8 text-center text-[--color-muted]">
-          No campaigns yet. Create your first campaign to start advertising.
-        </div>
+        <EmptyState 
+          title='No campaigns yet'
+          message='Create your first campaign to start advertising'
+          action={{label: 'Create Campaign', onClick: () => setShowCreateForm(true)}}
+        />
       )}
 
       {campaigns.length > 0 && (

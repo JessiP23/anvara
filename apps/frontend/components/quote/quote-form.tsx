@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 import { requestQuote } from './actions';
-import { initialActionState, type ActionState } from '@/lib/actions/types';
+import { initialActionState, type ActionState } from '@/lib/types';
 import { FormField } from '../ui/form/form-field';
 import { SubmitButton } from '../ui/form/submit-button';
 import { FormAlert } from '../ui/form/form-alerts';

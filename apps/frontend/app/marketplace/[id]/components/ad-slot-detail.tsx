@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAdSlot, bookAdSlot, unbookAdSlot } from '@/lib/api';
+import { getUserRole } from '@/lib/auth-helpers';
 import { authClient } from '@/auth-client';
 import type { AdSlot, User, RoleInfo } from '@/lib/types';
 import { QuoteButton } from '@/components/quote/quote-button';
-
-const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291'
+import { LoadingState } from '@/components/state/loading';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -35,31 +35,25 @@ export function AdSlotDetail({ id }: Props) {
   useEffect(() => {
     // Fetch ad slot
     getAdSlot<AdSlot>(id)
-      .then((data) => setAdSlot(data))
+      .then(setAdSlot)
       .catch(() => setError('Failed to load ad slot details'))
       .finally(() => setLoading(false));
 
     // Check user session and fetch role
     authClient
       .getSession()
-      .then(({ data }) => {
+      .then(async ({ data }) => {
         if (data?.user) {
           const sessionUser = data.user as User;
           setUser(sessionUser);
 
           // Fetch role info from backend
-          fetch(
-            `${API_URL}/api/auth/role/${sessionUser.id}`
-          )
-            .then((res) => res.json())
-            .then((data) => setRoleInfo(data))
-            .catch(() => setRoleInfo(null))
-            .finally(() => setRoleLoading(false));
-        } else {
-          setRoleLoading(false);
+          const role = await getUserRole(sessionUser.id);
+          setRoleInfo(role);
         }
       })
-      .catch(() => setRoleLoading(false));
+      .catch(() => setRoleInfo(null))
+      .finally(() => setRoleLoading(false));
   }, [id]);
 
   const handleBooking = async () => {
@@ -94,7 +88,7 @@ export function AdSlotDetail({ id }: Props) {
   };
 
   if (loading) {
-    return <div className="py-12 text-center text-[--color-muted]">Loading...</div>;
+    return <LoadingState message='Loading ad slot details...' />
   }
 
   if (error || !adSlot) {
@@ -109,6 +103,9 @@ export function AdSlotDetail({ id }: Props) {
       </div>
     );
   }
+
+  const isSponsor = roleInfo?.role === 'sponsor' && roleInfo?.sponsorId;
+  const canBook = adSlot.isAvailable && !bookingSuccess;
 
   return (
     <div className="space-y-6">
@@ -171,13 +168,13 @@ export function AdSlotDetail({ id }: Props) {
           </div>
         </div>
 
-        {adSlot.isAvailable && !bookingSuccess && (
+        {canBook && (
           <div className="mt-6 border-t border-[--color-border] pt-6">
             <h2 className="mb-4 text-lg font-semibold">Request This Placement</h2>
 
             {roleLoading ? (
-              <div className="py-4 text-center text-[--color-muted]">Loading...</div>
-            ) : roleInfo?.role === 'sponsor' && roleInfo?.sponsorId ? (
+              <LoadingState message='Loading...' />
+            ) : isSponsor ? (
               <div className="space-y-4">
                 <div>
                   <label className="mb-1 block text-sm font-medium text-[--color-muted]">

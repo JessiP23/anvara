@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { getAdSlots } from '@/lib/api';
 import type { AdSlot } from '@/lib/types';
+import { LoadingState } from '@/components/state/loading';
+import { EmptyState } from '@/components/state/empty';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -25,7 +27,7 @@ export function AdSlotGrid() {
   }, []);
 
   if (loading) {
-    return <div className="py-12 text-center text-[--color-muted]">Loading marketplace...</div>;
+    return <LoadingState message='Loading marketplace...' />
   }
 
   if (error) {
@@ -34,9 +36,10 @@ export function AdSlotGrid() {
 
   if (adSlots.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-[--color-border] p-12 text-center text-[--color-muted]">
-        No ad slots available at the moment.
-      </div>
+      <EmptyState 
+        title='No ad slots available'
+        message='Check back later for new opportunities.'
+      />
     );
   }
 

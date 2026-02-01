@@ -2,7 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { apiRequest } from '@/lib/actions/utils';
-import type { ActionState } from '@/lib/actions/types';
+import type { ActionState } from '@/lib/types';
 
 function getValues(formData: FormData) {
   return {

@@ -1,7 +1,7 @@
 'use client';
 
 import { useActionState, useEffect, useState } from 'react';
-import { initialActionState, type ActionState } from '@/lib/actions/types';
+import { initialActionState, type ActionState } from '@/lib/types';
 
 type DeleteButtonProps = {
     id: string;

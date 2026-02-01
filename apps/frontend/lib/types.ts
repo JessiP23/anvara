@@ -1,6 +1,26 @@
 // Core types matching the Prisma schema
 
-export type UserRole = 'sponsor' | 'publisher';
+export type UserRole = 'sponsor' | 'publisher' | null;
+export type CampaignStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'COMPLETED';
+export type PlacementStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED';
+export type AdSlotType = 'DISPLAY' | 'VIDEO' | 'NATIVE' | 'NEWSLETTER' | "PODCAST";
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface Publisher {
+  id: string;
+  name: string;
+  website?: string
+}
+
+export interface Sponsor {
+  id: string;
+  name: string;
+}
 
 export interface AdSlot {
   id: string;
@@ -12,11 +32,7 @@ export interface AdSlot {
   width?: number;
   height?: number;
   position?: string;
-  publisher?: {
-    id: string;
-    name: string;
-    website?: string;
-  }
+  publisher?: Publisher;
 }
 
 export interface RoleInfo {
@@ -26,30 +42,33 @@ export interface RoleInfo {
   name?: string;
 }
 
-export interface User {
-  id: string;
-  name: string;
-  email: string;
-}
-
 export interface Campaign {
   id: string;
   name: string;
   description?: string;
   budget: number;
   spent: number;
-  status: 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'COMPLETED';
+  status: CampaignStatus;
   startDate: string;
   endDate: string;
   sponsorId: string;
-  sponsor?: { id: string; name: string };
+  sponsor?: Sponsor;
 }
 
 export interface Placement {
   id: string;
   impressions: number;
   clicks: number;
-  status: 'PENDING' | 'ACTIVE' | 'COMPLETED';
+  status: PlacementStatus;
   campaignId: string;
   adSlotId: string;
 }
+
+export type ActionState = {
+  success?: boolean;
+  error?: string;
+  fieldErrors?: Record<string, string>;
+  values?: Record<string, string>;
+}
+
+export const initialActionState: ActionState = {};

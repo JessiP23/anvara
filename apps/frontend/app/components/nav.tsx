@@ -3,33 +3,31 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { authClient } from '@/auth-client';
+import { usePathname } from 'next/navigation';
+import { cn } from '@/lib/utils';
+import { getUserRole } from '@/lib/auth-helpers';
 
-type UserRole = 'sponsor' | 'publisher' | null;
-const env = globalThis.process?.env;
-const API_URL = env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
+type NavRole = 'sponsor' | 'publisher' | null;
 
 export function Nav() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
-  const [role, setRole] = useState<UserRole>(null);
+  const [role, setRole] = useState<NavRole>(null);
+  const pathname = usePathname();
 
   // TODO: Convert to server component and fetch role server-side
   // Fetch user role from backend when user is logged in
   useEffect(() => {
-    if (!user?.id) {
-      return;
-    }
-
-    fetch(
-      `${API_URL}/api/auth/role/${user.id}`
-    )
-      .then((res) => res.json())
+    if (!user?.id) return;
+    getUserRole(user.id)
       .then((data) => setRole(data.role))
       .catch(() => setRole(null));
   }, [user?.id]);
 
   // TODO: Add active link styling using usePathname() from next/navigation
   // The current page's link should be highlighted differently
+  const isActive = (path: string) => pathname === path;
+  const linkClass = (path:string) => cn('transition-colors', isActive(path) ? 'text-[--color-foreground] font-medium' : 'text-[--color-muted] hover:text-[--color-foreground]');
 
   return (
     <header className="border-b border-[--color-border]">
@@ -41,7 +39,7 @@ export function Nav() {
         <div className="flex items-center gap-6">
           <Link
             href="/marketplace"
-            className="text-[--color-muted] hover:text-[--color-foreground]"
+            className={linkClass('/marketplace')}
           >
             Marketplace
           </Link>
@@ -49,7 +47,7 @@ export function Nav() {
           {user && role === 'sponsor' && (
             <Link
               href="/dashboard/sponsor"
-              className="text-[--color-muted] hover:text-[--color-foreground]"
+              className={linkClass('/dashboard/sponsor')}
             >
               My Campaigns
             </Link>
@@ -57,7 +55,7 @@ export function Nav() {
           {user && role === 'publisher' && (
             <Link
               href="/dashboard/publisher"
-              className="text-[--color-muted] hover:text-[--color-foreground]"
+              className={linkClass('/dashboard/publisher')}
             >
               My Ad Slots
             </Link>

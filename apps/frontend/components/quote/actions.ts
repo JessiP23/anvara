@@ -1,6 +1,6 @@
 'use server';
 
-import type { ActionState } from '@/lib/actions/types';
+import type { ActionState } from '@/lib/types';
 
 const API_URL = globalThis.process?.env?.NEXT_PUBLIC_API_URL || 'http://localhost:4291';
 

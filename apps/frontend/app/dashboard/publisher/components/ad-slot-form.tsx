@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 import { createAdSlot, updateAdSlot } from '../actions';
-import { initialActionState, type ActionState } from '@/lib/actions/types';
+import { initialActionState, type ActionState } from '@/lib/types';
 import { FormField } from '@/components/ui/form/form-field';
 import { SubmitButton } from '@/components/ui/form/submit-button';
 import { FormAlert } from '@/components/ui/form/form-alerts';
