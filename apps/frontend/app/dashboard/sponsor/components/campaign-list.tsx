@@ -1,68 +1,40 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { getCampaigns } from '@/lib/api';
-import { authClient } from '@/auth-client';
+import { useState } from 'react';
 import { CampaignForm } from './campaign-form';
 import { CampaignCard } from './campaign-card';
 import type { Campaign } from '@/lib/types';
 import { useToast } from '@/components/notification/toast';
-import { LoadingState } from '@/components/state/loading';
-import { ErrorState } from '@/components/state/error';
 import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
+import { useRouter } from 'next/navigation';
 
-export function CampaignList() {
-  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface CampaignListProps{
+  initialCampaigns: Campaign[];
+}
+
+export function CampaignList({ initialCampaigns }: CampaignListProps) {
+  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
-  const { data: session } = authClient.useSession();
   const { show } = useToast();
-
-  const loadCampaigns = useCallback(async () => {
-    if (!session?.user?.id) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await getCampaigns<Campaign[]>();
-      setCampaigns(data);
-    } catch {
-      setError("Failed to load campaigns")
-    } finally {
-      setLoading(false);
-    }
-  }, [session?.user?.id]);
-
-  useEffect(() => {
-    loadCampaigns();
-  }, [loadCampaigns]);
+  const router = useRouter()
 
   const handleCreateSuccess = () => {
     setShowCreateModal(false);
-    loadCampaigns();
+    router.refresh();
     show('Campaign Created!', 'success');
   }
 
   const handleEditSuccess = () => {
     setEditingCampaign(null);
-    loadCampaigns();
+    router.refresh();
     show('Campaign Updated!', 'success');
   }
 
   const handleCampaignDeleted = (campaignId: string) => {
     setCampaigns(prev => prev.filter(c => c.id !== campaignId));
     show('Campaign Deleted!', 'success');
-  }
-
-  if (loading) {
-    return <LoadingState message='Loading campaigns...' />;
-  }
-
-  if (error) {
-    return <ErrorState message={error} onRetry={loadCampaigns} />;
   }
 
   return (

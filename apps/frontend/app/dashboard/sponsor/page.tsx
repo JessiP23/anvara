@@ -2,6 +2,7 @@ import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
+import { getServerCampaigns } from '@/lib/server-api/helper';
 import { CampaignList } from './components/campaign-list';
 
 export default async function SponsorDashboard() {
@@ -19,6 +20,8 @@ export default async function SponsorDashboard() {
     redirect('/');
   }
 
+  const campaigns = await getServerCampaigns();
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -26,7 +29,7 @@ export default async function SponsorDashboard() {
         {/* TODO: Add CreateCampaignButton here */}
       </div>
 
-      <CampaignList />
+      <CampaignList initialCampaigns={campaigns} />
     </div>
   );
 }

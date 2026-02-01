@@ -1,75 +1,40 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { getAdSlots } from '@/lib/api';
-import { getUserRole } from '@/lib/auth-helpers';
-import { authClient } from '@/auth-client';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { AdSlotCard } from './ad-slot-card';
 import type { AdSlot } from '@/lib/types';
 import { AdSlotForm } from './ad-slot-form';
 import { useToast } from '@/components/notification/toast';
-import { LoadingState } from '@/components/state/loading';
-import { ErrorState } from '@/components/state/error';
 import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
 
-export function AdSlotList() {
-  const [adSlots, setAdSlots] = useState<AdSlot[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+interface AdSlotListProps {
+  initialAdSlots: AdSlot[];
+}
+
+export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
+  const [adSlots, setAdSlots] = useState<AdSlot[]>(initialAdSlots);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingSlot, setEditingSlot] = useState<AdSlot | null>(null);
-  const { data: session } = authClient.useSession();
   const {show} = useToast();
-
-  const loadAdSlots = useCallback(async () => {
-    if (!session?.user?.id) return;
-
-    try {
-      setLoading(true);
-      setError(null);
-      const roleData = await getUserRole(session.user.id);
-
-      if (roleData.publisherId) {
-        const data = await getAdSlots<AdSlot[]>(roleData.publisherId);
-        setAdSlots(data);
-      } else {
-        setAdSlots([]);
-      }
-    } catch {
-      setError("Failed to load ad slots")
-    } finally {
-      setLoading(false);
-    }
-  }, [session?.user?.id]);
-
-  useEffect(() => {
-    loadAdSlots();
-  }, [loadAdSlots]);
+  const router = useRouter();
 
   const handleCreateSuccess = () => {
     setShowCreateModal(false);
-    loadAdSlots();
+    router.refresh();
     show('Ad Slot Created!', 'success');
   }
 
   const handleEditSuccess = () => {
     setEditingSlot(null);
-    loadAdSlots();
+    router.refresh();
     show('Ad Slot Updated!', 'success');
   }
 
   const handleSlotDeleted = (adSlotId: string) => {
     setAdSlots(prev => prev.filter(s => s.id !== adSlotId));
     show('Ad Slot Deleted!', 'success');
-  }
-
-  if (loading) {
-    return <LoadingState message='Loading ad slots...'/>;
-  }
-
-  if (error) {
-    return <ErrorState message={error} onRetry={loadAdSlots} />;
   }
 
   return (
