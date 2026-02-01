@@ -18,7 +18,7 @@ export function QuoteButton({ adSlotId, adSlotName, basePrice }: QuoteButtonProp
         <>
             <button
                 onClick={() => setIsOpen(true)}
-                className="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                className="rounded-lg border-2 border-blue-600 px-5 py-2.5 text-sm font-semibold text-blue-600 transition-colors hover:bg-blue-600 hover:text-white"
             >
                 Request Quote
             </button>
