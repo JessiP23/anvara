@@ -7,6 +7,7 @@ import adSlotsRoutes from './adSlots.js';
 import placementsRoutes from './placements.js';
 import dashboardRoutes from './dashboard.js';
 import healthRoutes from './health.js';
+import newsletterRouter from './newsletter.js'
 
 const router: IRouter = Router();
 
@@ -19,5 +20,6 @@ router.use('/ad-slots', adSlotsRoutes);
 router.use('/placements', placementsRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/health', healthRoutes);
+router.use('/newsletter', newsletterRouter);
 
 export default router;

@@ -1,4 +1,5 @@
 import { AdSlotGrid } from './components/ad-slot-grid';
+import { NewsletterSidebar } from '@/components/newsletter/newsletter-sidebar';
 
 // FIXME: This page fetches all ad slots client-side. Consider:
 // 1. Server-side pagination with searchParams
@@ -14,7 +15,16 @@ export default function MarketplacePage() {
         {/* TODO: Add search input and filter controls */}
       </div>
 
-      <AdSlotGrid />
+      <div className='flex gap-8'>
+        <div className='flex-1'>
+          <AdSlotGrid />
+        </div>
+        <div className='hidden w-72 shrink-0 lg:block'>
+          <div className='sticky top-24'>
+            <NewsletterSidebar />
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
