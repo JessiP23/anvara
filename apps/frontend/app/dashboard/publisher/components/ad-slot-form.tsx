@@ -46,7 +46,7 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
             <FormAlert error={state.error} success={state.success} successMessage={isEditing ? "Ad Slot updated!" : 'Ad slot created!'} />
 
             <FormField id='name' label='Name' required error={state.fieldErrors?.name}>
-                <input type='text' id='name' name='name' defaultValue={getValue('name')} className='mt-1 w-full rounded border p-2' required />
+                <input type='text' id='name' name='name' defaultValue={getValue('name')} className='mt-1 w-full rounded border p-2' />
             </FormField>
 
             <FormField id='type' label='Type' required error={state.fieldErrors?.type}>
@@ -56,7 +56,7 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
             </FormField>
 
             <FormField id='basePrice' label='Base Price ($/month)' required error={state.fieldErrors?.basePrice}>
-                <input type='number' id='basePrice' name='basePrice' defaultValue={getValue('basePrice')} min='1' className='mt-1 w-full rounded border p-2' required />
+                <input type='number' id='basePrice' name='basePrice' defaultValue={getValue('basePrice')} min='1' className='mt-1 w-full rounded border p-2' />
             </FormField>
 
             <FormField id='description' label='Description' required error={state.fieldErrors?.description}>

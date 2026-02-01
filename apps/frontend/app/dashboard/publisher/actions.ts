@@ -4,72 +4,75 @@ import { revalidatePath } from 'next/cache';
 import { apiRequest } from '@/lib/actions/utils';
 import type { ActionState } from '@/lib/actions/types';
 
-function parseAdSlotForm(formData: FormData) {
+function getValues(formData: FormData) {
   return {
-    id: formData.get('id')?.toString(),
-    name: formData.get('name')?.toString().trim(),
-    type: formData.get('type')?.toString(),
-    basePrice: formData.get('basePrice')?.toString(),
-    description: formData.get('description')?.toString().trim() || undefined,
-    position: formData.get('position')?.toString().trim() || undefined,
-    width: formData.get('width')?.toString(),
-    height: formData.get('height')?.toString(),
-    isAvailable: formData.get('isAvailable') === 'true',
+    name: formData.get('name')?.toString() || '',
+    type: formData.get('type')?.toString() || '',
+    basePrice: formData.get('basePrice')?.toString() || '',
+    description: formData.get('description')?.toString() || '',
+    position: formData.get('position')?.toString() || '',
+    width: formData.get('width')?.toString() || '',
+    height: formData.get('height')?.toString() || '',
   };
 }
 
-function validateAdSlotForm(data: ReturnType<typeof parseAdSlotForm>) {
+function validateAdSlotForm(values: ReturnType<typeof getValues>) {
   const fieldErrors: Record<string, string> = {};
-  if (!data.name) fieldErrors.name = 'Name is required';
-  if (!data.type) fieldErrors.type = 'Type is required';
-  if (!data.basePrice || isNaN(Number(data.basePrice)) || Number(data.basePrice) <= 0) {
+  if (!values.name.trim()) fieldErrors.name = 'Name is required';
+  if (!values.type) fieldErrors.type = 'Type is required';
+  if (!values.basePrice || isNaN(Number(values.basePrice)) || Number(values.basePrice) <= 0) {
     fieldErrors.basePrice = 'Base price must be a positive number';
   }
+  if (!values.description.trim()) fieldErrors.description = 'Description is required';
+  if (!values.position.trim()) fieldErrors.position = 'Position is required';
   return Object.keys(fieldErrors).length > 0 ? fieldErrors : null;
 }
 
-function buildAdSlotPayload(data: ReturnType<typeof parseAdSlotForm>) {
+function buildPayload(values: ReturnType<typeof getValues>, isAvailable: boolean) {
   return {
-    name: data.name,
-    type: data.type,
-    basePrice: Number(data.basePrice),
-    description: data.description,
-    position: data.position,
-    width: data.width ? Number(data.width) : undefined,
-    height: data.height ? Number(data.height) : undefined,
-    isAvailable: data.isAvailable,
+    name: values.name.trim(),
+    type: values.type,
+    basePrice: Number(values.basePrice),
+    description: values.description.trim() || undefined,
+    position: values.position.trim() || undefined,
+    width: values.width ? Number(values.width) : undefined,
+    height: values.height ? Number(values.height) : undefined,
+    isAvailable,
   };
 }
 
 export async function createAdSlot(_prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const data = parseAdSlotForm(formData);
-  const fieldErrors = validateAdSlotForm(data);
-  if (fieldErrors) return { fieldErrors };
+  const values = getValues(formData);
+  const fieldErrors = validateAdSlotForm(values);
+  if (fieldErrors) return { fieldErrors, values };
 
   const { error } = await apiRequest('/api/ad-slots', {
     method: 'POST',
-    body: JSON.stringify(buildAdSlotPayload(data)),
+    body: JSON.stringify(buildPayload(values, true)),
   });
 
-  if (error) return { error };
+  if (error) return { error, values };
 
   revalidatePath('/dashboard/publisher');
   return { success: true };
 }
 
 export async function updateAdSlot(_prevState: ActionState, formData: FormData): Promise<ActionState> {
-  const data = parseAdSlotForm(formData);
-  if (!data.id) return { error: 'Missing ad slot ID' };
+  const id = formData.get('id')?.toString();
+  if (!id) return { error: 'Missing ad slot ID' };
 
-  const fieldErrors = validateAdSlotForm(data);
-  if (fieldErrors) return { fieldErrors };
+  const values = getValues(formData);
+  const fieldErrors = validateAdSlotForm(values);
+  if (fieldErrors) return { fieldErrors, values };
 
-  const { error } = await apiRequest(`/api/ad-slots/${data.id}`, {
+  const isAvailable = formData.get('isAvailable') === 'true';
+
+  const { error } = await apiRequest(`/api/ad-slots/${id}`, {
     method: 'PUT',
-    body: JSON.stringify(buildAdSlotPayload(data)),
+    body: JSON.stringify(buildPayload(values, isAvailable)),
   });
 
-  if (error) return { error };
+  if (error) return { error, values };
 
   revalidatePath('/dashboard/publisher');
   return { success: true };
@@ -80,7 +83,6 @@ export async function deleteAdSlot(_prevState: ActionState, formData: FormData):
   if (!id) return { error: 'Missing ad slot ID' };
 
   const { error } = await apiRequest(`/api/ad-slots/${id}`, { method: 'DELETE' });
-
   if (error) return { error };
 
   revalidatePath('/dashboard/publisher');
