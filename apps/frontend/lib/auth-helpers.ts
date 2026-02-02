@@ -18,7 +18,3 @@ export async function getUserRole(userId: string): Promise<RoleInfo> {
     return { role: null };
   }
 }
-
-export function getApiUrl(): string {
-  return API_URL;
-}
