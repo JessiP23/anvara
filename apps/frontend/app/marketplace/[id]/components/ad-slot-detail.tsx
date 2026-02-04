@@ -8,6 +8,7 @@ import { authClient } from '@/auth-client';
 import type { AdSlot, User, RoleInfo } from '@/lib/types';
 import { QuoteButton } from '@/components/quote/quote-button';
 import { LoadingState } from '@/components/state/loading';
+import { ErrorState } from '@/components/state/error';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -97,9 +98,10 @@ export function AdSlotDetail({ id }: Props) {
         <Link href="/marketplace" className="text-[--color-primary] hover:underline">
           ← Back to Marketplace
         </Link>
-        <div className="rounded border border-red-200 bg-red-50 p-4 text-red-600">
-          {error || 'Ad slot not found'}
-        </div>
+        <ErrorState 
+          title="Ad Slot Not Found"
+          message={error || "The ad slot you are looking for does not exist."}
+        />
       </div>
     );
   }
