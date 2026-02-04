@@ -21,7 +21,7 @@ export async function getServerCampaigns(): Promise<Campaign[]> {
     return (await serverFetch<Campaign[]>('/api/campaigns')) || []
 }
 
-export async function getServerAdSlots(publisherId: string): Promise<AdSlot[]> {
+export async function getServerAdSlots(publisherId?: string): Promise<AdSlot[]> {
     const query = publisherId ? `?publisherId=${publisherId}`: '';
     return (await serverFetch<AdSlot[]>(`/api/ad-slots${query}`)) || []
 }

@@ -23,7 +23,7 @@ export function ErrorState({
                 <button
                     type="button"
                     onClick={onRetry}
-                    className="mt-5 flex items-center gap-2 rounded-lg border border-red-300 bg-white px-5 py-2 text-sm font-medium text-red-700 transition-all hover:text-red-50"
+                    className="mt-5 flex items-center gap-2 rounded-lg border border-red-300 bg-white px-5 py-2 text-sm font-medium text-red-700 transition-all hover:bg-red-50"
                 >
                     <span>↻</span> Try Again
                 </button>
