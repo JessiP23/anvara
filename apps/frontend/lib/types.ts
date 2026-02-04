@@ -5,6 +5,14 @@ export type CampaignStatus = 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'COMPLETED';
 export type PlacementStatus = 'PENDING' | 'ACTIVE' | 'COMPLETED';
 export type AdSlotType = 'DISPLAY' | 'VIDEO' | 'NATIVE' | 'NEWSLETTER' | "PODCAST";
 
+export const PAGINATION = { DEFAULT_LIMIT: 12 };
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  nextCursor: string | null;
+  hasMore: boolean;
+}
+
 export interface User {
   id: string;
   name: string;

@@ -1,4 +1,6 @@
 import { API_URL } from "./utils";
+import type { PaginatedResponse, AdSlot } from './types';
+import { PAGINATION } from "./types";
 
 export async function api<T>(endpoint: string, options?: globalThis.RequestInit): Promise<T> {
   const res = await fetch(`${API_URL}${endpoint}`, {
@@ -8,6 +10,14 @@ export async function api<T>(endpoint: string, options?: globalThis.RequestInit)
   });
   if (!res.ok) throw new Error('API request failed');
   return res.json();
+}
+
+export function fetchPaginated<T>(endpoint: string, limit = PAGINATION.DEFAULT_LIMIT, cursor?: string): Promise<PaginatedResponse<T>> {
+  const params = new URLSearchParams({ limit: String(limit) });
+  if (cursor) {
+    params.set('cursor', cursor);
+  }
+  return api<PaginatedResponse<T>>(`${endpoint}?${params}`);
 }
 
 // Campaigns
@@ -23,6 +33,7 @@ export const deleteCampaign = (id: string) => api(`/api/campaigns/${id}`, {  met
 export const getAdSlots = <T = unknown[]>(publisherId?: string) =>
   api<T>(publisherId ? `/api/ad-slots?publisherId=${publisherId}` : '/api/ad-slots');
 export const getAdSlot = <T = unknown>(id: string) => api<T>(`/api/ad-slots/${id}`);
+export const getAdSlotsPaginated = (limit?: number, cursor?: string) => fetchPaginated<AdSlot>('/api/ad-slots', limit, cursor);
 export const createAdSlot = (data: Record<string, unknown>) =>
   api('/api/ad-slots', { method: 'POST', body: JSON.stringify(data) });
 export const updateAdSlot = <T = unknown>(id: string, data: Record<string, unknown>) => api<T>(`/api/ad-slots/${id}`, { method: 'PUT', body: JSON.stringify(data) });
