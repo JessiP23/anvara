@@ -1,23 +1,27 @@
 import { Router, type Response, type IRouter } from 'express';
 import { AdSlotType, prisma } from '../db.js';
-import { getParam } from '../utils/helpers.js';
+import { getParam, parseCursorPagination, buildPaginatedResponse } from '../utils/helpers.js';
 import { requireAuth } from '../middleware/auth.middleware.js';
-// import { optionalAuth } from '../middleware/auth.middleware.js';
 import { requirePublisher } from '../middleware/role.middleware.js';
 import type { AuthRequest } from '../types/auth.types.js';
 import { Prisma } from '../generated/prisma/client.js';
 
 const router: IRouter = Router();
+const adSlotInclude = {publisher: { select: { id: true, name: true, category: true, monthlyViews: true } }, _count: { select: { placements: true } },} as const;
+const pickDefined = <T extends Record<string, unknown>>(obj: T): Partial<T> => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
 
 // GET /api/ad-slots - List available ad slots
 // IMPORTANT: If needed to be public just switch to OptionalAuth
 router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const { publisherId, type, available } = req.query;
+    const {cursor, limit} = parseCursorPagination({ cursor: req.query.cursor?.toString(), limit: req.query.limit?.toString() });
 
     // If user is a publisher and no publisherId specified, show only their slots
     const effectivePublisherId =
       req.user?.role === 'PUBLISHER' && !publisherId ? req.user.publisherId : getParam(publisherId);
+
+    console.log('[Pagination] Request', { cursor: cursor ??  'INITIAL', limit, filters: { publisherId: effectivePublisherId, type: available } });
 
     const adSlots = await prisma.adSlot.findMany({
       where: {
@@ -25,14 +29,22 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
         ...(type && { type: type as 'DISPLAY' | 'VIDEO' | 'NATIVE' | 'NEWSLETTER' | 'PODCAST' }),
         ...(available === 'true' && { isAvailable: true }),
       },
-      include: {
-        publisher: { select: { id: true, name: true, category: true, monthlyViews: true } },
-        _count: { select: { placements: true } },
-      },
-      orderBy: { basePrice: 'desc' },
+      take: limit + 1,
+      ...(cursor && { cursor: { id: cursor }, skip: 1 }),
+      include: adSlotInclude,
+      orderBy: { createdAt: 'desc' },
     });
 
-    res.json(adSlots);
+    const response = buildPaginatedResponse(adSlots, limit);
+    console.log('[Pagination] Response:', {
+      itemsReturned: response.items.length,
+      hasMore: response.hasMore,
+      nextCursor: response.nextCursor ?? 'NONE',
+      firstItemId: response.items[0]?.id ?? 'EMPTY',
+      lastItemId: response.items[response.items.length - 1]?.id ?? 'EMPTY',
+    })
+
+    res.json(buildPaginatedResponse(adSlots, limit));
   } catch (error) {
     console.error('Error fetching ad slots:', error);
     res.status(500).json({ error: 'Failed to fetch ad slots' });
@@ -196,12 +208,6 @@ router.post('/:id/unbook', requireAuth, requirePublisher, async (req: AuthReques
     res.status(500).json({ error: 'Failed to unbook ad slot' });
   }
 });
-
-const adSlotInclude = {
-  publisher: { select: { id: true, name: true } }
-} as const;
-
-const pickDefined = <T extends Record<string, unknown>>(obj: T): Partial<T> => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
 
 router.put('/:id', requireAuth, requirePublisher, async (req: AuthRequest, res: Response) => {
   try {

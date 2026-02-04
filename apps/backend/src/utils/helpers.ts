@@ -1,3 +1,8 @@
+export const PAGINATION = {
+  DEFAULT_LIMIT: 12,
+  MAX_LIMIT: 50
+} as const;
+
 // Utility helpers for the API
 export function getParam(param: unknown): string {
   if (typeof param === 'string') return param;
@@ -20,10 +25,24 @@ export function calculatePercentChange(oldValue: number, newValue: number): numb
 
 export function parsePagination(query: {page?: string; limit?: string}): { page: number; limit: number; skip: number } {
   const page = parseInt(query.page ?? '1', 10) || 1;
-  const limit = parseInt(query.limit ?? '10', 10) || 10;
+  const limit = Math.min(parseInt(query.limit ?? String(PAGINATION.DEFAULT_LIMIT), 10) || PAGINATION.DEFAULT_LIMIT, PAGINATION.MAX_LIMIT);
   const skip = (page - 1) * limit;
 
   return { page, limit, skip };
+}
+
+export function parseCursorPagination(query: { cursor?: string; limit?: string }) : {cursor: string | undefined; limit: number;} {
+  return {
+    cursor: query.cursor,
+    limit: Math.min(parseInt(query.limit ?? String(PAGINATION.DEFAULT_LIMIT), 10) || PAGINATION.DEFAULT_LIMIT, PAGINATION.MAX_LIMIT),
+  };
+}
+
+export function buildPaginatedResponse<T extends {id: string }> (items: T[], limit: number): { items: T[]; nextCursor: string | null; hasMore: boolean } {
+  const hasMore = items.length > limit;
+  const data = hasMore ? items.slice(0, limit) : items;
+  const nextCursor = hasMore && data.length > 0 ? data[data.length - 1].id : null;
+  return { items: data, nextCursor, hasMore };
 }
 
 export function isValidEmail(email: string): boolean {

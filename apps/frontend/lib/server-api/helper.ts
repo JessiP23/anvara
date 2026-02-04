@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
-import type { Campaign, AdSlot } from "../types";
+import type { Campaign, AdSlot, PaginatedResponse } from "../types";
+import { PAGINATION } from '../types';
 import { API_URL } from "../utils";
 
 async function serverFetch<T>(endpoint: string): Promise<T | null> {
@@ -17,6 +18,15 @@ async function serverFetch<T>(endpoint: string): Promise<T | null> {
     return response.json();
 }
 
+async function fetchServerPaginated<T>(endpoint: string, limit = PAGINATION.DEFAULT_LIMIT, cursor?: string): Promise<PaginatedResponse<T>> {
+    const params = new URLSearchParams({ limit: String(limit) });
+    if (cursor) {
+        params.set('cursor', cursor);
+    }
+    const result = await serverFetch<PaginatedResponse<T>>(`${endpoint}?${params}`);
+    return result ?? { items: [], nextCursor: null, hasMore: false };
+}
+
 export async function getServerCampaigns(): Promise<Campaign[]> {
     return (await serverFetch<Campaign[]>('/api/campaigns')) || []
 }
@@ -28,4 +38,8 @@ export async function getServerAdSlots(publisherId?: string): Promise<AdSlot[]> 
 
 export async function getServerAdSlot(id: string): Promise<AdSlot | null> {
     return serverFetch<AdSlot>(`/api/ad-slots/${id}`);
+}
+
+export async function getServerAdSlotsPaginated(limit?: number, cursor?: string) {
+    return fetchServerPaginated<AdSlot>('/api/ad-slots', limit, cursor);
 }

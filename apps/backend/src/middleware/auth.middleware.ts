@@ -24,20 +24,3 @@ export async function requireAuth(
     req.user = user;
     next();
 }
-
-export async function optionalAuth(
-    req: AuthRequest,
-    res: Response,
-    next: NextFunction
-): Promise<void> {
-    const sessionToken = extractSessionToken(req.headers.cookie);
-
-    if (sessionToken) {
-        const user = await validateSession(sessionToken);
-        if (user) {
-            req.user = user;
-        }
-    }
-
-    next();
-}
