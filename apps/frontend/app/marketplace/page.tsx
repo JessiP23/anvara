@@ -9,6 +9,13 @@ import { getServerAdSlotsPaginated } from '@/lib/server-api/helper';
 
 export default async function MarketplacePage() {
   const { items, nextCursor, hasMore } = await getServerAdSlotsPaginated();
+
+  console.log('[Marketplace] Initial page loaded:', {
+    itemsCount: items.length,
+    hasMore,
+    nextCursor: nextCursor ?? 'NONE',
+    itemIds: items.map((i) => i.id),
+  })
   return (
     <div className="space-y-6">
       <div>

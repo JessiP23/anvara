@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import Link from 'next/link';
 import type { AdSlot } from '@/lib/types';
 import { EmptyState } from '@/components/state/empty';
@@ -25,13 +25,37 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isPending, startTransition] = useTransition();
 
+  useEffect(() => {
+    if (globalThis.process?.env?.NODE_ENV === 'development') {
+      console.log('[AdSlotGrid] Mounted:', {
+        initialItemsCount: initialItems.length,
+        initialCursor: initialCursor ?? 'NONE',
+        initialHasMore,
+      });
+    }
+  }, []);
+
   const loadMore = () => {
     if (!cursor || isPending) return;
 
+    console.log('[AdSlotGrid] Loading more...', { cursor });
+
     startTransition(async () => {
       const response = await getAdSlotsPaginated(undefined, cursor);
+      console.log('[AdSlotGrid] Loaded more:', {
+        newItemsCount: response.items.length,
+        nextCursor: response.nextCursor ?? 'NONE',
+        hasMore: response.hasMore
+      });
+
       setItems((prev) => {
         const ids = new Set(prev.map((i) => i.id));
+        const newItems = response.items.filter((i) => !ids.has(i.id));
+        console.log('[AdSlotGrid] After dedupe:', { 
+          prevCount: prev.length, 
+          newCount: newItems.length, 
+          totalCount: prev.length + newItems.length 
+        });        
         return [...prev, ...response.items.filter((i) => !ids.has(i.id))];
       });
       setCursor(response.nextCursor);
