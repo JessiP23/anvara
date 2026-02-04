@@ -1,7 +1,16 @@
 // Frontend utility functions
+const env = globalThis.process?.env;
+
+export const config = {
+  apiUrl: env?.NEXT_PUBLIC_API_URL || "http://localhost:4291",
+  isDev: env?.NODE_ENV === 'development',
+  isProd: env?.NODE_ENV === 'production'
+} as const;
+
+export const API_URL = config.apiUrl;
 
 // Format a price for display
-export function formatPrice(price: number, locale = 'en-US') {
+export function formatPrice(price: number, locale = 'en-US'): string {
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: 'USD',
@@ -9,9 +18,9 @@ export function formatPrice(price: number, locale = 'en-US') {
 }
 
 // Debounce function for search inputs
-export function debounce(fn: (...args: unknown[]) => void, delay: number) {
+export function debounce<T extends unknown[]>(fn: (...args: T) => void, delay: number): (...args: T) => void {
   let timeoutId: ReturnType<typeof setTimeout>;
-  return (...args: unknown[]) => {
+  return (...args: T) => {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => fn(...args), delay);
   };
@@ -39,7 +48,7 @@ export function truncate(text: string, maxLength: number): string {
 }
 
 // Class name helper (simple cn alternative)
-export function cn(...classes: string[]): string {
+export function cn(...classes: (string | false | null | undefined)[]): string {
   return classes.filter(Boolean).join(' ');
 }
 
@@ -50,28 +59,18 @@ export function deepClone<T>(obj: T): T {
   return JSON.parse(JSON.stringify(obj));
 }
 
-const env = globalThis.process?.env;
-
-export const config = {
-  apiUrl: env?.NEXT_PUBLIC_API_URL || "http://localhost:4291",
-  isDev: env?.NODE_ENV === 'development',
-  isProd: env?.NODE_ENV === 'production'
-} as const;
-
-export const API_URL = config.apiUrl;
-
 export const logger = {
-  log: (...args: unknown[]) => {
+  log: (...args: unknown[]): void => {
     if (config.isDev) {
       // eslint-disable-next-line no-console
       console.log('[App]', ...args);
     }
   },
-  error: (...args: unknown[]) => {
+  error: (...args: unknown[]): void => {
     // eslint-disable-next-line no-console
     console.error('[App Error]', ...args);
   },
-  warn: (...args: unknown[]) => {
+  warn: (...args: unknown[]): void => {
     // eslint-disable-next-line no-console
     console.warn('[App Warning]', ...args);
   },
@@ -87,3 +86,4 @@ export function formatRelativeTime(date: Date): string {
   if (days < 7) return `${days} days ago`;
   return date.toLocaleDateString();
 }
+
