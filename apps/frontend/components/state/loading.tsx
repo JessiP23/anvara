@@ -15,18 +15,20 @@ function CardSkeleton() {
     return (
         <div className="rounded-lg border border-[--color-border] p-4">
             <div className="mb-3 flex items-start justify-between">
-                <Skeleton className="mb-2 h-4 w-full" />
-                <Skeleton className="mb-4 h-4 w-3/4" />
-                <div className="flex items-center justify-between border-t pt-3">
-                    <Skeleton className="h-4 w-20" />
-                    <Skeleton className="h-4 w-24" />
-                </div>
+                <Skeleton className="h-5 w-32" />
+                <Skeleton className="h-5 w-16 rounded-full" />
+            </div>
+            <Skeleton className="mb-2 h-4 w-full" />
+            <Skeleton className="mb-4 h-4 w-3/4" />
+            <div className="flex items-center justify-between border-t pt-3">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-4 w-24" />
             </div>
         </div>
     )
 }
 
-export function LoadingState({ message = "LOading...", variant="spinner", count=6, className = '' }: LoadingStateProps) {
+export function LoadingState({ message = "Loading...", variant="spinner", count=6, className = '' }: LoadingStateProps) {
     if (variant === 'card-grid') {
         return(
             <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${className}`}>
