@@ -6,6 +6,7 @@ import { authClient } from '@/auth-client';
 import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { getUserRole } from '@/lib/auth-helpers';
+import { useBreakpoint } from '@/hooks/use-breakpoint';
 
 type NavRole = 'sponsor' | 'publisher' | null;
 
@@ -13,7 +14,9 @@ export function Nav() {
   const { data: session, isPending } = authClient.useSession();
   const user = session?.user;
   const [role, setRole] = useState<NavRole>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const pathname = usePathname();
+  const {isMobile} = useBreakpoint();
 
   // TODO: Convert to server component and fetch role server-side
   // Fetch user role from backend when user is logged in
@@ -26,17 +29,29 @@ export function Nav() {
 
   // TODO: Add active link styling using usePathname() from next/navigation
   // The current page's link should be highlighted differently
+  useEffect(() => setMenuOpen(false), [pathname]);
   const isActive = (path: string) => pathname === path;
-  const linkClass = (path:string) => cn('transition-colors', isActive(path) ? 'text-[--color-foreground] font-medium' : 'text-[--color-muted] hover:text-[--color-foreground]');
-
+  const linkClass = (path: string) => cn('block py-3 md:py-0 transition-colors', isActive(path) ? 'text-[--color-foreground] font-medium' : 'text-[--color-muted] hover:text-[--color-foreground]');
   return (
     <header className="border-b border-[--color-border]">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between p-4">
+      <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 p-4">
         <Link href="/" className="text-xl font-bold text-[--color-primary]">
           Anvara
         </Link>
 
-        <div className="flex items-center gap-6">
+        {isMobile && (
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="flex h-10 w-10 flex-col items-center justify-center gap-1.5"
+            aria-label='Toggle Menu'
+          >
+            <span className={cn('h-0.5 w-5 bg-current transition-all', menuOpen && 'translate-y-2 rotate-45')} />
+            <span className={cn('h-0.5 w-5 bg-current transition-opacity', menuOpen && 'opacity-0')} />
+            <span className={cn('h-0.5 w-5 bg-current transition-all', menuOpen && '-translate-y-2 -rotate-45')} />
+          </button>
+        )}
+
+        <div className={cn('w-full flex-col gap-2 md:flex md:w-auto md:flex-row md:items-center md:gap-6', isMobile ? (menuOpen ? 'flex' : 'hidden') : 'flex')}>
           <Link
             href="/marketplace"
             className={linkClass('/marketplace')}
@@ -64,7 +79,7 @@ export function Nav() {
           {isPending ? (
             <span className="text-[--color-muted]">...</span>
           ) : user ? (
-            <div className="flex items-center gap-4">
+            <div className={cn('flex gap-4', isMobile ? 'flex-col border-t border-[--color-border] pt-3' : 'items-center')}>
               <span className="text-sm text-[--color-muted]">
                 {user.name} {role && `(${role})`}
               </span>
@@ -78,7 +93,7 @@ export function Nav() {
                     },
                   });
                 }}
-                className="rounded bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500"
+                className="rounded bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-500"
               >
                 Logout
               </button>
@@ -86,8 +101,7 @@ export function Nav() {
           ) : (
             <Link
               href="/login"
-              className="rounded bg-[--color-primary] px-4 py-2 text-sm text-white hover:bg-[--color-primary-hover]"
-            >
+              className={cn('rounded bg-[--color-primary] px-4 py-2 text-sm text-white hover:bg-[--color-primary-hover]', isMobile && 'text-center')}            >
               Login
             </Link>
           )}

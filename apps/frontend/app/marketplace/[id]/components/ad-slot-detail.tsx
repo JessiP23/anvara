@@ -9,6 +9,8 @@ import type { AdSlot, User, RoleInfo } from '@/lib/types';
 import { QuoteButton } from '@/components/quote/quote-button';
 import { LoadingState } from '@/components/state/loading';
 import { ErrorState } from '@/components/state/error';
+import { useBreakpoint } from '@/hooks/use-breakpoint';
+import { cn } from '@/lib/utils';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -32,6 +34,7 @@ export function AdSlotDetail({ id }: Props) {
   const [booking, setBooking] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [bookingError, setBookingError] = useState<string | null>(null);
+  const { isMobile } = useBreakpoint();
 
   useEffect(() => {
     // Fetch ad slot
@@ -111,16 +114,16 @@ export function AdSlotDetail({ id }: Props) {
 
   return (
     <div className="space-y-6">
-      <Link href="/marketplace" className="text-[--color-primary] hover:underline">
+      <Link href="/marketplace" className={cn('inline-block text-[--color-primary] hover:underline', isMobile ? 'text-sm' : 'text-base')}>
         ← Back to Marketplace
       </Link>
 
-      <div className="rounded-lg border border-[--color-border] p-6">
-        <div className="mb-4 flex items-start justify-between">
+      <div className={cn('rounded-lg border border-[--color-border]', isMobile ? 'p-4' : 'p-6')}>
+        <div className={cn('mb-4 gap-2', isMobile ? 'flex flex-col' : 'flex items-start justify-between')}>
           <div>
-            <h1 className="text-2xl font-bold">{adSlot.name}</h1>
+            <h1 className={cn('font-bold', isMobile ? 'text-xl' : 'text-2xl')}>{adSlot.name}</h1>
             {adSlot.publisher && (
-              <p className="text-[--color-muted]">
+              <p className={cn('text-[--color-muted]', isMobile ? 'text-sm' : 'text-base')}>
                 by {adSlot.publisher.name}
                 {adSlot.publisher.website && (
                   <>
@@ -139,14 +142,14 @@ export function AdSlotDetail({ id }: Props) {
               </p>
             )}
           </div>
-          <span className={`rounded px-3 py-1 text-sm ${typeColors[adSlot.type] || 'bg-gray-100'}`}>
+          <span className={`self-start rounded px-3 py-1 text-sm ${typeColors[adSlot.type] || 'bg-gray-100'}`}>
             {adSlot.type}
           </span>
         </div>
 
-        {adSlot.description && <p className="mb-6 text-[--color-muted]">{adSlot.description}</p>}
+        {adSlot.description && <p className={cn('mb-6 text-[--color-muted]', isMobile ? 'text-sm' : 'text-base')}>{adSlot.description}</p>}
 
-        <div className="flex items-center justify-between border-t border-[--color-border] pt-4">
+        <div className={cn('border-t border-[--color-border] pt-4', isMobile ? 'flex flex-col gap-4' : 'flex items-center justify-between')}>
           <div>
             <span
               className={`text-sm font-medium ${adSlot.isAvailable ? 'text-green-600' : 'text-[--color-muted]'}`}
@@ -156,30 +159,30 @@ export function AdSlotDetail({ id }: Props) {
             {!adSlot.isAvailable && !bookingSuccess && (
               <button
                 onClick={handleUnbook}
-                className="ml-3 text-sm text-[--color-primary] underline hover:opacity-80"
+                className="ml-3 text-sm text-[--color-primary] underline"
               >
                 Reset listing
               </button>
             )}
           </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-[--color-primary]">
+          <div className={cn(isMobile ? 'text-left' : 'text-right')}>
+            <p className={cn('font-bold text-[--color-primary]', isMobile ? 'text-xl' : 'text-2xl')}>              
               ${Number(adSlot.basePrice).toLocaleString()}
             </p>
-            <p className="text-sm text-[--color-muted]">per month</p>
+            <p className={cn('text-[--color-muted]', isMobile ? 'text-xs' : 'text-sm')}>per month</p>
           </div>
         </div>
 
         {canBook && (
           <div className="mt-6 border-t border-[--color-border] pt-6">
-            <h2 className="mb-4 text-lg font-semibold">Request This Placement</h2>
+            <h2 className={cn('mb-4 font-semibold', isMobile ? 'text-base' : 'text-lg')}>Request This Placement</h2>
 
             {roleLoading ? (
               <LoadingState message='Loading...' />
             ) : isSponsor ? (
               <div className="space-y-4">
                 <div>
-                  <label className="mb-1 block text-sm font-medium text-[--color-muted]">
+                  <label className={cn('mb-1 block font-medium text-[--color-muted]', isMobile ? 'text-xs' : 'text-sm')}>
                     Your Company
                   </label>
                   <p className="text-[--color-foreground]">{roleInfo.name || user?.name}</p>
@@ -187,7 +190,7 @@ export function AdSlotDetail({ id }: Props) {
                 <div>
                   <label
                     htmlFor="message"
-                    className="mb-1 block text-sm font-medium text-[--color-muted]"
+                    className={cn('mb-1 block font-medium text-[--color-muted]', isMobile ? 'text-xs' : 'text-sm')}
                   >
                     Message to Publisher (optional)
                   </label>
@@ -196,7 +199,7 @@ export function AdSlotDetail({ id }: Props) {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Tell the publisher about your campaign goals..."
-                    className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground] placeholder:text-[--color-muted] focus:border-[--color-primary] focus:outline-none focus:ring-1 focus:ring-[--color-primary]"
+                    className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-3 text-sm text-[--color-foreground] placeholder:text-[--color-muted] focus:border-[--color-primary] focus:outline-none"
                     rows={3}
                   />
                 </div>
@@ -204,7 +207,7 @@ export function AdSlotDetail({ id }: Props) {
                 <button
                   onClick={handleBooking}
                   disabled={booking}
-                  className="w-full rounded-lg bg-[--color-primary] px-4 py-3 font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50"
+                  className={cn('rounded-lg bg-[--color-primary] px-4 py-3 font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50', isMobile ? 'w-full' : '')}
                 >
                   {booking ? 'Booking...' : 'Book This Placement'}
                 </button>

@@ -1,6 +1,8 @@
 'use client'
 import React from "react"
 import { useEffect } from "react"
+import { useBreakpoint } from "@/hooks/use-breakpoint"
+import { cn } from "@/lib/utils"
 
 interface ModalProps {
     isOpen: boolean;
@@ -10,6 +12,12 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+    const {isMobile} = useBreakpoint();
+    useEffect(() => {
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+        return () => { document.body.style.overflow = ''; };
+    }, [isOpen]);
+
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -29,17 +37,19 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-            <div className="relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-xl">
-                <button
-                    onClick={onClose}
-                    className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors"
-                    aria-label="Close"
-                >
-                ✕
-                </button>
-                <h2 className="mb-6 text-xl font-semibold text-black">{title}</h2>
+        <div className={cn('fixed inset-0 z-50 flex justify-center', isMobile ? 'items-end' : 'items-center')}>
+            <div className="fixed inset-0 bg-black/50" onClick={onClose} />
+            <div className={cn('relative z-10 max-h-[90vh] w-full overflow-y-auto bg-white p-4 shadow-xl', isMobile ? 'rounded-t-2xl' : 'max-w-lg rounded-2xl p-6')}>
+                <div className="mb-4 flex items-center justify-between">
+                    <h2 className={cn('font-bold', isMobile ? 'text-lg' : 'text-xl')}>{title}</h2>
+                    <button
+                        onClick={onClose}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
+                        aria-label="Close"
+                    >
+                    ✕
+                    </button>
+                </div>
                 {children}
             </div>
         </div>

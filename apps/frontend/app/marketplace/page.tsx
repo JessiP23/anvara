@@ -1,6 +1,7 @@
 import { AdSlotGrid } from './components/ad-slot-grid';
 import { NewsletterSidebar } from '@/components/newsletter/newsletter-sidebar';
 import { getServerAdSlotsPaginated } from '@/lib/server-api/helper';
+import { MarketplaceLayout } from './components/marketplace-layout';
 
 // FIXME: This page fetches all ad slots client-side. Consider:
 // 1. Server-side pagination with searchParams
@@ -18,14 +19,10 @@ export default async function MarketplacePage() {
         {/* TODO: Add search input and filter controls */}
       </div>
 
-      <div className='flex gap-8'>
-        <div className='flex-1 max-h-[calc(100vh-200px)] overflow-y-auto pr-2'>
-          <AdSlotGrid initialItems={items} initialCursor={nextCursor} initialHasMore={hasMore} />
-        </div>
-        <div className='hidden w-64 shrink-0 lg:block'>
-          <NewsletterSidebar />
-        </div>
-      </div>
+      <MarketplaceLayout
+        grid={<AdSlotGrid initialItems={items} initialCursor={nextCursor} initialHasMore={hasMore} />}
+        sidebar={<NewsletterSidebar />}
+      />
     </div>
   );
 }
