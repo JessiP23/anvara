@@ -18,9 +18,9 @@ export function calculatePercentChange(oldValue: number, newValue: number): numb
   return ((newValue - oldValue) / oldValue) * 100;
 }
 
-export function parsePagination(query: {page?: string; limit?: string}) {
-  const page = parseInt(query.page?? '1', 10) || 1;
-  const limit = parseInt(query.limit??'10', 10) || 10;
+export function parsePagination(query: {page?: string; limit?: string}): { page: number; limit: number; skip: number } {
+  const page = parseInt(query.page ?? '1', 10) || 1;
+  const limit = parseInt(query.limit ?? '10', 10) || 10;
   const skip = (page - 1) * limit;
 
   return { page, limit, skip };
@@ -31,11 +31,11 @@ export function isValidEmail(email: string): boolean {
   return emailRegex.test(email);
 }
 
-export const buildFilters = (query: Record<string, string | undefined>, allowedFields: string[]) => {
+export const buildFilters = (query: Record<string, string | undefined>, allowedFields: string[]): Record<string, string> => {
   const filters: Record<string, string> = {};
 
   for (const field of allowedFields) {
-    const value = query[field]
+    const value = query[field];
     if (value !== undefined) {
       filters[field] = value;
     }
@@ -45,11 +45,10 @@ export const buildFilters = (query: Record<string, string | undefined>, allowedF
 };
 
 export function clampValue(value: number, min: number, max: number): number {
-  return Math.max(min, Math.min(max, value))
+  return Math.max(min, Math.min(max, value));
 }
 
 export function formatDate(date: Date): string {
-  // BUG: Doesn't handle invalid dates
   if (isNaN(date.getTime())) {
     return 'Invalid Date';
   }
