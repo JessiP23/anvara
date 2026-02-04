@@ -2,14 +2,57 @@
 
 interface LoadingStateProps {
     message?: string;
+    variant?: 'spinner' | 'skeleton' | 'card-grid';
+    count?: number;
     className?: string;
 }
 
-export function LoadingState({ message = "LOading...", className = '' }: LoadingStateProps) {
+function Skeleton({ className = '' }: {className?: string}) {
+    return <div className={`animate-pulse rounded bg-gray-200 ${className}`} />
+}
+
+function CardSkeleton() {
     return (
-        <div className={`py-8 text-center text-[--color-muted] ${className}`}>
-            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-current border-t-transparent" />
-            <p className="mt-2">{message}</p>
+        <div className="rounded-lg border border-[--color-border] p-4">
+            <div className="mb-3 flex items-start justify-between">
+                <Skeleton className="mb-2 h-4 w-full" />
+                <Skeleton className="mb-4 h-4 w-3/4" />
+                <div className="flex items-center justify-between border-t pt-3">
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="h-4 w-24" />
+                </div>
+            </div>
         </div>
     )
 }
+
+export function LoadingState({ message = "LOading...", variant="spinner", count=6, className = '' }: LoadingStateProps) {
+    if (variant === 'card-grid') {
+        return(
+            <div className={`grid gap-4 sm:grid-cols-2 lg:grid-cols-3 ${className}`}>
+                {Array.from({ length: count }).map((_, i) => (
+                    <CardSkeleton key={i} />
+                ))}
+            </div>
+        )
+    }
+
+    if (variant === 'skeleton') {
+        return (
+            <div className={`space-y-4 ${className}`}>
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+            </div>
+        )
+    }
+    return (
+        <div className={`flex flex-col items-center justify-center py-12 ${className}`}>
+            <div className="h-10 w-10 animate-spin rounded-full border-4 border-[--color-primary] border-t-transparent" />
+            <p className="mt-4 text-[--color-muted]">{message}</p>
+        </div>
+    )
+}
+
+export { Skeleton }
