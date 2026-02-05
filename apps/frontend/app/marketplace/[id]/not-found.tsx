@@ -6,7 +6,7 @@ export default function AdSlotNotFound() {
             <div className="mb-6 text-6xl">📭</div>
             <h1 className="mb-2 text-2xl font-bold text-[--color-foreground]">Ad Slot Not Found</h1>
             <p className="mb-6 max-w-md text-[--color-muted]">
-                This ad slot doesn't exist or is no longer available.
+                This ad slot does not exist or is no longer available.
             </p>
             <Link
                 href="/marketplace"
