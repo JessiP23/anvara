@@ -8,7 +8,6 @@ import { authClient } from '@/auth-client';
 import type { AdSlot, User, RoleInfo } from '@/lib/types';
 import { QuoteButton } from '@/components/quote/quote-button';
 import { LoadingState } from '@/components/state/loading';
-import { ErrorState } from '@/components/state/error';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -19,12 +18,12 @@ const typeColors: Record<string, string> = {
 
 interface Props {
   id: string;
+  initialAdSlot?: AdSlot;
 }
 
-export function AdSlotDetail({ id }: Props) {
+export function AdSlotDetail({ id, initialAdSlot }: Props) {
   const [adSlot, setAdSlot] = useState<AdSlot | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [roleInfo, setRoleInfo] = useState<RoleInfo | null>(null);
   const [roleLoading, setRoleLoading] = useState(true);
@@ -34,11 +33,13 @@ export function AdSlotDetail({ id }: Props) {
   const [bookingError, setBookingError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Fetch ad slot
-    getAdSlot<AdSlot>(id)
-      .then(setAdSlot)
-      .catch(() => setError('Failed to load ad slot details'))
-      .finally(() => setLoading(false));
+    // Fetch if not initial data
+    if (!initialAdSlot) {
+      getAdSlot<AdSlot>(id)
+        .then(setAdSlot)
+        .catch(() => setAdSlot(null))
+        .finally(() => setLoading(false));
+    }
 
     // Check user session and fetch role
     authClient
@@ -55,7 +56,7 @@ export function AdSlotDetail({ id }: Props) {
       })
       .catch(() => setRoleInfo(null))
       .finally(() => setRoleLoading(false));
-  }, [id]);
+  }, [id, initialAdSlot]);
 
   const handleBooking = async () => {
     if (!roleInfo?.sponsorId || !adSlot) return;
@@ -92,18 +93,8 @@ export function AdSlotDetail({ id }: Props) {
     return <LoadingState message='Loading ad slot details...' />
   }
 
-  if (error || !adSlot) {
-    return (
-      <div className="space-y-4">
-        <Link href="/marketplace" className="text-[--color-primary] hover:underline">
-          ← Back to Marketplace
-        </Link>
-        <ErrorState 
-          title="Ad Slot Not Found"
-          message={error || "The ad slot you are looking for does not exist."}
-        />
-      </div>
-    );
+  if (!adSlot) {
+    return null;
   }
 
   const isSponsor = roleInfo?.role === 'sponsor' && roleInfo?.sponsorId;

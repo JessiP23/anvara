@@ -9,6 +9,10 @@ import { CampaignList } from './components/campaign-list';
 export const metadata: Metadata = {
   title: "My Campaigns",
   description: "Manager your advertising campaigns and track performance.",
+  openGraph: {
+    title: 'My Campaigns | Anvara',
+    description: "Manage your advertising campaigns and track performance.",
+  }
 }
 
 export default async function SponsorDashboard() {

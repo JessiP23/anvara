@@ -9,6 +9,10 @@ import { AdSlotList } from './components/ad-slot-list';
 export const metadata: Metadata = {
   title: "My Ad Slots",
   description: "Manage your ad invenotry and connect with sponsors.",
+  openGraph: {
+    title: "My Ad Slots | Anvara",
+    description: "Manage your ad inventory and connect with sponsors.",
+  }
 }
 
 export default async function PublisherDashboard() {
