@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 import { cn } from '@/lib/utils';
 import { getUserRole } from '@/lib/auth-helpers';
 import { useBreakpoint } from '@/hooks/use-breakpoint';
+import { responsive } from '@/lib/responsive';
 
 type NavRole = 'sponsor' | 'publisher' | null;
 
@@ -30,9 +31,10 @@ export function Nav() {
   // TODO: Add active link styling using usePathname() from next/navigation
   // The current page's link should be highlighted differently
   useEffect(() => setMenuOpen(false), [pathname]);
-  const isActive = (path: string) => pathname === path;
-  const linkClass = (path: string) => cn('block py-3 md:py-0 transition-colors', isActive(path) ? 'text-[--color-foreground] font-medium' : 'text-[--color-muted] hover:text-[--color-foreground]');
-  return (
+  const linkClass = (path: string) => cn(
+    'block py-3 md:py-0 transition-colors min-h-[44px] flex items-center',
+    pathname === path ? 'text-[--color-foreground] font-medium' : 'text-[--color-muted] hover:text-[--color-foreground]'
+  );  return (
     <header className="border-b border-[--color-border]">
       <nav className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 p-4">
         <Link href="/" className="text-xl font-bold text-[--color-primary]">
@@ -80,7 +82,7 @@ export function Nav() {
             <span className="text-[--color-muted]">...</span>
           ) : user ? (
             <div className={cn('flex gap-4', isMobile ? 'flex-col border-t border-[--color-border] pt-3' : 'items-center')}>
-              <span className="text-sm text-[--color-muted]">
+              <span className={cn('text-[--color-muted]', responsive.text.small)}>
                 {user.name} {role && `(${role})`}
               </span>
               <button
@@ -93,7 +95,7 @@ export function Nav() {
                     },
                   });
                 }}
-                className="rounded bg-gray-600 px-3 py-2 text-sm text-white hover:bg-gray-500"
+                className={cn('rounded bg-gray-600 px-3 text-white hover:bg-gray-500', responsive.button.touch, responsive.text.small)}
               >
                 Logout
               </button>

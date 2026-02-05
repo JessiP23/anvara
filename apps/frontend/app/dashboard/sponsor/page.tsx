@@ -4,6 +4,8 @@ import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
 import { getServerCampaigns } from '@/lib/server-api/helper';
 import { CampaignList } from './components/campaign-list';
+import { responsive } from '@/lib/responsive';
+import { cn } from '@/lib/utils';
 
 export default async function SponsorDashboard() {
   const session = await auth.api.getSession({
@@ -23,12 +25,8 @@ export default async function SponsorDashboard() {
   const campaigns = await getServerCampaigns();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Campaigns</h1>
-        {/* TODO: Add CreateCampaignButton here */}
-      </div>
-
+    <div className={responsive.spacing.section}>
+      <h1 className={cn('font-bold', responsive.text.heading)}>My Campaigns</h1>
       <CampaignList initialCampaigns={campaigns} />
     </div>
   );

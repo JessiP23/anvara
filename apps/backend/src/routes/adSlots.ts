@@ -35,15 +35,6 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
       orderBy: { createdAt: 'desc' },
     });
 
-    const response = buildPaginatedResponse(adSlots, limit);
-    console.log('[Pagination] Response:', {
-      itemsReturned: response.items.length,
-      hasMore: response.hasMore,
-      nextCursor: response.nextCursor ?? 'NONE',
-      firstItemId: response.items[0]?.id ?? 'EMPTY',
-      lastItemId: response.items[response.items.length - 1]?.id ?? 'EMPTY',
-    })
-
     res.json(buildPaginatedResponse(adSlots, limit));
   } catch (error) {
     console.error('Error fetching ad slots:', error);
@@ -158,8 +149,6 @@ router.post('/:id/book', requireAuth, async (req: AuthRequest, res: Response) =>
       data: { isAvailable: false },
       include: adSlotInclude,
     });
-
-    console.log(`Ad slot ${id} booked by sponsor ${req.user!.sponsorId}. Message: ${message || 'None'}`);
 
     res.json({
       success: true,

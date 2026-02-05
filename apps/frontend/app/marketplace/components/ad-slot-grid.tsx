@@ -5,7 +5,7 @@ import Link from 'next/link';
 import type { AdSlot } from '@/lib/types';
 import { EmptyState } from '@/components/state/empty';
 import { getAdSlotsPaginated } from '@/lib/api';
-import { useBreakpoint } from '@/hooks/use-breakpoint';
+import { responsive } from '@/lib/responsive';
 import { cn } from '@/lib/utils';
 
 const typeColors: Record<string, string> = {
@@ -26,7 +26,6 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
   const [cursor, setCursor] = useState(initialCursor);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [isPending, startTransition] = useTransition();
-  const { isMobile, isTablet } = useBreakpoint();
 
   const loadMore = () => {
     if (!cursor || isPending) return;
@@ -53,11 +52,9 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
     );
   }
 
-  const gridCols = isMobile ? 'grid-cols-1' : isTablet ? 'grid-cols-2' : 'grid-cols-3';
-
   return (
     <div className='space-y-6'>
-      <div className={cn('grid gap-4', gridCols)}>
+      <div className={cn('grid gap-4', responsive.grid.cols)}>
         {items.map((slot) => (
           <Link
             key={slot.id}
@@ -65,7 +62,7 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
             className="block rounded-lg border border-[--color-border] p-4 transition-shadow hover:shadow-md active:bg-gray-50"
           >
             <div className="mb-2 flex items-start justify-between gap-2">
-              <h3 className={cn('font-semibold line-clamp-1', isMobile ? 'text-sm' : 'text-base')}>{slot.name}</h3>
+              <h3 className={cn('font-semibold line-clamp-1', responsive.text.body)}>{slot.name}</h3>
               <span
                 className={`shrink-0 rounded px-2 py-0.5 text-xs ${typeColors[slot.type] || 'bg-gray-100'}`}
               >
@@ -74,18 +71,18 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
             </div>
 
             {slot.publisher && (
-              <p className={cn('mb-2 text-[--color-muted]', isMobile ? 'text-xs' : 'text-sm')}>by {slot.publisher.name}</p>
+              <p className={cn('mb-2 text-[--color-muted]', responsive.text.small)}>by {slot.publisher.name}</p>
             )}
 
             {slot.description && (
-              <p className={cn('mb-3 text-[--color-muted] line-clamp-2', isMobile ? 'text-xs' : 'text-sm')}>{slot.description}</p>
+              <p className={cn('mb-3 text-[--color-muted] line-clamp-2', responsive.text.small)}>{slot.description}</p>
             )}
 
             <div className="flex items-center justify-between">
-              <span className={cn(slot.isAvailable ? 'text-green-600' : 'text-[--color-muted]', isMobile ? 'text-xs' : 'text-sm')}>
+              <span className={cn(slot.isAvailable ? 'text-green-600' : 'text-[--color-muted]', responsive.text.small)}>
                 {slot.isAvailable ? 'Available' : 'Booked'}
               </span>
-              <span className={cn('font-semibold text-[--color-primary]', isMobile ? 'text-sm' : 'text-base')}>
+              <span className={cn('font-semibold text-[--color-primary]', responsive.text.body)}>
                 ${Number(slot.basePrice).toLocaleString()}/mo
               </span>
             </div>
@@ -98,7 +95,7 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
           <button
             onClick={loadMore}
             disabled={isPending}
-            className={cn('rounded-lg border border-[--color-border] px-6 py-3 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-50', isMobile && 'w-full')}          
+            className={cn('rounded-lg border border-[--color-border] px-6 py-3 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-50', responsive.button.full, responsive.button.touch)}          
           >
             {isPending ? 'Loading...' : 'Load More'}
           </button>

@@ -1,8 +1,6 @@
-'use client';
-
-import { useBreakpoint } from '@/hooks/use-breakpoint';
 import { cn } from '@/lib/utils';
 import type { ReactNode } from 'react';
+import { responsive } from '@/lib/responsive';
 
 interface MarketplaceLayoutProps {
   grid: ReactNode;
@@ -10,13 +8,10 @@ interface MarketplaceLayoutProps {
 }
 
 export function MarketplaceLayout({ grid, sidebar }: MarketplaceLayoutProps) {
-  const { isMobile, isTablet } = useBreakpoint();
-  const showSidebarInline = !isMobile && !isTablet;
-
   return (
-    <div className={cn('flex gap-8', showSidebarInline ? 'flex-row' : 'flex-col')}>
+    <div className={cn(responsive.layout.sidebar)}>
       <div className="flex-1">{grid}</div>
-      <div className={cn(showSidebarInline && 'w-64 shrink-0')}>{sidebar}</div>
+      <div className="lg:w-64 lg:shrink-0">{sidebar}</div>
     </div>
   );
 }

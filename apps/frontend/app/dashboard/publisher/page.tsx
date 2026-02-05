@@ -4,6 +4,8 @@ import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
 import { getServerAdSlots } from '@/lib/server-api/helper';
 import { AdSlotList } from './components/ad-slot-list';
+import { responsive } from '@/lib/responsive';
+import { cn } from '@/lib/utils';
 
 export default async function PublisherDashboard() {
   const session = await auth.api.getSession({
@@ -23,11 +25,9 @@ export default async function PublisherDashboard() {
   const adSlots = await getServerAdSlots(roleData.publisherId)
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Ad Slots</h1>
+    <div className={responsive.spacing.section}>
+      <h1 className={cn('font-bold', responsive.text.heading)}>My Ad Slots</h1>
         {/* TODO: Add CreateAdSlotButton here */}
-      </div>
 
       <AdSlotList initialAdSlots={adSlots} />
     </div>

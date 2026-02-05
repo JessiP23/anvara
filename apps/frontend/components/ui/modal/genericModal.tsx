@@ -1,6 +1,5 @@
 'use client'
-import React from "react"
-import { useEffect } from "react"
+import React, { useEffect } from "react"
 import { useBreakpoint } from "@/hooks/use-breakpoint"
 import { cn } from "@/lib/utils"
 
@@ -13,24 +12,15 @@ interface ModalProps {
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     const {isMobile} = useBreakpoint();
-    useEffect(() => {
-        document.body.style.overflow = isOpen ? 'hidden' : '';
-        return () => { document.body.style.overflow = ''; };
-    }, [isOpen]);
 
     useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
-
-        if (isOpen) {
-            document.addEventListener('keydown', handleEscape);
-            document.body.style.overflow = 'hidden';
-        }
-
+        if (!isOpen) return;
+        document.body.style.overflow = 'hidden';
+        const handleEscape = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+        document.addEventListener('keydown', handleEscape);
         return () => {
-            document.removeEventListener('keydown', handleEscape);
             document.body.style.overflow = '';
+            document.removeEventListener('keydown', handleEscape);
         };
     }, [isOpen, onClose]);
 
@@ -39,12 +29,12 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     return (
         <div className={cn('fixed inset-0 z-50 flex justify-center', isMobile ? 'items-end' : 'items-center')}>
             <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-            <div className={cn('relative z-10 max-h-[90vh] w-full overflow-y-auto bg-white p-4 shadow-xl', isMobile ? 'rounded-t-2xl' : 'max-w-lg rounded-2xl p-6')}>
+            <div className={cn('relative z-10 max-h-[90vh] w-full overflow-y-auto bg-white shadow-xl', isMobile ? 'rounded-t-2xl p-4 pb-8' : 'max-w-lg rounded-2xl p-6' )}>
                 <div className="mb-4 flex items-center justify-between">
-                    <h2 className={cn('font-bold', isMobile ? 'text-lg' : 'text-xl')}>{title}</h2>
+                    <h2 className="text-lg font-bold md:text-xl">{title}</h2>
                     <button
                         onClick={onClose}
-                        className="flex h-8 w-8 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100"
                         aria-label="Close"
                     >
                     ✕

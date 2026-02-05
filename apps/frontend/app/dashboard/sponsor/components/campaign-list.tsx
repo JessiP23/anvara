@@ -8,7 +8,7 @@ import { useToast } from '@/components/notification/toast';
 import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
 import { useRouter } from 'next/navigation';
-import { useBreakpoint } from '@/hooks/use-breakpoint';
+import { responsive } from '@/lib/responsive';
 import { cn } from '@/lib/utils';
 
 interface CampaignListProps{
@@ -21,7 +21,6 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const { show } = useToast();
   const router = useRouter()
-  const { isMobile, isTablet } = useBreakpoint();
 
   const handleCreateSuccess = () => {
     setShowCreateModal(false);
@@ -40,15 +39,13 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
     show('Campaign Deleted!', 'success');
   }
 
-  const gridCols = isMobile ? 'grid-cols-1' : isTablet ? 'grid-cols-2' : 'grid-cols-3';
-
   return (
-    <div className="space-y-6">
+    <div className={responsive.spacing.section}>
       <div className='flex justify-end'>
         <button
           type='button'
           onClick={() => setShowCreateModal(true)}
-          className={cn('rounded bg-blue-600 px-4 py-3 text-white hover:bg-blue-700', isMobile ? 'w-full' : 'py-2')}
+          className={cn('rounded bg-blue-600 px-4 text-white hover:bg-blue-700', responsive.button.full, responsive.button.touch)}
         >
           Create New Campaign
         </button>
@@ -88,7 +85,7 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
       )}
 
       {campaigns.length > 0 && (
-        <div className={cn('grid gap-4', gridCols)}>
+        <div className={cn('grid gap-4', responsive.grid.cols)}>
           {campaigns.map((campaign) =>
             <CampaignCard
               key={campaign.id}
