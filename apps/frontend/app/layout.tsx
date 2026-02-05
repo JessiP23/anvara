@@ -3,7 +3,7 @@ import './globals.css';
 import React from 'react';
 import { Nav } from './components/nav';
 import { ToastProvider } from '@/components/notification/toast';
-import { QueryProvider } from '@/providers/query-provider';
+import { QueryProvider } from '@/provider/query-provider';
 
 // TODO: Add ErrorBoundary wrapper for graceful error handling
 // TODO: Consider adding a loading.tsx for Suspense boundaries

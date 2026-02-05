@@ -1,9 +1,15 @@
+import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
 import { getServerCampaigns } from '@/lib/server-api/helper';
 import { CampaignList } from './components/campaign-list';
+
+export const metadata: Metadata = {
+  title: "My Campaigns",
+  description: "Manager your advertising campaigns and track performance.",
+}
 
 export default async function SponsorDashboard() {
   const session = await auth.api.getSession({
