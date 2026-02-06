@@ -1,7 +1,17 @@
+import type { Metadata } from 'next';
 // TODO: This should be a marketing landing page, not just a simple welcome screen
 // TODO: Add proper metadata for SEO (title, description, Open Graph)
 // TODO: Add hero section, features, testimonials, etc.
 // HINT: Check out the bonus challenge for marketing landing page!
+
+export const metadata: Metadata = {
+  title: 'Welcome',
+  description: "The sponsorship marketplace connecting sponsors with premium publishers. Create campaigns, list ad slots, and grow your business.",
+  openGraph: {
+    title: "Anvara - Sponsorship Marketplace",
+    description: "Connect sponsors with premium publishers.",
+  }
+}
 
 export default function Home() {
   return (

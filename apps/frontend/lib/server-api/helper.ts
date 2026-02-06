@@ -33,7 +33,8 @@ export async function getServerCampaigns(): Promise<Campaign[]> {
 
 export async function getServerAdSlots(publisherId?: string): Promise<AdSlot[]> {
     const query = publisherId ? `?publisherId=${publisherId}`: '';
-    return (await serverFetch<AdSlot[]>(`/api/ad-slots${query}`)) || []
+    const result = await serverFetch<PaginatedResponse<AdSlot>>(`/api/ad-slots${query}`);
+    return result?.items ?? [];
 }
 
 export async function getServerAdSlot(id: string): Promise<AdSlot | null> {

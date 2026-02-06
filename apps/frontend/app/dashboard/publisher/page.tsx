@@ -1,9 +1,19 @@
+import type { Metadata } from 'next';
 import { headers } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
 import { getServerAdSlots } from '@/lib/server-api/helper';
 import { AdSlotList } from './components/ad-slot-list';
+
+export const metadata: Metadata = {
+  title: "My Ad Slots",
+  description: "Manage your ad invenotry and connect with sponsors.",
+  openGraph: {
+    title: "My Ad Slots | Anvara",
+    description: "Manage your ad inventory and connect with sponsors.",
+  }
+}
 
 export default async function PublisherDashboard() {
   const session = await auth.api.getSession({

@@ -1,6 +1,16 @@
+import type { Metadata } from 'next';
 import { AdSlotGrid } from './components/ad-slot-grid';
 import { NewsletterSidebar } from '@/components/newsletter/newsletter-sidebar';
 import { getServerAdSlotsPaginated } from '@/lib/server-api/helper';
+
+export const metadata: Metadata = {
+  title: 'Marketplace',
+  description: 'Browser available ad slots from premium publishers',
+  openGraph: {
+    title: "Marketplace - Anvara",
+    description: "Browser available ad slots from premium publishers",
+  }
+}
 
 // FIXME: This page fetches all ad slots client-side. Consider:
 // 1. Server-side pagination with searchParams
