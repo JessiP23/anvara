@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import Link from 'next/link';
 import type { AdSlot } from '@/lib/types';
 import { EmptyState } from '@/components/state/empty';
 import { getAdSlotsPaginated } from '@/lib/api';
+import { queryKeys } from '@/lib/query-keys';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -20,24 +21,26 @@ interface AdSlotGridProps {
 }
 
 export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSlotGridProps) {
-  const [items, setItems] = useState(initialItems);
-  const [cursor, setCursor] = useState(initialCursor);
-  const [hasMore, setHasMore] = useState(initialHasMore);
-  const [isPending, startTransition] = useTransition();
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, refetch } = useInfiniteQuery({
+    queryKey: queryKeys.adSlots.paginated(),
+    queryFn: ({ pageParam }) => getAdSlotsPaginated(undefined, pageParam ?? undefined),
+    initialPageParam: null as string | null,
+    getNextPageParam: (lastPage) => (lastPage.hasMore ? lastPage.nextCursor : undefined),
+    initialData: {
+      pages: [{ items: initialItems, nextCursor: initialCursor, hasMore: initialHasMore }],
+      pageParams: [null],
+    }
+  });
 
-  const loadMore = () => {
-    if (!cursor || isPending) return;
+  const items = data?.pages.flatMap((page) => page.items) ?? [];
 
-    startTransition(async () => {
-      const response = await getAdSlotsPaginated(undefined, cursor);
-
-      setItems((prev) => {
-        const ids = new Set(prev.map((i) => i.id));
-        return [...prev, ...response.items.filter((i) => !ids.has(i.id))];
-      });
-      setCursor(response.nextCursor);
-      setHasMore(response.hasMore);
-    })
+  if (isError) {
+    return <EmptyState 
+      icon='⚠️'
+      title='Failed to load ad slots'
+      message='Something went wrong. Please try again.'
+      action={{ label: 'Retry', onClick: () => refetch() }}
+    />
   }
 
   if (items.length === 0) {
@@ -90,14 +93,14 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
         ))}
       </div>
 
-      {hasMore && (
+      {hasNextPage && (
         <div className='flex justify-center'>
           <button
-            onClick={loadMore}
-            disabled={isPending}
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
             className='rounded-lg border border-[--color-border] px-6 py-2.5 text-sm font-medium transition-colors hover:bg-gray-50 disabled:opacity-50'
           >
-            {isPending ? 'Loading...' : 'Load More'}
+            {isFetchingNextPage ? 'Loading...' : 'Load More'}
           </button>
         </div>
       )}
