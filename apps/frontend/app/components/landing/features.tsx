@@ -56,8 +56,7 @@ export function Features() {
   return (
     <section aria-labelledby="features-heading" className="relative py-28 sm:py-36">
       <div className="mx-auto max-w-6xl px-6">
-        {/* Section header */}
-        <div className="mx-auto mb-16 max-w-2xl text-center">
+        <header className="mx-auto mb-16 max-w-2xl text-center">
           <p className="mb-3 text-xs font-medium uppercase tracking-[0.2em] text-[--color-primary]">
             Why Anvara
           </p>
@@ -68,11 +67,9 @@ export function Features() {
             Built by marketers, for marketers. We understand what it takes to run
             successful campaigns at any scale.
           </p>
-        </div>
+        </header>
 
-        {/* Feature showcase image */}
-        <div className="relative mx-auto mb-20 max-w-4xl">
-          {/* Glow effect behind image */}
+        <figure className="relative mx-auto mb-20 max-w-4xl">
           <div aria-hidden='true' className="pointer-events-none absolute inset-0 -z-10 translate-y-8 rounded-3xl bg-gradient-to-b from-[--color-primary]/10 via-transparent to-transparent blur-2xl" />
           
           <div className="overflow-hidden rounded-2xl border border-[--color-border] bg-gradient-to-b from-[hsl(230_40%_96%)] to-[hsl(250_40%_98%)] p-4 shadow-xl shadow-[--color-foreground]/5">
@@ -86,16 +83,14 @@ export function Features() {
               priority
             />
           </div>
-        </div>
+        </figure>
 
-        {/* Bento grid */}
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" role="list">
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3" role="list">
           {features.map((feature, index) => (
             <div
               key={index}
               className={`group relative overflow-hidden rounded-2xl border border-[--color-border] bg-[--color-card] p-8 transition-all duration-500 hover:border-[--color-primary]/30 hover:shadow-sm ${feature.span}`}
             >
-              {/* Accent top line on hover */}
               <div aria-hidden="true" className="absolute left-0 right-0 top-0 h-px bg-[--color-primary] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
 
               <p className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-[--color-primary]">
@@ -109,7 +104,7 @@ export function Features() {
               </p>
             </div>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
   );
