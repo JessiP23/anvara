@@ -106,10 +106,10 @@ export function AdSlotDetail({ id, initialAdSlot }: Props) {
         ← Back to Marketplace
       </Link>
 
-      <div className="rounded-lg border border-[--color-border] p-6">
+      <div className="rounded-lg border border-[--color-border] bg-[--color-card] p-6">
         <div className="mb-4 flex items-start justify-between">
           <div>
-            <h1 className="text-2xl font-bold">{adSlot.name}</h1>
+            <h1 className="text-2xl font-bold text-[--color-foreground]">{adSlot.name}</h1>
             {adSlot.publisher && (
               <p className="text-[--color-muted]">
                 by {adSlot.publisher.name}
@@ -163,7 +163,7 @@ export function AdSlotDetail({ id, initialAdSlot }: Props) {
 
         {canBook && (
           <div className="mt-6 border-t border-[--color-border] pt-6">
-            <h2 className="mb-4 text-lg font-semibold">Request This Placement</h2>
+            <h2 className="mb-4 text-lg font-semibold text-[--color-foreground]">Request This Placement</h2>
 
             {roleLoading ? (
               <LoadingState message='Loading...' />
@@ -187,15 +187,15 @@ export function AdSlotDetail({ id, initialAdSlot }: Props) {
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     placeholder="Tell the publisher about your campaign goals..."
-                    className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground] placeholder:text-[--color-muted] focus:border-[--color-primary] focus:outline-none focus:ring-1 focus:ring-[--color-primary]"
+                    className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground] placeholder:text-[--color-muted] focus:border-[--color-primary] focus:outline-none"
                     rows={3}
                   />
                 </div>
-                {bookingError && <p className="text-sm text-red-600">{bookingError}</p>}
+                {bookingError && <p className="text-sm text-[--color-error]">{bookingError}</p>}
                 <button
                   onClick={handleBooking}
                   disabled={booking}
-                  className="w-full rounded-lg bg-[--color-primary] px-4 py-3 font-semibold text-white transition-colors hover:opacity-90 disabled:opacity-50"
+                  className="btn-accent btn-full"                
                 >
                   {booking ? 'Booking...' : 'Book This Placement'}
                 </button>
@@ -209,7 +209,7 @@ export function AdSlotDetail({ id, initialAdSlot }: Props) {
               <div>
                 <button
                   disabled
-                  className="w-full cursor-not-allowed rounded-lg bg-gray-300 px-4 py-3 font-semibold text-gray-500"
+                  className="btn-secondary btn-full opacity-50"               
                 >
                   Request This Placement
                 </button>

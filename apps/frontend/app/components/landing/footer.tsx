@@ -2,7 +2,7 @@ import Link from "next/link"
 
 const navigation = {
   product: [
-    { name: "Marketplace", href: "/marketplace" },
+    { name: "Marketplace", href: "#" },
     { name: "For Sponsors", href: "#" },
     { name: "For Publishers", href: "#" },
     { name: "Pricing", href: "#" },

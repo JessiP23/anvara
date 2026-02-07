@@ -20,7 +20,7 @@ export function EmptyState({
     className = '' 
 }: EmptyStateProps) {
     return (
-        <div className={`flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[--color-border] bg-gradient-to-b from-gray-50 to-white p-12 text-center ${className}`}>
+        <div className={`flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-[--color-border] bg-[--color-card] p-12 text-center ${className}`}>
             <div className="mb-4 text-5xl" role="img" aria-hidden="true">
                 {icon}
             </div>
@@ -30,7 +30,7 @@ export function EmptyState({
                 <button
                     type="button"
                     onClick={action.onClick}
-                    className="mt-6 rounded-lg bg-[--color-primary] px-6 py-2.5 font-medium text-white transition-all hover:bg-[--color-primary-hover] hover:shadow-md"
+                    className="btn-accent mt-6"
                 >
                     {action.label}
                 </button>

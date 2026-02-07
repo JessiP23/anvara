@@ -10,7 +10,7 @@ export default function AdSlotNotFound() {
             </p>
             <Link
                 href="/marketplace"
-                className="min-h-[44px] rounded-lg bg-[--color-primary] px-6 py-3 font-medium text-white transition-colors hover:opacity-90"
+                className="btn-primary"            
             >
                 Back to Marketplace
             </Link>

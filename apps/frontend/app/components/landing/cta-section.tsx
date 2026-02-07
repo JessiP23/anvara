@@ -25,12 +25,6 @@ export function CTASection() {
               {"->"}
             </span>
           </Link>
-          <Link
-            href="/marketplace"
-            className="inline-flex h-12 items-center rounded-full border border-border px-8 text-sm font-medium text-foreground transition-colors duration-300 hover:bg-card"
-          >
-            Explore Marketplace
-          </Link>
         </div>
 
         <p className="mt-10 text-xs text-muted-foreground/50">

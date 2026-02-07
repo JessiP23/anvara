@@ -34,21 +34,12 @@ export function Hero() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-          <Link
-            href="/login"
-            className="inline-flex h-12 items-center justify-center rounded-full bg-[--color-foreground] px-8 text-base font-medium text-[--color-background] transition-opacity duration-300 hover:opacity-90"
-          >
+          <Link href="/login" className="btn-primary btn-lg">
             Start Free Today →
-          </Link>
-          <Link
-            href="/marketplace"
-            className="inline-flex h-12 items-center justify-center rounded-full border border-[--color-border] bg-[--color-card] px-8 text-base font-medium text-[--color-foreground] transition-colors duration-300 hover:bg-[--color-card-hover]"
-          >
-            Browse Marketplace
           </Link>
         </div>
 
-        {/* Trust indicators - text only, no icons */}
+        {/* Trust indicators */}
         <div className="mt-12 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-[--color-muted]">
           <span>No credit card required</span>
           <span>·</span>
