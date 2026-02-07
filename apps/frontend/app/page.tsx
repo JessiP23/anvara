@@ -7,14 +7,10 @@ import {Stats} from "./components/landing/stats";
 import { Testimonials } from './components/landing/testimonials';
 import { CTASection } from './components/landing/cta-section';
 import { Footer } from './components/landing/footer';
-// TODO: This should be a marketing landing page, not just a simple welcome screen
-// TODO: Add proper metadata for SEO (title, description, Open Graph)
-// TODO: Add hero section, features, testimonials, etc.
-// HINT: Check out the bonus challenge for marketing landing page!
 
 export const metadata: Metadata = {
-  title: 'Welcome',
-  description: "The sponsorship marketplace connecting sponsors with premium publishers. Create campaigns, list ad slots, and grow your business.",
+  title: 'Sponsorship Marketplace That Actually Works',
+  description: 'Connect with premium publishers, launch campaigns in minutes, and track performance in real-time. No middlemen, no hidden fees.',
   openGraph: {
     title: "Anvara - Sponsorship Marketplace",
     description: "Connect sponsors with premium publishers.",
@@ -23,13 +19,14 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: "Anvara - Sponsorship Marketplace",
-    description: "Connect sponsors with premium publishers."
+    description: "Connect sponsors with premium publishers.",
+    images: ['/og-image.png'],
   }
 }
 
 export default function Home() {
   return (
-    <main>
+    <>
       <Hero />
       <SocialProof />
       <Features />
@@ -38,6 +35,6 @@ export default function Home() {
       <Testimonials />
       <CTASection />
       <Footer />
-    </main>
+    </>
   );
 }

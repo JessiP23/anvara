@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import './globals.css';
+import './globals.css'
 import React from 'react';
 import { Nav } from './components/nav';
 import { ToastProvider } from '@/components/notification/toast';
@@ -76,7 +76,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <QueryProvider>
           <ToastProvider>
             <Nav />
-            <main className="mx-auto max-w-6xl p-4">{children}</main>
+            {children}
           </ToastProvider>
         </QueryProvider>
       </body>

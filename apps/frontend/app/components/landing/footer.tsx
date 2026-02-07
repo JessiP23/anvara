@@ -1,10 +1,10 @@
-import Link from "next/link"
+import Link from "next/link";
 
 const navigation = {
   product: [
-    { name: "Marketplace", href: "#" },
-    { name: "For Sponsors", href: "#" },
-    { name: "For Publishers", href: "#" },
+    { name: "Marketplace", href: "/marketplace" },
+    { name: "For Sponsors", href: "/login" },
+    { name: "For Publishers", href: "/login" },
     { name: "Pricing", href: "#" },
   ],
   company: [
@@ -18,11 +18,11 @@ const navigation = {
     { name: "Terms", href: "#" },
     { name: "Cookies", href: "#" },
   ],
-}
+};
 
 export function Footer() {
   return (
-    <footer className="border-t border-border bg-card py-16">
+    <footer className="border-t border-border bg-card py-16" role="contentinfo">
       <div className="mx-auto max-w-6xl px-6">
         <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand */}
@@ -37,7 +37,7 @@ export function Footer() {
           </div>
 
           {/* Product */}
-          <div>
+          <nav aria-label="Product">
             <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-foreground">
               Product
             </h3>
@@ -53,10 +53,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
           {/* Company */}
-          <div>
+          <nav aria-label="Company">
             <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-foreground">
               Company
             </h3>
@@ -72,10 +72,10 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
           {/* Legal */}
-          <div>
+          <nav aria-label="Legal">
             <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.15em] text-foreground">
               Legal
             </h3>
@@ -91,13 +91,13 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
         </div>
 
         {/* Bottom bar */}
         <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-border pt-8 sm:flex-row">
           <p className="text-xs text-muted-foreground">
-            2026 Anvara. All rights reserved.
+            © 2026 Anvara. All rights reserved.
           </p>
           <div className="flex gap-6">
             <Link href="#" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
@@ -113,5 +113,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

@@ -33,13 +33,13 @@ export default async function SponsorDashboard() {
   const campaigns = await getServerCampaigns();
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">My Campaigns</h1>
-        {/* TODO: Add CreateCampaignButton here */}
+    <main className="mx-auto max-w-6xl p-4">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">My Campaigns</h1>
+        </div>
+        <CampaignList initialCampaigns={campaigns} />
       </div>
-
-      <CampaignList initialCampaigns={campaigns} />
-    </div>
+    </main>
   );
 }
