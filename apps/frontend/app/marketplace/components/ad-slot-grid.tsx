@@ -1,12 +1,13 @@
 'use client';
 
 import { useInfiniteQuery } from '@tanstack/react-query';
-import Link from 'next/link';
 import type { AdSlot } from '@/lib/types';
 import { EmptyState } from '@/components/state/empty';
 import { getAdSlotsPaginated } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
-import { TypeBadge } from '@/components/ui/badge';
+import { SectionHeader } from '@/components/ui/typography';
+import { MarketplaceCard } from './marketplace-card';
+import { useState } from 'react';
 
 interface AdSlotGridProps {
   initialItems: AdSlot[];
@@ -27,6 +28,7 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
   });
 
   const items = data?.pages.flatMap((page) => page.items) ?? [];
+  const availableCount = items.filter((s) => s.isAvailable).length;
 
   if (isError) {
     return <EmptyState 
@@ -47,45 +49,22 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
   }
 
   return (
-    <div className='space-y-6'>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
+    <section className='space-y-6'>
+      <SectionHeader 
+        title="Available Slots"
+        description={`${availableCount} of ${items.length} available`}
+      />
+
+      <div className="grid gap-5 sm:grid-cols-2 stagger-children">
         {items.map((slot) => (
-          <Link
-            key={slot.id}
-            href={`/marketplace/${slot.id}`}
-            className="group block rounded-xl border border-[--color-border] bg-[--color-card] p-5 transition-all duration-200 hover:border-[--color-primary]/30 hover:shadow-md"
-          >
-            <div className="mb-3 flex items-start justify-between">
-              <h3 className="font-semibold text-[--color-foreground] group-hover:text-[--color-primary] transition-colors">{slot.name}</h3>
-              <TypeBadge type={slot.type} />
-            </div>
-
-            {slot.publisher && (
-              <p className="mb-2 text-sm text-[--color-muted]">by {slot.publisher.name}</p>
-            )}
-
-            {slot.description && (
-              <p className="mb-3 text-sm text-[--color-muted] line-clamp-2">{slot.description}</p>
-            )}
-
-            <div className="flex items-center justify-between border-t border-[--color-border] pt-4">
-              <span
-                className={`text-sm font-medium ${slot.isAvailable ? 'text-green-600' : 'text-[--color-muted]'}`}
-              >
-                {slot.isAvailable ? 'Available' : 'Booked'}
-              </span>
-              <span className="text-lg font-bold text-[--color-primary]">
-                ${Number(slot.basePrice).toLocaleString()}
-                <span className="text-xs font-normal text-[--color-muted]">/mo</span>
-              </span>
-            </div>
-          </Link>
+          <MarketplaceCard key={slot.id} slot={slot} />
         ))}
       </div>
 
       {hasNextPage && (
-        <div className="flex justify-center pt-4">
+        <div className="flex justify-center pt-6">
           <button
+            type="button"
             onClick={() => fetchNextPage()}
             disabled={isFetchingNextPage}
             className="btn-secondary"
@@ -94,6 +73,6 @@ export function AdSlotGrid({ initialItems, initialCursor, initialHasMore }: AdSl
           </button>
         </div>
       )}
-    </div>
+    </section>
   );
 }
