@@ -7,7 +7,6 @@ import { getAdSlotsPaginated } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 import { SectionHeader } from '@/components/ui/typography';
 import { MarketplaceCard } from './marketplace-card';
-import { useState } from 'react';
 
 interface AdSlotGridProps {
   initialItems: AdSlot[];
