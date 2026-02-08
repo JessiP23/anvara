@@ -34,5 +34,9 @@ export default async function AdSlotPage({ params }: Props) {
     notFound();
   }
 
-  return <AdSlotDetail id={id} />;
+  return (
+    <main className="mx-auto max-w-6xl p-4">
+      <AdSlotDetail id={id} />
+    </main>
+  );
 }

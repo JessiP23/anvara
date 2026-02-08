@@ -30,7 +30,7 @@ export function Nav() {
   const linkClass = (path:string) => cn('transition-colors', isActive(path) ? 'text-[--color-foreground] font-medium' : 'text-[--color-muted] hover:text-[--color-foreground]');
 
   return (
-    <header className="border-b border-[--color-border]">
+    <header className="border-b border-[--color-border] bg-[--color-background]">
       <nav className="mx-auto flex max-w-6xl items-center justify-between p-4">
         <Link href="/" className="text-xl font-bold text-[--color-primary]">
           Anvara
@@ -78,7 +78,7 @@ export function Nav() {
                     },
                   });
                 }}
-                className="rounded bg-gray-600 px-3 py-1.5 text-sm text-white hover:bg-gray-500"
+                className="btn-secondary"
               >
                 Logout
               </button>
@@ -86,7 +86,7 @@ export function Nav() {
           ) : (
             <Link
               href="/login"
-              className="rounded bg-[--color-primary] px-4 py-2 text-sm text-white hover:bg-[--color-primary-hover]"
+              className="btn-primary"
             >
               Login
             </Link>

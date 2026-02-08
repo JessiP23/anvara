@@ -2,44 +2,145 @@
 
 /*
  * Tailwind CSS v4 - CSS-first configuration
- * No tailwind.config.js needed! Use CSS custom properties for theming.
- * Modern 2026 best practices: Oxide engine for faster builds, CSS vars for themes.
+ * Warm, approachable palette with terracotta accent
  */
 
-/* Custom theme variables - modify these to customize the marketplace look */
 :root {
-  /* Primary brand colors */
-  --color-primary: #6366f1;
-  --color-primary-hover: #4f46e5;
-  --color-primary-light: #818cf8;
+  /* Warm brand colors */
+  --color-primary: hsl(12 60% 52%);        /* Terracotta */
+  --color-primary-hover: hsl(12 65% 45%);
+  --color-primary-light: hsl(12 50% 65%);
 
-  /* Secondary colors */
-  --color-secondary: #10b981;
-  --color-secondary-hover: #059669;
+  /* Secondary - warm emerald */
+  --color-secondary: hsl(160 45% 40%);
+  --color-secondary-hover: hsl(160 50% 35%);
 
-  /* Neutral colors */
-  --color-background: #ffffff;
-  --color-foreground: #0f172a;
-  --color-muted: #64748b;
-  --color-border: #e2e8f0;
+  /* Warm neutrals */
+  --color-background: hsl(40 30% 96%);     /* Warm sand/cream */
+  --color-foreground: hsl(30 10% 12%);     /* Deep charcoal ink */
+  --color-muted: hsl(30 8% 46%);
+  --color-border: hsl(35 15% 88%);
 
-  /* Status colors */
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
-  --color-error: #ef4444;
+  /* Cards and surfaces */
+  --color-card: hsl(40 25% 97%);
+  --color-card-hover: hsl(40 20% 95%);
+
+  /* Status colors - warmer versions */
+  --color-success: hsl(160 50% 42%);
+  --color-warning: hsl(38 92% 50%);
+  --color-error: hsl(0 72% 51%);
+
+  /* Button colors - primary solid button */
+  --btn-primary-bg: hsl(30 10% 12%);
+  --btn-primary-text: hsl(40 30% 96%);
+  --btn-primary-hover: hsl(30 10% 20%);
+
+  /* Button colors - secondary/outline button */
+  --btn-secondary-bg: hsl(0 0% 100%);
+  --btn-secondary-text: hsl(30 10% 12%);
+  --btn-secondary-border: hsl(35 15% 88%);
+  --btn-secondary-hover: hsl(40 20% 95%);
+
+  /* Button colors - accent button (terracotta) */
+  --btn-accent-bg: hsl(12 60% 52%);
+  --btn-accent-text: hsl(0 0% 100%);
+  --btn-accent-hover: hsl(12 65% 45%);
 
   /* Spacing */
   --spacing-container: 1rem;
+  
+  /* Border radius */
+  --radius: 0.625rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 }
 
-/* Dark mode support - TODO: Implement dark mode toggle */
-@media (prefers-color-scheme: dark) {
-  :root {
-    --color-background: #0f172a;
-    --color-foreground: #f8fafc;
-    --color-muted: #94a3b8;
-    --color-border: #334155;
-  }
+/* Dark mode - ready for toggle implementation */
+.dark {
+  --color-background: hsl(30 10% 10%);
+  --color-foreground: hsl(40 30% 96%);
+  --color-muted: hsl(30 15% 60%);
+  --color-border: hsl(30 10% 20%);
+  --color-card: hsl(30 10% 14%);
+  --color-card-hover: hsl(30 10% 18%);
+
+  /* Button colors - inverted for dark mode */
+  --btn-primary-bg: hsl(40 30% 96%);
+  --btn-primary-text: hsl(30 10% 12%);
+  --btn-primary-hover: hsl(40 25% 90%);
+
+  --btn-secondary-bg: hsl(30 10% 18%);
+  --btn-secondary-text: hsl(40 30% 96%);
+  --btn-secondary-border: hsl(30 10% 25%);
+  --btn-secondary-hover: hsl(30 10% 22%);
+
+  --btn-accent-bg: hsl(12 60% 52%);
+  --btn-accent-text: hsl(0 0% 100%);
+  --btn-accent-hover: hsl(12 55% 58%);
+}
+
+/* Cross-hatch pattern - signature background */
+.cross-hatch {
+  background-image:
+    linear-gradient(
+      to right,
+      hsl(30 10% 12% / 0.03) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      hsl(30 10% 12% / 0.03) 1px,
+      transparent 1px
+    );
+  background-size: 48px 48px;
+}
+
+/* Peach glow effect */
+.peach-glow {
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 40%,
+    hsl(20 80% 90% / 0.4) 0%,
+    transparent 70%
+  );
+}
+
+/* Soft pulse animation */
+@keyframes soft-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.animate-soft-pulse {
+  animation: soft-pulse 2s ease-in-out infinite;
+}
+
+/* Hide scrollbar for carousels */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Smooth scroll snap */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+
+.scroll-snap-start {
+  scroll-snap-align: start;
+}
+
+/* Marquee animation */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  animation: marquee 25s linear infinite;
 }
 
 /* Base styles */
@@ -55,9 +156,165 @@ body {
     sans-serif;
 }
 
-/*
- * HINT: Use Tailwind v4 arbitrary values with CSS vars:
- * - bg-[--color-primary] for custom backgrounds
- * - text-[--color-foreground] for custom text colors
- * - p-[--spacing-container] for custom spacing
- */
+/* ===========================================
+   BUTTON UTILITY CLASSES
+   Use these classes for consistent buttons
+   =========================================== */
+
+/* Primary button - dark bg, light text */
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  transition: opacity 0.2s, background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--btn-primary-hover);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Secondary button - outline style */
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 9999px;
+  background-color: var(--btn-secondary-bg);
+  color: var(--btn-secondary-text);
+  border: 1px solid var(--btn-secondary-border);
+  transition: background-color 0.2s;
+}
+
+.btn-secondary:hover {
+  background-color: var(--btn-secondary-hover);
+}
+
+.btn-secondary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Accent button - terracotta/primary color */
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.75rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  background-color: var(--btn-accent-bg);
+  color: var(--btn-accent-text);
+  transition: background-color 0.2s;
+}
+
+.btn-accent:hover {
+  background-color: var(--btn-accent-hover);
+}
+
+.btn-accent:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Full width modifier */
+.btn-full {
+  width: 100%;
+}
+
+/* Large button modifier */
+.btn-lg {
+  height: 3rem;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  font-size: 1rem;
+}
+
+/* Warm gradient utilities */
+.gradient-warm {
+  background: linear-gradient(135deg, hsl(12 60% 52%) 0%, hsl(25 70% 55%) 100%);
+}
+
+.gradient-warm-subtle {
+  background: linear-gradient(180deg, hsl(40 30% 96%) 0%, hsl(35 25% 94%) 100%);
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.3s ease-out forwards;
+}
+
+/* Stagger children animation */
+.stagger-children > * {
+  opacity: 0;
+  animation: fade-in-up 0.3s ease-out forwards;
+}
+
+.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
+.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
+.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
+.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
+.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
+.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
+.stagger-children > *:nth-child(7) { animation-delay: 300ms; }
+.stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+.stagger-children > *:nth-child(9) { animation-delay: 400ms; }
+
+/* Number counter animation */
+@keyframes count-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-count {
+  animation: count-up 0.5s ease-out forwards;
+}
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(var(--color-primary-rgb, 212 93 63) / 0.2);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(var(--color-primary-rgb, 212 93 63) / 0);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}

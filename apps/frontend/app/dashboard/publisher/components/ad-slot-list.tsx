@@ -8,6 +8,7 @@ import { AdSlotForm } from './ad-slot-form';
 import { useToast } from '@/components/notification/toast';
 import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
+import { SectionHeader } from '@/components/ui/typography';
 
 interface AdSlotListProps {
   initialAdSlots: AdSlot[];
@@ -37,17 +38,23 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
     show('Ad Slot Deleted!', 'success');
   }
 
+  const availableCount = adSlots.filter(s => s.isAvailable).length;
+
   return (
-    <div className="space-y-6">
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={() => setShowCreateModal(true)}
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          Create Ad Slot
-        </button>
-      </div>
+    <section className="space-y-6">
+      <SectionHeader 
+        title="Ad Slots"
+        description={`${availableCount} of ${adSlots.length}`}
+        action={
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="btn-accent"
+          >
+            New Ad Slot
+          </button>
+        }
+      />
 
       <Modal
         isOpen={showCreateModal}
@@ -73,15 +80,14 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
           />
         )}
       </Modal>
-      {adSlots.length === 0 && (
+      {adSlots.length === 0 ? (
         <EmptyState 
           title='No ad slots found'
           message='Create your first ad slot'
           action={{ label: 'Create Ad Slot', onClick: () => setShowCreateModal(true) }}
         />
-      )}
-      {adSlots.length > 0 && (
-        <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
+      ): (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
           {adSlots.map((slot) => (
             <AdSlotCard
               key={slot.id}
@@ -92,6 +98,6 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
           ))}
         </div>
       )}
-    </div>
+    </section>
   );
 }

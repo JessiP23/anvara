@@ -72,20 +72,20 @@ export default function LoginPage() {
         <h1 className="mb-6 text-2xl font-bold">Login to Anvara</h1>
 
         {error && (
-          <div className="mb-4 rounded border border-red-200 bg-red-50 p-3 text-red-600">
+          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-[--color-foreground]">
+            <label className="mb-2 block text-sm font-medium text-[--color-foreground]">
               Quick Login As
             </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as 'sponsor' | 'publisher')}
-              className="mt-1 w-full rounded border border-[--color-border] bg-white px-3 py-2 text-gray-900"
+              className="mt-1 w-full rounded border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground outline-none transition-colors focus:border-[--color-primary"
             >
               <option value="sponsor">Sponsor (sponsor@example.com)</option>
               <option value="publisher">Publisher (publisher@example.com)</option>
@@ -95,7 +95,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-lg bg-[--color-primary] px-4 py-2 font-semibold text-white hover:opacity-90 disabled:opacity-50"
+            className="btn-primary btn-full btn-lg"
           >
             {loading ? 'Logging in...' : `Login as ${role === 'sponsor' ? 'Sponsor' : 'Publisher'}`}
           </button>

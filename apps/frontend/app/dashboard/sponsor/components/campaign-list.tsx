@@ -8,6 +8,7 @@ import { useToast } from '@/components/notification/toast';
 import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
 import { useRouter } from 'next/navigation';
+import { SectionHeader } from '@/components/ui/typography';
 
 interface CampaignListProps{
   initialCampaigns: Campaign[];
@@ -39,15 +40,19 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
 
   return (
     <div className="space-y-6">
-      <div className='flex justify-end'>
-        <button
-          type='button'
-          onClick={() => setShowCreateModal(true)}
-          className="rounded bg-blue-600 px-4 py-2 text-white hover:bg-blue-700"
-        >
-          Create New Campaign
-        </button>
-      </div>
+      <SectionHeader
+        title='Campaigns'
+        description={`${campaigns.length} total`}
+        action={
+          <button
+            type="button"
+            onClick={() => setShowCreateModal(true)}
+            className="btn-accent"
+          >
+            New Campaign
+          </button>
+        }
+      />
 
       <Modal
         isOpen={showCreateModal}
@@ -74,26 +79,24 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
         )}
       </Modal>
 
-      {campaigns.length === 0 && (
+      {campaigns.length === 0 ? (
         <EmptyState 
           title="No Campaigns yet"
           message="Create your first campaign"
           action={{ label: "Create Campaign", onClick: () => setShowCreateModal(true) }}
         />
-      )}
-
-      {campaigns.length > 0 && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {campaigns.map((campaign) =>
+      ): (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
+          {campaigns.map((campaign) => (
             <CampaignCard
               key={campaign.id}
               campaign={campaign}
               onEdit={() => setEditingCampaign(campaign)}
               onDeleted={() => handleCampaignDeleted(campaign.id)}
             />
-          )}
+          ))}
         </div>
-      )}     
+      )}
     </div>
   )
 }
