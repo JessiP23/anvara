@@ -44,15 +44,16 @@ export default async function PublisherDashboard() {
         title="My Ad Slots"
         description="Manage your ad inventory and connect with sponsors"
       />
-
+      <div className='animate-fade-in-up' style={{ animationDelay: '80ms' }}>
       <PublisherStats
         totalSlots={totalSlots}
         availableSlots={availableSlots}
         bookedSlots={bookedSlots}
         totalRevenue={totalRevenue}
       />
+      </div>
 
-      <AdSlotList initialAdSlots={adSlots} />
+        <AdSlotList initialAdSlots={adSlots} />
     </main>
   );
 }

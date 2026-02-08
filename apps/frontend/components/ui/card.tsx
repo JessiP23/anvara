@@ -7,6 +7,8 @@ interface CardProps {
   hover?: boolean;
   padding?: 'none' | 'sm' | 'md' | 'lg';
   variant?: 'default' | 'outlined' | 'elevated';
+  isExiting?: boolean;
+  onClick?: () => void;
 }
 
 const paddingStyles = {
@@ -22,16 +24,20 @@ const variantStyles = {
   elevated: 'border border-[--color-border] bg-[--color-card] shadow-md',
 };
 
-export function Card({ children, className, hover = false, padding = 'md', variant = 'default' }: CardProps) {
+export function Card({ children, className = '', hover = false, padding = 'md', variant = 'default', isExiting = false, onClick }: CardProps) {
   return (
     <div
       className={cn(
-        'rounded-xl transition-all duration-200',
-        variantStyles[variant],
+        'rounded-xl overflow-hidden',
         paddingStyles[padding],
-        hover && 'hover:border-[--color-primary]/30 hover:shadow-sm',
+        variantStyles[variant],
+        hover && 'cursor-pointer transition-all duration-200 hover:-translate-y-0.5 hover:shadow-lg active:translate-y-0',
+        isExiting && 'animate-fade-out-down pointer-events-none',
         className
       )}
+      onClick={onClick}
+      role={onClick ? 'button' : undefined}
+      tabIndex={onClick ? 0 : undefined}
     >
       {children}
     </div>
@@ -48,28 +54,36 @@ interface CardHeaderProps {
 
 export function CardHeader({ title, subtitle, badge, action }: CardHeaderProps) {
   return (
-    <div className="mb-3 flex items-start justify-between">
+    <div className="mb-3 flex items-start justify-between gap-2">
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <h3 className="truncate font-semibold text-[--color-foreground]">{title}</h3>
+          <h3 className="truncate text-base font-semibold">{title}</h3>
           {badge}
         </div>
-        {subtitle && <p className="mt-0.5 text-sm text-[--color-muted]">{subtitle}</p>}
+        {subtitle && <p className="mt-0.5 truncate text-sm text-[--color-muted]">{subtitle}</p>}
       </div>
-      {action}
+      {action && <div className="flex-shrink-0">{action}</div>}
     </div>
   );
 }
 
-// Card Content
-export function CardContent({ children, className }: { children: ReactNode; className?: string }) {
+interface CardContentProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function CardContent({ children, className = '' }: CardContentProps) {
   return <div className={cn('text-sm text-[--color-muted]', className)}>{children}</div>;
 }
 
-// Card Footer
-export function CardFooter({ children, className }: { children: ReactNode; className?: string }) {
+interface CardFooterProps {
+  children: ReactNode;
+  className?: string;
+}
+
+export function CardFooter({ children, className = '' }: CardFooterProps) {
   return (
-    <div className={cn('mt-4 flex items-center justify-between border-t border-[--color-border] pt-3', className)}>
+    <div className={cn('mt-4 flex items-center gap-2 border-t border-[--color-border] pt-3', className)}>
       {children}
     </div>
   );

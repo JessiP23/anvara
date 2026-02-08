@@ -40,17 +40,21 @@ export default async function SponsorDashboard() {
 
   return (
     <main className="mx-auto max-w-6xl space-y-8 p-4 pb-12">
-      <PageHeader
-        title="My Campaigns"
-        description="Manage and track all your advertising campaigns"
-      />
+      <div className="animate-fade-in-up">
+        <PageHeader
+          title="My Campaigns"
+          description="Manage and track all your advertising campaigns"
+        />
+      </div>
 
-      <SponsorStats
-        totalCampaigns={totalCampaigns}
-        activeCampaigns={activeCampaigns}
-        totalBudget={totalBudget}
-        totalSpent={totalSpent}
-      />
+      <div className='animate-fade-in-up' style={{ animationDelay: '80ms' }}>
+        <SponsorStats
+          totalCampaigns={totalCampaigns}
+          activeCampaigns={activeCampaigns}
+          totalBudget={totalBudget}
+          totalSpent={totalSpent}
+        />
+      </div>
 
       <CampaignList initialCampaigns={campaigns} />
     </main>

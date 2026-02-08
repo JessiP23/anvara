@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { CampaignForm } from './campaign-form';
 import { CampaignCard } from './campaign-card';
 import type { Campaign } from '@/lib/types';
@@ -18,6 +18,7 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
   const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
+  const [existingIds, setExistingIds] = useState<Set<string>>(new Set());
   const { show } = useToast();
   const router = useRouter()
 
@@ -33,10 +34,19 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
     show('Campaign Updated!', 'success');
   }
 
-  const handleCampaignDeleted = (campaignId: string) => {
+  const handleCampaignDeleted = useCallback((campaignId: string) => {
+    setExistingIds((prev) => new Set(prev).add(campaignId));
+  }, []);
+
+  const handleAnimationEnd = useCallback((campaignId: string) => {
     setCampaigns(prev => prev.filter(c => c.id !== campaignId));
-    show('Campaign Deleted!', 'success');
-  }
+    setExistingIds(prev => {
+      const newSet = new Set(prev);
+      newSet.delete(campaignId);
+      return newSet;
+    });
+    show('Campaign Deleted!', 'success')
+  }, [show]);
 
   return (
     <div className="space-y-6">
@@ -88,12 +98,22 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
       ): (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
           {campaigns.map((campaign) => (
-            <CampaignCard
+            <div
               key={campaign.id}
-              campaign={campaign}
-              onEdit={() => setEditingCampaign(campaign)}
-              onDeleted={() => handleCampaignDeleted(campaign.id)}
-            />
+              className={existingIds.has(campaign.id) ? 'animate-fade-out-down': ''}
+              onAnimationEnd={() => {
+                if (existingIds.has(campaign.id)) {
+                  handleAnimationEnd(campaign.id);
+                }
+              }}
+            >
+              <CampaignCard
+                key={campaign.id}
+                campaign={campaign}
+                onEdit={() => setEditingCampaign(campaign)}
+                onDeleted={() => handleCampaignDeleted(campaign.id)}
+              />
+            </div>
           ))}
         </div>
       )}
