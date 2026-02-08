@@ -31,7 +31,7 @@ export function CampaignCard({ campaign, onEdit, onDeleted }: CampaignCardProps)
     <Card hover className="group">
       <CardHeader 
         title={campaign.name}
-        badge={<StatusBadge status={campaign.name} />}
+        badge={<StatusBadge status={campaign.status} />}
       />
       <CardContent>
         {campaign.description && (

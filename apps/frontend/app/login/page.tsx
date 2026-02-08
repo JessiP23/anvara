@@ -85,7 +85,7 @@ export default function LoginPage() {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as 'sponsor' | 'publisher')}
-              className="mt-1 w-full rounded border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground outline-none transition-colors focus:border-[--color-primary"
+              className="mt-1 w-full rounded border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground] outline-none transition-colors focus:border-[--color-primary]" 
             >
               <option value="sponsor">Sponsor (sponsor@example.com)</option>
               <option value="publisher">Publisher (publisher@example.com)</option>
