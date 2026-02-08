@@ -167,26 +167,39 @@ body {
   align-items: center;
   justify-content: center;
   height: 2.75rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  font-size: 0.875rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  font-size: 1rem;
   font-weight: 500;
   border-radius: 9999px;
   background-color: var(--btn-primary-bg);
   color: var(--btn-primary-text);
   transition: opacity 0.2s, background-color 0.2s, transform 0.1s;
+  touch-action: manipulation;
+}
+
+@media (min-width: 640px) {
+  .btn-primary {
+    min-height: 2.5rem;
+    font-size: 0.875rem;
+  }
+  .btn-secondary {
+    min-height: 2.5rem;
+    font-size: 0.875rem;
+  }
+  .btn-accent {
+    min-height: 2.5rem;
+    font-size: 0.875rem;
+  }
 }
 
 .btn-primary:hover {
   background-color: var(--btn-primary-hover);
 }
 
-.btn-secondary:active {
-  transform: scale(0.97);
-}
-
 .btn-primary:disabled {
   opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Secondary button - outline style */
@@ -195,23 +208,28 @@ body {
   align-items: center;
   justify-content: center;
   height: 2.75rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  font-size: 0.875rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  font-size: 1rem;
   font-weight: 500;
   border-radius: 9999px;
   background-color: var(--btn-secondary-bg);
   color: var(--btn-secondary-text);
+  border: 1px solid var(--btn-secondary-border);
   transition: background-color 0.2s, transform 0.1s;
+  touch-action: manipulation;
 }
 
 .btn-secondary:hover {
   background-color: var(--btn-secondary-hover);
 }
 
+.btn-secondary:active {
+  transform: scale(0.97);
+}
+
 .btn-secondary:disabled {
   opacity: 0.5;
-  cursor: not-allowed;
 }
 
 /* Accent button - terracotta/primary color */
@@ -220,22 +238,28 @@ body {
   align-items: center;
   justify-content: center;
   height: 2.75rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
-  font-size: 0.875rem;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+  font-size: 1rem;
   font-weight: 500;
-  border-radius: 0.5rem;
+  border-radius: 9999px;
   background-color: var(--btn-accent-bg);
   color: var(--btn-accent-text);
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, transform 0.1s;
+  touch-action: manipulation;
 }
 
 .btn-accent:hover {
   background-color: var(--btn-accent-hover);
 }
 
-.btn-accent:disabled{
+.btn-accent:active {
   transform: scale(0.97);
+}
+
+.btn-accent:disabled{
+  transform: scale(0.5);
+  cursor: not-allowed;
 }
 
 .btn-accent:disabled {
@@ -368,6 +392,57 @@ body {
   0%, 100% { transform: translateX(0); }
   20%, 60% { transform: translateX(-4px); }
   40%, 80% { transform: translateX(4px); }
+}
+
+@keyframes slide-in-bottom {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-slide-in-bottom {
+  animation: slide-in-bottom 0.3s ease-out forwards;
+}
+
+@keyframes slide-out-bottom {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+}
+.animate-slide-out-bottom {
+  animation: slide-out-bottom 0.2s ease-out forwards;
+}
+
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.safe-top {
+  padding-top: env(safe-area-inset-top, 0);
+}
+
+.no-select {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.scroll-smooth {
+  -webkit-overflow-scrolling: touch;
 }
 
 .animate-slide-in-right { animation: slide-in-right 0.3s ease-out forwards; }

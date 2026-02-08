@@ -3,12 +3,23 @@
 import { useActionState, useEffect, useRef } from 'react';
 import { createAdSlot, updateAdSlot } from '../actions';
 import { initialActionState, type ActionState } from '@/lib/types';
-import { FormField } from '@/components/ui/form/form-field';
+import { FormField, SelectField, TextAreaField } from '@/components/ui/form/form-field';
 import { SubmitButton } from '@/components/ui/form/submit-button';
 import { FormAlert } from '@/components/ui/form/form-alerts';
 import type { AdSlot } from '@/lib/types';
 
-const AD_SLOT_TYPES = ['DISPLAY', 'VIDEO', 'NATIVE', 'NEWSLETTER', 'PODCAST'] as const;
+const AD_SLOT_TYPES = [
+    { value: 'DISPLAY', label: 'Display' },
+    { value: 'VIDEO', label: 'Video' },
+    { value: 'NATIVE', label: 'Native' },
+    { value: 'NEWSLETTER', label: 'Newsletter' },
+    { value: 'PODCAST', label: 'Podcast' },
+];
+
+const AVAILABILITY_OPTIONS = [
+    { value: 'true', label: 'Available' },
+    { value: 'false', label: 'Currently Booked' },
+];
 
 type AdSlotFormProps = {
     adSlot?: AdSlot;
@@ -40,54 +51,33 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
     };
 
     return (
-        <form action={formAction} className="space-y-4 text-black">
+        <form action={formAction} className="space-y-4">
             {isEditing && <input type="hidden" name="id" value={adSlot.id} />}
 
             <FormAlert error={state.error} success={state.success} successMessage={isEditing ? "Ad Slot updated!" : 'Ad slot created!'} />
-
-            <FormField id='name' label='Name' required error={state.fieldErrors?.name}>
-                <input type='text' id='name' name='name' defaultValue={getValue('name')} className='mt-1 w-full rounded border p-2' />
-            </FormField>
-
-            <FormField id='type' label='Type' required error={state.fieldErrors?.type}>
-                <select id='type' name='type' defaultValue={getValue('type', 'DISPLAY')} className='mt-1 w-full rounded border p-2'>
-                    {AD_SLOT_TYPES.map((type) => <option key={type} value={type}>{type}</option>)}
-                </select>
-            </FormField>
-
-            <FormField id='basePrice' label='Base Price ($/month)' required error={state.fieldErrors?.basePrice}>
-                <input type='number' id='basePrice' name='basePrice' defaultValue={getValue('basePrice')} min='1' className='mt-1 w-full rounded border p-2' />
-            </FormField>
-
-            <FormField id='description' label='Description' required error={state.fieldErrors?.description}>
-                <textarea id='description' name='description' defaultValue={getValue('description')} rows={3} className='mt-1 w-full rounded border p-2' />
-            </FormField>
-
-            <FormField id='position' label='Position' required error={state.fieldErrors?.position}>
-                <input type='text' id='position' name='position' defaultValue={getValue('position')} placeholder='e.g., Header, Sidebar, Footer' className='mt-1 w-full rounded border p-2' />
-            </FormField>
+            <FormField name='name' label='Name' required error={state.fieldErrors?.name} defaultValue={getValue('name')} />
+            <SelectField name='type' label='Type' required options={AD_SLOT_TYPES} error={state.fieldErrors?.type} defaultValue={getValue('type', 'DISPLAY')} />
+            <FormField name='basePrice' label='Base Price ($/month)' type="number" required error={state.fieldErrors?.basePrice} defaultValue={getValue('basePrice')} />
+            <TextAreaField name='description' label='Description' required rows={3} error={state.fieldErrors?.description} defaultValue={getValue('description')} />
+            <FormField name='position' label='Position' required placeholder="e.g., Header, Sidebar, Footer" error={state.fieldErrors?.position} defaultValue={getValue('position')} />
 
             <div className='grid grid-cols-2 gap-4'>
-                <FormField id='width' label='Width (px)'>
-                    <input type='number' id='width' name='width' defaultValue={getValue('width')} min='1' className='mt-1 w-full rounded border p-2' />
-                </FormField>
-                <FormField id='height' label='Height (px)'>
-                    <input type='number' id='height' name='height'defaultValue={getValue('height')} min='1' className='mt-1 w-full rounded border p-2' />
-                </FormField>
+                <FormField name='width' label='Width (px)' type="number" min={1} defaultValue={getValue('width')} />
+                <FormField name='height' label='Height (px)' type="number" min={1} defaultValue={getValue('height')} />
             </div>
 
             {isEditing && (
-                <FormField id='isAvailable' label='Availability'>
-                    <select id='isAvailable' name='isAvailable' defaultValue={adSlot.isAvailable ? 'true' : 'false'} className='mt-1 w-full rounded border p-2'>
-                        <option value='true'>Available</option>
-                        <option value='false'>Currently Booked</option>
-                    </select>
-                </FormField>
+                <SelectField 
+                    name="isAvailable"
+                    label="Availability"
+                    options={AVAILABILITY_OPTIONS}
+                    defaultValue={adSlot.isAvailable ? 'true': 'false'}
+                />
             )}
 
             <div className='flex gap-3 pt-2'>
                 <SubmitButton>{isEditing ? 'Update Ad Slot' : 'Create Ad Slot'}</SubmitButton>
-                {onCancel && <button type='button' onClick={onCancel} className='rounded border px-4 py-2 hover:bg-gray-50'>Cancel</button>}
+                {onCancel && <button type='button' onClick={onCancel} className='btn-secondary'>Cancel</button>}
             </div>
         </form>
     );

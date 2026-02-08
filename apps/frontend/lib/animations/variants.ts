@@ -9,6 +9,8 @@ export const animations = {
   
   slideInRight: 'animate-slide-in-right',
   slideOutRight: 'animate-slide-out-right',
+  slideInBottom: 'animate-slide-in-bottom',
+  slideOutBottom: 'animate-slide-out-bottom',
   scaleIn: 'animate-scale-in',
   scaleOut: 'animate-scale-out',
   shake: 'animate-shake',
