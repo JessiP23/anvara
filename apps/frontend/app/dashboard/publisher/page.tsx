@@ -5,6 +5,8 @@ import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
 import { getServerAdSlots } from '@/lib/server-api/helper';
 import { AdSlotList } from './components/ad-slot-list';
+import { PageHeader } from '@/components/ui/typography';
+import { PublisherStats } from '@/components/dashboard/dashboard-stats';
 
 export const metadata: Metadata = {
   title: "My Ad Slots",
@@ -31,15 +33,26 @@ export default async function PublisherDashboard() {
   }
 
   const adSlots = await getServerAdSlots(roleData.publisherId)
+  const totalSlots = adSlots.length;
+  const availableSlots = adSlots.filter((s) => s.isAvailable).length;
+  const bookedSlots = totalSlots - availableSlots;
+  const totalRevenue = adSlots.filter((s) => !s.isAvailable).reduce((sum, s) => sum + Number(s.basePrice), 0);
 
   return (
-    <main className="mx-auto max-w-6xl p-4">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">My Ad Slots</h1>
-        </div>
-        <AdSlotList initialAdSlots={adSlots} />
-      </div>
+    <main className="mx-auto max-w-6xl space-y-8 p-4 pb-12">
+      <PageHeader
+        title="My Ad Slots"
+        description="Manage your ad inventory and connect with sponsors"
+      />
+
+      <PublisherStats
+        totalSlots={totalSlots}
+        availableSlots={availableSlots}
+        bookedSlots={bookedSlots}
+        totalRevenue={totalRevenue}
+      />
+
+      <AdSlotList initialAdSlots={adSlots} />
     </main>
   );
 }

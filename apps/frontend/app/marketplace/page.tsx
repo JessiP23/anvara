@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { AdSlotGrid } from './components/ad-slot-grid';
 import { NewsletterSidebar } from '@/components/newsletter/newsletter-sidebar';
 import { getServerAdSlotsPaginated } from '@/lib/server-api/helper';
+import { PageHeader } from '@/components/ui/typography';
 
 export const metadata: Metadata = {
   title: 'Marketplace',
@@ -21,18 +22,17 @@ export default async function MarketplacePage() {
   const { items, nextCursor, hasMore } = await getServerAdSlotsPaginated();
 
   return (
-    <main className="mx-auto max-w-6xl p-4">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Marketplace</h1>
-          <p className="text-[--color-muted]">Browse available ad slots from our publishers</p>
+    <main className="mx-auto max-w-6xl space-y-8 p-4 pb-12">
+      <PageHeader 
+        title="Marketplace"
+        description="Browse available ad slots from our publishers"
+      />
+      <div className="flex gap-8">
+        <div className="min-w-0 flex-1">
+          <AdSlotGrid initialItems={items} initialCursor={nextCursor} initialHasMore={hasMore} />
         </div>
-
-        <div className="flex gap-8">
-          <div className="max-h-[calc(100vh-200px)] flex-1 overflow-y-auto pr-2">
-            <AdSlotGrid initialItems={items} initialCursor={nextCursor} initialHasMore={hasMore} />
-          </div>
-          <div className="hidden w-64 shrink-0 lg:block">
+        <div className="hidden w-72 shrink-0 lg:block">
+          <div className="sticky top-4">
             <NewsletterSidebar />
           </div>
         </div>

@@ -3,13 +3,9 @@
 import type { Campaign } from "@/lib/types";
 import { DeleteButton } from "@/app/components/DeleteButton";
 import { deleteCampaign } from "../actions";
-
-const statusColors: Record<string, string> = {
-  DRAFT: 'bg-gray-100 text-gray-600',
-  ACTIVE: 'bg-green-100 text-green-700',
-  PAUSED: 'bg-yellow-100 text-yellow-700',
-  COMPLETED: 'bg-blue-100 text-blue-700',
-};
+import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
+import { StatusBadge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
 
 interface CampaignCardProps {
   campaign: Campaign;
@@ -24,49 +20,64 @@ export function CampaignCard({ campaign, onEdit, onDeleted }: CampaignCardProps)
   const spent = Number(campaign.spent || 0);
   const budget = Number(campaign.budget);
   const progress = budget > 0 ? Math.min((spent / budget) * 100, 100): 0;
+  const remaining = budget - spent;
+
+  // calculate days remaining
+  const endDate = new Date(campaign.endDate);
+  const today = new Date();
+  const daysRemaining = Math.max(0, Math.ceil((endDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24)));
 
   return (
-    <div className="rounded-lg border border-[--color-border] p-4">
-      <div className="mb-2 flex items-start justify-between">
-        <h3 className="font-semibold">{campaign.name}</h3>
-        <span
-          className={`rounded px-2 py-0.5 text-xs ${statusColors[campaign.status] || 'bg-gray-100'}`}
-        >
-          {campaign.status}
-        </span>
-      </div>
-
-      {campaign.description && (
-        <p className="mb-3 text-sm text-[--color-muted] line-clamp-2">{campaign.description}</p>
-      )}
-
-      <div className="mb-3 space-y-1 text-sm text-[--color-muted]">
-        <p>
-          {formatDate(campaign.startDate)} - {formatDate(campaign.endDate)}
-        </p>
-        <div className="flex items-center justify-between">
-          <span>Budget: ${budget.toLocaleString()}</span>
-          <span>Spent: ${spent.toLocaleString()}</span>
+    <Card hover className="group">
+      <CardHeader 
+        title={campaign.name}
+        badge={<StatusBadge status={campaign.name} />}
+      />
+      <CardContent>
+        {campaign.description && (
+          <p className="mb-4 line-clamp-2 text-[--color-foreground]">{campaign.description}</p>
+        )}
+        <div className="mb-4 flex items-center justify-between text-xs">
+          <span className="text-[--color-muted]">
+            {formatDate(campaign.startDate)} → {formatDate(campaign.endDate)}
+          </span>
+          <span className="font-medium text-[--color-foreground]">
+            {daysRemaining} days left
+          </span>
         </div>
-        <div className="mt-1 h-1.5 rounded-full bg-gray-200">
-          <div
-            className="h-2 rounded-full bg-blue-600"
-            style={{ width: `${progress}%` }}
-          />
+
+        <div className="space-y-2 rounded-lg bg-[--color-background] p-3">
+          <div className="flex justify-between text-sm">
+            <span className="text-[--color-muted]">Budget</span>
+            <span className="font-semibold text-[--color-foreground]">
+              ${budget.toLocaleString()}
+            </span>
+          </div>
+
+          <Progress value={progress} size="sm" showLabel />
+
+          <div className="flex justify-between text-xs">
+            <span className="text-[--color-muted]">
+              Spent: <span className="text-[--color-foreground]">${spent.toLocaleString()}</span>
+            </span>
+            <span className="text-[--color-muted]">
+              Left: <span className="font-medium text-green-600">${remaining.toLocaleString()}</span>
+            </span>
+          </div>
         </div>
-      </div>
-      <div className="flex items-center justify-between border-t pt-3">
+      </CardContent>
+      <CardFooter>
         {onEdit && (
           <button
             type="button"
             onClick={onEdit}
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm font-medium text-[--color-primary] transition-colors hover:text-[--color-primary-hover]"
           >
             Edit
           </button>
         )}
         <DeleteButton id={campaign.id} name={campaign.name} action={deleteCampaign} onDeleted={onDeleted} />
-      </div>
-    </div>
+      </CardFooter>
+    </Card>
   );
 }

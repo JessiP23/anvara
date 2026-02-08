@@ -5,6 +5,8 @@ import { auth } from '@/auth';
 import { getUserRole } from '@/lib/auth-helpers';
 import { getServerCampaigns } from '@/lib/server-api/helper';
 import { CampaignList } from './components/campaign-list';
+import { PageHeader } from '@/components/ui/typography';
+import { SponsorStats } from '@/components/dashboard/dashboard-stats';
 
 export const metadata: Metadata = {
   title: "My Campaigns",
@@ -31,15 +33,26 @@ export default async function SponsorDashboard() {
   }
 
   const campaigns = await getServerCampaigns();
+  const totalCampaigns = campaigns.length;
+  const activeCampaigns = campaigns.filter((c) => c.status === 'ACTIVE').length;
+  const totalBudget = campaigns.reduce((sum, c) => sum + Number(c.budget), 0);
+  const totalSpent = campaigns.reduce((sum, c) => sum + Number(c.spent || 0), 0);
 
   return (
-    <main className="mx-auto max-w-6xl p-4">
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold">My Campaigns</h1>
-        </div>
-        <CampaignList initialCampaigns={campaigns} />
-      </div>
+    <main className="mx-auto max-w-6xl space-y-8 p-4 pb-12">
+      <PageHeader
+        title="My Campaigns"
+        description="Manage and track all your advertising campaigns"
+      />
+
+      <SponsorStats
+        totalCampaigns={totalCampaigns}
+        activeCampaigns={activeCampaigns}
+        totalBudget={totalBudget}
+        totalSpent={totalSpent}
+      />
+
+      <CampaignList initialCampaigns={campaigns} />
     </main>
   );
 }
