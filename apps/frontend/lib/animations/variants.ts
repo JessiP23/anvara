@@ -1,6 +1,8 @@
 export const animations = {
   fadeIn: 'animate-fade-in',
+  fadeOut: 'animate-fade-out',
   fadeInUp: 'animate-fade-in-up',
+  fadeOutDown: 'animate-fade-out-down',
   pulse: 'animate-pulse',
   spin: 'animate-spin',
   bounce: 'animate-bounce',
@@ -9,7 +11,6 @@ export const animations = {
   slideOutRight: 'animate-slide-out-right',
   scaleIn: 'animate-scale-in',
   scaleOut: 'animate-scale-out',
-  fadeOutDown: 'animate-fade-out-down',
   shake: 'animate-shake',
 } as const;
 

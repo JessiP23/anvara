@@ -1,6 +1,7 @@
 'use client'
-import React from "react"
-import { useEffect } from "react"
+
+import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import { animations } from "@/lib/animations/variants"
 
 interface ModalProps {
@@ -11,36 +12,59 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
-    useEffect(() => {
-        const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
+    const [isClosing, setIsClosing] = useState(false);
+    const [shouldRender, setShouldRender] = useState(false);
 
+    useEffect(() => {
         if (isOpen) {
-            document.addEventListener('keydown', handleEscape);
+            setShouldRender(true);
+            setIsClosing(false);
             document.body.style.overflow = 'hidden';
         }
+    }, [isOpen]);
 
-        return () => {
-            document.removeEventListener('keydown', handleEscape);
-            document.body.style.overflow = '';
+    useEffect(() => {
+        const handleEscape = (e: KeyboardEvent) => {
+            if (e.key === 'Escape' && isOpen) handleClose();
         };
-    }, [isOpen, onClose]);
+        document.addEventListener('keydown', handleEscape);
+        return () => document.removeEventListener('keydown', handleEscape);
+    }, [isOpen, isClosing]);
 
-    if (!isOpen) return null;
+    const handleClose = () => {
+        if (isClosing) return;
+        setIsClosing(true);
+    };
 
-    return (
-        <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${animations.fadeIn}`}>
-            {/* Backdrop */}
+    const handleAnimationEnd = () => {
+        if (isClosing) {
+            setShouldRender(false);
+            setIsClosing(false);
+            document.body.style.overflow = '';
+            onClose();
+        }
+    };
+
+    if (!shouldRender) return null;
+
+    const modalContent = (
+        <div 
+            className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${
+                isClosing ? animations.fadeOut : animations.fadeIn
+            }`}
+            onAnimationEnd={handleAnimationEnd}
+        >
             <div 
                 className="absolute inset-0 bg-black/50" 
-                onClick={onClose} 
+                onClick={handleClose} 
             />
-            {/* Modal */}
-            <div className={`relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-xl ${animations.scaleIn}`}>
+            <div
+                className={`relative w-full max-w-lg max-h-[90vh] overflow-y-auto rounded-xl bg-white p-6 shadow-xl ${
+                isClosing ? animations.scaleOut : animations.scaleIn
+            }`}>
                 <button
-                    onClick={onClose}
-                    className="absolute right-4 top-4 text-gray-400 hover:text-gray-600 transition-colors active:scale-95"
+                    onClick={handleClose}
+                    className="absolute right-4 top-4 text-gray-400 transition-colors hover:text-gray-600 active:scale-95"
                     aria-label="Close"
                 >
                     ✕
@@ -50,4 +74,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             </div>
         </div>
     );
+
+    if (typeof window === 'undefined') return null;
+    return createPortal(modalContent, document.body);
 }
