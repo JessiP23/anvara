@@ -22,16 +22,18 @@ export default async function MarketplacePage() {
 
   return (
     <main className="mx-auto max-w-6xl space-y-8 p-4 pb-12">
-      <PageHeader 
-        title="Marketplace"
-        description="Browse available ad slots from our publishers"
-      />
+      <div className='animate-fade-in-up'>
+        <PageHeader 
+          title="Marketplace"
+          description="Browse available ad slots from our publishers"
+        />
+      </div>
       <div className="grid gap-4 sm:grid-cols-3 stagger-children">
         <StatCard label="Total Listings" value={totalSlots} description="Active ad slots" />
         <StatCard label="Available Now" value={availableSlots} accent description={`${Math.round((availableSlots / totalSlots) * 100) || 0}% availability`} />
         <StatCard label="Avg. Price" value={`$${averagePrice.toLocaleString()}`} description="Per month" />
       </div>
-      <div className="flex gap-8">
+      <div className="flex gap-8 animate-fade-in-up" style={{ animationDelay: '150ms' }}>
         <div className="min-w-0 flex-1">
           <AdSlotGrid initialItems={items} initialCursor={nextCursor} initialHasMore={hasMore} />
         </div>
