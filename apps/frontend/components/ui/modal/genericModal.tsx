@@ -25,6 +25,12 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
     }, [isOpen]);
 
     useEffect(() => {
+        if (!isOpen && shouldRender && !isClosing) {
+            setIsClosing(true);
+        }
+    }, [isOpen, shouldRender, isClosing]);
+
+    useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape' && isOpen && !isClosing) handleClose();
         };
