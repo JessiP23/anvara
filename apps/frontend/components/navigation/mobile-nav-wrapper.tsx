@@ -6,11 +6,15 @@ import { MenuDrawer } from './menu-drawer';
 import { authClient } from '@/auth-client';
 import { getUserRole } from '@/lib/auth-helpers';
 import type { UserRole } from '@/lib/types';
+import { usePathname } from 'next/navigation';
+
+const HIDDEN_PATHS = ['/', 'login']
 
 export function MobileNavWrapper() {
     const [menuOpen, setMenuOpen] = useState(false);
     const [userRole, setUserRole] = useState<UserRole>(null);
-    const { data: session } = authClient.useSession();
+    const { data: session, isPending } = authClient.useSession();
+    const pathname = usePathname();
 
     useEffect(() => {
         async function fetchRole() {
@@ -23,6 +27,10 @@ export function MobileNavWrapper() {
         }
         fetchRole();
     }, [session?.user?.id]);
+
+    if (isPending || HIDDEN_PATHS.includes(pathname) || !session?.user) {
+        return null
+    }
 
     return (
         <>
