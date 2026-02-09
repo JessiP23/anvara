@@ -4,6 +4,7 @@ import React from 'react';
 import { Nav } from './components/nav';
 import { ToastProvider } from '@/components/notification/toast';
 import { QueryProvider } from '@/provider/query-provider';
+import { MobileNavWrapper } from '@/components/navigation/mobile-nav-wrapper';
 
 const siteConfig = {
   name: 'Anvara',
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <ToastProvider>
             <Nav />
             {children}
+            <MobileNavWrapper />
           </ToastProvider>
         </QueryProvider>
       </body>

@@ -3,7 +3,7 @@
 import { useActionState, useEffect, useRef } from 'react';
 import { requestQuote } from './actions';
 import { initialActionState, type ActionState } from '@/lib/types';
-import { FormField } from '../ui/form/form-field';
+import { FormField, TextAreaField, SelectField } from '../ui/form/form-field';
 import { SubmitButton } from '../ui/form/submit-button';
 import { FormAlert } from '../ui/form/form-alerts';
 import { useToast } from '../notification/toast';
@@ -17,8 +17,21 @@ interface QuoteFormProps {
   perfillEmail?: string;
 }
 
-const BUDGETS = ['Under $1,000/mo', '$1,000 - $5,000/mo', '$5,000 - $10,000/mo', '$10,000+/mo'];
-const TIMELINES = ['As soon as possible', 'This month', 'Next month', 'Just exploring'];
+const BUDGETS = [
+  { value: '', label: 'Select' },
+  { value: 'Under $1,000/mo', label: 'Under $1,000/mo' },
+  { value: '$1,000 - $5,000/mo', label: '$1,000 - $5,000/mo' },
+  { value: '$5,000 - $10,000/mo', label: '$5,000 - $10,000/mo' },
+  { value: '$10,000+/mo', label: '$10,000+/mo' },
+];
+
+const TIMELINES = [
+  { value: '', label: 'Select' },
+  { value: 'As soon as possible', label: 'As soon as possible' },
+  { value: 'This month', label: 'This month' },
+  { value: 'Next month', label: 'Next month' },
+  { value: 'Just exploring', label: 'Just exploring' },
+];
 
 export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel, perfillEmail }: QuoteFormProps) {
   const [state, formAction] = useActionState<ActionState, FormData>(requestQuote, initialActionState);
@@ -47,54 +60,33 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
   };
 
   return (
-    <form action={formAction} className="space-y-4 text-black">
+    <form action={formAction} className="space-y-4">
       <input type="hidden" name="adSlotId" value={adSlotId} />
 
       <div className="rounded-lg bg-gray-50 p-3 text-sm">
         <span className="text-gray-500">Quote for:</span>{' '}
-        <span className="font-medium">{adSlotName}</span>
+        <span className="font-medium text-gray-900">{adSlotName}</span>
         {basePrice && <span className="text-gray-500"> (${basePrice}/mo)</span>}
       </div>
 
       <FormAlert error={state.error} />
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="companyName" label="Company" required error={state.fieldErrors?.companyName}>
-          <input type="text" id="companyName" name="companyName" defaultValue={getValue('companyName')} className="mt-1 w-full rounded border px-3 py-2 text-sm" />
-        </FormField>
-
-        <FormField id="email" label="Email" required error={state.fieldErrors?.email}>
-          <input type="email" id="email" name="email" defaultValue={getValue('email')} className="mt-1 w-full rounded border px-3 py-2 text-sm" />
-        </FormField>
+        <FormField name="companyName" label="Company" required error={state.fieldErrors?.companyName} defaultValue={getValue('companyName')} />
+        <FormField name="email" label="Email" type="email" required error={state.fieldErrors?.email} defaultValue={getValue('email')} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="phone" label="Phone">
-          <input type="tel" id="phone" name="phone" defaultValue={getValue('phone')} className="mt-1 w-full rounded border px-3 py-2 text-sm" />
-        </FormField>
-
-        <FormField id="budget" label="Budget" required error={state.fieldErrors?.budget}>
-          <select key={`budget-${state.values?.budget}`} id="budget" name="budget" defaultValue={getValue('budget')} className="mt-1 w-full rounded border px-3 py-2 text-sm">
-            <option value="">Select</option>
-            {BUDGETS.map((b) => <option key={b} value={b}>{b}</option>)}
-          </select>
-        </FormField>
+        <FormField name="phone" label="Phone" type="tel" defaultValue={getValue('phone')} />
+        <SelectField name="budget" label="Budget" required error={state.fieldErrors?.budget} options={BUDGETS} defaultValue={getValue('budget')} />
       </div>
 
-      <FormField id="timeline" label="Timeline" required error={state.fieldErrors?.timeline}>
-        <select key={`timeline-${state.values?.timeline}`} id="timeline" name="timeline" defaultValue={getValue('timeline')} className="mt-1 w-full rounded border px-3 py-2 text-sm">
-          <option value="">Select</option>
-          {TIMELINES.map((t) => <option key={t} value={t}>{t}</option>)}
-        </select>
-      </FormField>
+      <FormField name="timeline" label="Timeline" required error={state.fieldErrors?.timeline} defaultValue={getValue('timeline')} />
+      <TextAreaField name="message" label="Requirements" required rows={3} error={state.fieldErrors?.message} defaultValue={getValue('message')} />
 
-      <FormField id="message" label="Requirements" required error={state.fieldErrors?.message}>
-        <textarea id="message" name="message" rows={3} defaultValue={getValue('message')} className="mt-1 w-full rounded border px-3 py-2 text-sm" />
-      </FormField>
-
-      <div className="flex gap-3">
+      <div className="flex gap-3 pt-2">
         <SubmitButton pendintText="Submitting...">Request Quote</SubmitButton>
-        {onCancel && <button type="button" onClick={onCancel} className="rounded border px-4 py-2 text-sm hover:bg-gray-50">Cancel</button>}
+        {onCancel && <button type="button" onClick={onCancel} className="btn-secondary">Cancel</button>}
       </div>
     </form>
   );

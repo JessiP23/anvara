@@ -1,97 +1,79 @@
 'use client';
 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { authClient } from '@/auth-client';
 import { usePathname } from 'next/navigation';
+import { authClient } from '@/auth-client';
 import { cn } from '@/lib/utils';
+import { useEffect, useState } from 'react';
 import { getUserRole } from '@/lib/auth-helpers';
+import type { UserRole } from '@/lib/types';
 
-type NavRole = 'sponsor' | 'publisher' | null;
+export const navLinks = [
+  { href: '/marketplace', label: 'Marketplace', role: undefined },
+  { href: '/dashboard/sponsor', label: 'Campaigns', role: 'sponsor' },
+  { href: '/dashboard/publisher', label: 'Ad Slots', role: 'publisher' },
+] as const;
 
 export function Nav() {
-  const { data: session, isPending } = authClient.useSession();
-  const user = session?.user;
-  const [role, setRole] = useState<NavRole>(null);
   const pathname = usePathname();
+  const { data: session } = authClient.useSession();
+  const [userRole, setUserRole] = useState<UserRole>(null);
 
-  // TODO: Convert to server component and fetch role server-side
-  // Fetch user role from backend when user is logged in
   useEffect(() => {
-    if (!user?.id) return;
-    getUserRole(user.id)
-      .then((data) => setRole(data.role))
-      .catch(() => setRole(null));
-  }, [user?.id]);
+    async function fetchRole() {
+      if (session?.user?.id) {
+        const roleInfo = await getUserRole(session.user.id);
+        setUserRole(roleInfo.role);
+      } else {
+        setUserRole(null);
+      }
+    }
+    fetchRole();
+  }, [session?.user?.id]);
 
-  // TODO: Add active link styling using usePathname() from next/navigation
-  // The current page's link should be highlighted differently
-  const isActive = (path: string) => pathname === path;
-  const linkClass = (path:string) => cn('transition-colors', isActive(path) ? 'text-[--color-foreground] font-medium' : 'text-[--color-muted] hover:text-[--color-foreground]');
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          window.location.href = '/';
+        }
+      }
+    });
+  };
+
+  const visibleLinks = navLinks.filter(link => {
+    if (!link.role) return true;
+    return link.role === userRole;
+  })
 
   return (
-    <header className="border-b border-[--color-border] bg-[--color-background]">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between p-4">
-        <Link href="/" className="text-xl font-bold text-[--color-primary]">
+    <header className="sticky top-0 z-40 border-b border-[--color-border] bg-[--color-background]/95 backdrop-blur-sm supports-[backdrop-filter]:bg-[--color-background]/80 hidden md:block">
+      <nav className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4">
+        <Link href="/" className="text-xl font-bold text-[--color-foreground]">
           Anvara
         </Link>
 
         <div className="flex items-center gap-6">
-          <Link
-            href="/marketplace"
-            className={linkClass('/marketplace')}
-          >
-            Marketplace
-          </Link>
-
-          {user && role === 'sponsor' && (
+          {visibleLinks.map(({ href, label }) => (
             <Link
-              href="/dashboard/sponsor"
-              className={linkClass('/dashboard/sponsor')}
+              key={href}
+              href={href}
+              className={cn('text-sm font-medium transition-colors', pathname === href ? 'text-[--color-primary]' : 'text-[--color-muted] hover:text-[--color-foreground]')}
             >
-              My Campaigns
+              {label}
             </Link>
-          )}
-          {user && role === 'publisher' && (
-            <Link
-              href="/dashboard/publisher"
-              className={linkClass('/dashboard/publisher')}
-            >
-              My Ad Slots
-            </Link>
-          )}
-
-          {isPending ? (
-            <span className="text-[--color-muted]">...</span>
-          ) : user ? (
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-[--color-muted]">
-                {user.name} {role && `(${role})`}
-              </span>
-              <button
-                onClick={async () => {
-                  await authClient.signOut({
-                    fetchOptions: {
-                      onSuccess: () => {
-                        window.location.href = '/';
-                      },
-                    },
-                  });
-                }}
-                className="btn-secondary"
-              >
-                Logout
-              </button>
-            </div>
+          ))}
+          
+          {session?.user ? (
+            <button onClick={handleSignOut} className="btn-secondary text-sm">
+              Sign Out
+            </button>
           ) : (
-            <Link
-              href="/login"
-              className="btn-primary"
-            >
-              Login
+            <Link href="/login" className="btn-primary text-sm">
+              Sign In
             </Link>
           )}
-        </div>
+          </div>
       </nav>
     </header>
   );
