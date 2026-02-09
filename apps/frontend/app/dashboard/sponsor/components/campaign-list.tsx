@@ -8,6 +8,7 @@ import { useToast } from '@/components/notification/toast';
 import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
 import { useRouter } from 'next/navigation';
+import { ConfirmModal } from '@/components/ui/modal/confirm-modal';
 import { SectionHeader } from '@/components/ui/typography';
 import { SwipeableCard } from '@/components/ui/swipeable-card';
 import { TrashIcon } from '@/components/ui/icons';
@@ -23,6 +24,7 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [existingIds, setExistingIds] = useState<Set<string>>(new Set());
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const { show } = useToast();
   const router = useRouter()
 
@@ -51,6 +53,25 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
     });
     show('Campaign Deleted!', 'success')
   }, [show]);
+
+  const handleDeleteRequest = useCallback((campaign: Campaign) => {
+    setCampaignToDelete(campaign);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!campaignToDelete) return;
+    setDeletingId(campaignToDelete.id);
+    const formData = new FormData();
+    formData.append('id', campaignToDelete.id);
+    const result = await deleteCampaign({ success: false }, formData);
+    if (result.success) {
+      handleCampaignDeleted(campaignToDelete.id);
+      setCampaignToDelete(null);
+    } else {
+      show(result.error || 'Failed to delete campaign', 'error');
+    }
+    setDeletingId(null);
+  }, [campaignToDelete, handleCampaignDeleted, show]);
 
   const handleSwipeDelete = useCallback(async (campaign: Campaign) => {
     setDeletingId(campaign.id);
@@ -106,6 +127,18 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
         )}
       </Modal>
 
+      <ConfirmModal 
+        isOpen={!!campaignToDelete}
+        onClose={() => setCampaignToDelete(null)}
+        title='Delete Campaign'
+        message={`Are you sure you want to delete "${campaignToDelete?.name}"? This action cannot be undone.`}
+        onConfirm={handleConfirmDelete}
+        confirmLabel='Delete'
+        cancelLabel='Keep'
+        variant='danger'
+        isLoading={deletingId === campaignToDelete?.id}
+      />
+
       {campaigns.length === 0 ? (
         <EmptyState 
           title="No Campaigns yet"
@@ -133,14 +166,14 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
                       icon: <TrashIcon className="h-6 w-6 text-white" />,
                       label: 'Delete',
                       color: 'bg-red-500',
-                      onClick: () => handleSwipeDelete(campaign),
+                      onClick: () => handleDeleteRequest(campaign),
                     }}
                     disabled={isDeleting}
                   >
                     <CampaignCard
                       campaign={campaign}
                       onEdit={() => setEditingCampaign(campaign)}
-                      onDeleted={() => handleCampaignDeleted(campaign.id)}
+                      onDeleted={() => handleDeleteRequest(campaign)}
                     />
                   </SwipeableCard>
                 </div>
@@ -148,7 +181,7 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
                   <CampaignCard
                     campaign={campaign}
                     onEdit={() => setEditingCampaign(campaign)}
-                    onDeleted={() => handleCampaignDeleted(campaign.id)}
+                    onDeleted={() => handleDeleteRequest(campaign)}
                   />
                 </div>
               </div>

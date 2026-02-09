@@ -8,6 +8,7 @@ import { AdSlotForm } from './ad-slot-form';
 import { useToast } from '@/components/notification/toast';
 import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
+import { ConfirmModal } from '@/components/ui/modal/confirm-modal';
 import { SectionHeader } from '@/components/ui/typography';
 import { SwipeableCard } from '@/components/ui/swipeable-card';
 import { TrashIcon } from '@/components/ui/icons';
@@ -23,6 +24,7 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
   const [editingSlot, setEditingSlot] = useState<AdSlot | null>(null);
   const [existingIds, setExistingIds] = useState<Set<string>>(new Set());
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [slotToDelete, setSlotToDelete] = useState<AdSlot | null>(null);
   const {show} = useToast();
   const router = useRouter();
 
@@ -52,18 +54,24 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
     show('Ad Slot Deleted!', 'success');
   }, [show]);
 
-  const handleSwipeDelete = useCallback(async (slot: AdSlot) => {
-    setDeletingId(slot.id);
+  const handleDeleteRequest = useCallback((slot: AdSlot) => {
+    setSlotToDelete(slot);
+  }, []);
+
+  const handleConfirmDelete = useCallback(async () => {
+    if (!slotToDelete) return;
+    setDeletingId(slotToDelete.id);
     const formData = new FormData();
-    formData.append('id', slot.id);
+    formData.append('id', slotToDelete.id);
     const result = await deleteAdSlot({ success: false }, formData);
     if (result.success) {
-      handleSlotDeleted(slot.id);
+      handleSlotDeleted(slotToDelete.id);
+      setSlotToDelete(null);
     } else {
       show(result.error || 'Failed to delete', 'error');
     }
     setDeletingId(null);
-  }, [handleSlotDeleted, show])
+  }, [slotToDelete, handleSlotDeleted, show]);
 
   const availableCount = adSlots.filter(s => s.isAvailable).length;
 
@@ -107,6 +115,17 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
           />
         )}
       </Modal>
+      <ConfirmModal
+        isOpen={!!slotToDelete}
+        onClose={() => setSlotToDelete(null)}
+        onConfirm={handleConfirmDelete}
+        title='Delete Ad Slot'
+        message={`Are you sure you want to delete "${slotToDelete?.name}"? This action cannot be undone.`}
+        confirmLabel='Delete'
+        cancelLabel='Keep'
+        variant='danger'
+        isLoading={deletingId === slotToDelete?.id}
+      />
       {adSlots.length === 0 ? (
         <EmptyState 
           title='No ad slots found'
@@ -133,14 +152,14 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
                       icon: <TrashIcon className='h-6 w-6 text-white' />,
                       label: 'Delete',
                       color: 'bg-red-500',
-                      onClick: () => handleSwipeDelete(slot),
+                      onClick: () => handleDeleteRequest(slot),
                     }}
                     disabled={isDeleting}
                   >
                     <AdSlotCard
                       adSlot={slot}
                       onEdit={() => setEditingSlot(slot)}
-                      onDeleted={() => handleSlotDeleted(slot.id)}
+                      onDeleted={() => handleDeleteRequest(slot)}
                     />
                   </SwipeableCard>
                 </div>
@@ -148,7 +167,7 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
                   <AdSlotCard
                     adSlot={slot}
                     onEdit={() => setEditingSlot(slot)}
-                    onDeleted={() => handleSlotDeleted(slot.id)}
+                    onDeleted={() => handleDeleteRequest(slot)}
                   />
                 </div>
               </div>
