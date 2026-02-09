@@ -9,6 +9,9 @@ import { useToast } from '@/components/notification/toast';
 import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
 import { SectionHeader } from '@/components/ui/typography';
+import { SwipeableCard } from '@/components/ui/swipeable-card';
+import { TrashIcon } from '@/components/ui/icons';
+import { deleteAdSlot } from '../actions';
 
 interface AdSlotListProps {
   initialAdSlots: AdSlot[];
@@ -19,6 +22,7 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingSlot, setEditingSlot] = useState<AdSlot | null>(null);
   const [existingIds, setExistingIds] = useState<Set<string>>(new Set());
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const {show} = useToast();
   const router = useRouter();
 
@@ -47,6 +51,19 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
     });
     show('Ad Slot Deleted!', 'success');
   }, [show]);
+
+  const handleSwipeDelete = useCallback(async (slot: AdSlot) => {
+    setDeletingId(slot.id);
+    const formData = new FormData();
+    formData.append('id', slot.id);
+    const result = await deleteAdSlot({ success: false }, formData);
+    if (result.success) {
+      handleSlotDeleted(slot.id);
+    } else {
+      show(result.error || 'Failed to delete', 'error');
+    }
+    setDeletingId(null);
+  }, [handleSlotDeleted, show])
 
   const availableCount = adSlots.filter(s => s.isAvailable).length;
 
@@ -98,23 +115,44 @@ export function AdSlotList({ initialAdSlots }: AdSlotListProps) {
         />
       ): (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
-          {adSlots.map((slot) => (
-            <div
-              key={slot.id}
-              className={existingIds.has(slot.id) ? 'animate-fade-out-down': ''}
-              onAnimationEnd={() => {
-                if (existingIds.has(slot.id)) {
-                  handleAnimationEnd(slot.id);
-                }
-              }}
-            >
-              <AdSlotCard
-                adSlot={slot}
-                onEdit={() => setEditingSlot(slot)}
-                onDeleted={() => handleSlotDeleted(slot.id)}
-              />
-            </div>
-          ))}
+          {adSlots.map((slot) => {
+            const isDeleting = deletingId === slot.id;
+            const isExisting = existingIds.has(slot.id);
+            
+            return (
+              <div
+                key={slot.id}
+                className={existingIds.has(slot.id) ? 'animate-fade-out-down': ''}
+                onAnimationEnd={() => {
+                  if (isExisting) handleAnimationEnd(slot.id);
+                }}
+              >
+                <div className='md:hidden'>
+                  <SwipeableCard
+                    rightAction={{
+                      icon: <TrashIcon className='h-6 w-6 text-white' />,
+                      label: 'Delete',
+                      color: 'bg-red-500',
+                      onClick: () => handleSwipeDelete(slot),
+                    }}
+                    disabled={isDeleting}
+                  >
+                    <AdSlotCard
+                      adSlot={slot}
+                      onEdit={() => setEditingSlot(slot)}
+                      onDeleted={() => handleSlotDeleted(slot.id)}
+                    />
+                  </SwipeableCard>
+                </div>
+                <div className='hidden md:block'>
+                  <AdSlotCard
+                    adSlot={slot}
+                    onEdit={() => setEditingSlot(slot)}
+                    onDeleted={() => handleSlotDeleted(slot.id)}
+                  />
+                </div>
+              </div>
+        )})}
         </div>
       )}
     </section>

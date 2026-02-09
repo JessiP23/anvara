@@ -9,6 +9,9 @@ import { EmptyState } from '@/components/state/empty';
 import { Modal } from '@/components/ui/modal/genericModal';
 import { useRouter } from 'next/navigation';
 import { SectionHeader } from '@/components/ui/typography';
+import { SwipeableCard } from '@/components/ui/swipeable-card';
+import { TrashIcon } from '@/components/ui/icons';
+import { deleteCampaign } from '../actions';
 
 interface CampaignListProps{
   initialCampaigns: Campaign[];
@@ -19,6 +22,7 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
   const [existingIds, setExistingIds] = useState<Set<string>>(new Set());
+  const [deletingId, setDeletingId] = useState<string | null>(null);
   const { show } = useToast();
   const router = useRouter()
 
@@ -47,6 +51,19 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
     });
     show('Campaign Deleted!', 'success')
   }, [show]);
+
+  const handleSwipeDelete = useCallback(async (campaign: Campaign) => {
+    setDeletingId(campaign.id);
+    const formData = new FormData();
+    formData.append('id', campaign.id);
+    const result = await deleteCampaign({ success: false }, formData);
+    if (result.success) {
+      handleCampaignDeleted(campaign.id);
+    } else {
+      show(result.error || 'Failed to delete campaign', 'error');
+    }
+    setDeletingId(null);
+  }, [handleCampaignDeleted, show]);
 
   return (
     <div className="space-y-6">
@@ -97,24 +114,45 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
         />
       ): (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
-          {campaigns.map((campaign) => (
-            <div
-              key={campaign.id}
-              className={existingIds.has(campaign.id) ? 'animate-fade-out-down': ''}
-              onAnimationEnd={() => {
-                if (existingIds.has(campaign.id)) {
-                  handleAnimationEnd(campaign.id);
-                }
-              }}
-            >
-              <CampaignCard
+          {campaigns.map((campaign) => {
+            const isDeleting = deletingId === campaign.id;
+            const isExiting = existingIds.has(campaign.id);
+
+            return (
+              <div
                 key={campaign.id}
-                campaign={campaign}
-                onEdit={() => setEditingCampaign(campaign)}
-                onDeleted={() => handleCampaignDeleted(campaign.id)}
-              />
-            </div>
-          ))}
+                className={isExiting ? 'animate-fade-out-down' : ''}
+                onAnimationEnd={() => {
+                  if (isExiting) handleAnimationEnd(campaign.id);
+                }}
+              >
+                {/* Mobile: Swipeable with delete action */}
+                <div className="md:hidden">
+                  <SwipeableCard
+                    rightAction={{
+                      icon: <TrashIcon className="h-6 w-6 text-white" />,
+                      label: 'Delete',
+                      color: 'bg-red-500',
+                      onClick: () => handleSwipeDelete(campaign),
+                    }}
+                    disabled={isDeleting}
+                  >
+                    <CampaignCard
+                      campaign={campaign}
+                      onEdit={() => setEditingCampaign(campaign)}
+                      onDeleted={() => handleCampaignDeleted(campaign.id)}
+                    />
+                  </SwipeableCard>
+                </div>
+                <div className="hidden md:block">
+                  <CampaignCard
+                    campaign={campaign}
+                    onEdit={() => setEditingCampaign(campaign)}
+                    onDeleted={() => handleCampaignDeleted(campaign.id)}
+                  />
+                </div>
+              </div>
+          )})}
         </div>
       )}
     </div>
