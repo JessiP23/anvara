@@ -1,7 +1,7 @@
 'use client'
 
 import { cn } from "@/lib/utils";
-import { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react"
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, type ReactNode } from "react"
 
 type ToastType = 'success' | 'error' | 'info';
 interface Toast {

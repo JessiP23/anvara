@@ -73,19 +73,6 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
     setDeletingId(null);
   }, [campaignToDelete, handleCampaignDeleted, show]);
 
-  const handleSwipeDelete = useCallback(async (campaign: Campaign) => {
-    setDeletingId(campaign.id);
-    const formData = new FormData();
-    formData.append('id', campaign.id);
-    const result = await deleteCampaign({ success: false }, formData);
-    if (result.success) {
-      handleCampaignDeleted(campaign.id);
-    } else {
-      show(result.error || 'Failed to delete campaign', 'error');
-    }
-    setDeletingId(null);
-  }, [handleCampaignDeleted, show]);
-
   return (
     <div className="space-y-6">
       <SectionHeader

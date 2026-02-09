@@ -25,14 +25,6 @@ const BUDGETS = [
   { value: '$10,000+/mo', label: '$10,000+/mo' },
 ];
 
-const TIMELINES = [
-  { value: '', label: 'Select' },
-  { value: 'As soon as possible', label: 'As soon as possible' },
-  { value: 'This month', label: 'This month' },
-  { value: 'Next month', label: 'Next month' },
-  { value: 'Just exploring', label: 'Just exploring' },
-];
-
 export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel, perfillEmail }: QuoteFormProps) {
   const [state, formAction] = useActionState<ActionState, FormData>(requestQuote, initialActionState);
   const { show } = useToast();

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, type ReactNode } from 'react';
+import React, { useState, useRef, type ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 
 interface SwipeAction {
@@ -44,8 +44,6 @@ export function SwipeableCard({
 
     const handleTouchMove = (e: React.TouchEvent) => {
         if (!isSwiping || disabled) return;
-        const currentX = e.touches[0].clientX;
-        const currentY = e.touches[0].clientY;
         const diffX = e.touches[0].clientX - startX.current;
         const diffY = e.touches[0].clientY - startY.current;
 

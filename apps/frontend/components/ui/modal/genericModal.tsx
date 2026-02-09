@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from "react"
+import React, { useEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import { cn } from "@/lib/utils"
 import { animations } from "@/lib/animations/variants"
@@ -13,55 +13,40 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
-    const [isClosing, setIsClosing] = useState(false);
-    const [shouldRender, setShouldRender] = useState(false);
+    
+    const handleClose = useCallback(() => {
+        onClose();
+    }, [onClose]);
 
     useEffect(() => {
         if (isOpen) {
-            setShouldRender(true);
-            setIsClosing(false);
             document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
         }
+        return () => {
+            document.body.style.overflow = '';
+        };
     }, [isOpen]);
 
     useEffect(() => {
-        if (!isOpen && shouldRender && !isClosing) {
-            setIsClosing(true);
-        }
-    }, [isOpen, shouldRender, isClosing]);
-
-    useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
-            if (e.key === 'Escape' && isOpen && !isClosing) handleClose();
+            if (e.key === 'Escape' && isOpen) handleClose();
         };
         document.addEventListener('keydown', handleEscape);
         return () => document.removeEventListener('keydown', handleEscape);
-    }, [isOpen, isClosing]);
+    }, [isOpen, handleClose]);
 
-    const handleClose = () => {
-        if (isClosing) return;
-        setIsClosing(true);
-    };
+    if (!isOpen) return null;
+    if (typeof window === 'undefined') return null;
 
-    const handleAnimationEnd = () => {
-        if (isClosing) {
-            setShouldRender(false);
-            setIsClosing(false);
-            document.body.style.overflow = '';
-            onClose();
-        }
-    };
-
-    if (!shouldRender) return null;
-
-    const modalContent = (
+    return createPortal(
         <div 
             className={cn(
                 'fixed inset-0 z-50',
                 'flex items-end sm:items-center justify-center',
-                isClosing ? animations.fadeOut : animations.fadeIn
+                animations.fadeIn
             )}
-            onAnimationEnd={handleAnimationEnd}
         >
             {/* Backdrop */}
             <div 
@@ -69,18 +54,13 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
                 onClick={handleClose} 
             />
             
-            {/* Modal - slides up on mobile, scales on desktop */}
+            {/* Modal */}
             <div 
                 className={cn(
                     'relative w-full bg-white shadow-xl flex flex-col',
-                    // Mobile: max height with flex layout
-                    'max-h-[90vh]',
-                    // Mobile: slide up, rounded top
-                    'rounded-t-2xl',
-                    // Desktop: constrained, fully rounded
+                    'max-h-[90vh] rounded-t-2xl',
                     'sm:max-w-lg sm:rounded-xl sm:m-4 sm:max-h-[85vh]',
-                    // Animation
-                    isClosing  ? 'animate-slide-out-bottom sm:animate-scale-out'  : 'animate-slide-in-bottom sm:animate-scale-in'
+                    'animate-slide-in-bottom sm:animate-scale-in'
                 )}
             >
                 {/* Drag indicator - mobile only */}
@@ -103,14 +83,12 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
                     </button>
                 </div>
                 
-                {/* Content - scrollable */}
+                {/* Content */}
                 <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6">
                     {children}
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body
     );
-
-    if (typeof window === 'undefined') return null;
-    return createPortal(modalContent, document.body);
 }
