@@ -4,6 +4,7 @@ import React, { useEffect, useCallback } from "react"
 import { createPortal } from "react-dom"
 import { cn } from "@/lib/utils"
 import { animations } from "@/lib/animations/variants"
+import { useExitAnimation } from "@/lib/hooks/use-exit-animation"
 
 interface ModalProps {
     isOpen: boolean;
@@ -13,13 +14,14 @@ interface ModalProps {
 }
 
 export function Modal({ isOpen, onClose, title, children }: ModalProps) {
+    const { shouldRender, isExiting } = useExitAnimation({ isOpen, duration: 300 });
     
     const handleClose = useCallback(() => {
         onClose();
     }, [onClose]);
 
     useEffect(() => {
-        if (isOpen) {
+        if (shouldRender) {
             document.body.style.overflow = 'hidden';
         } else {
             document.body.style.overflow = '';
@@ -27,7 +29,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         return () => {
             document.body.style.overflow = '';
         };
-    }, [isOpen]);
+    }, [shouldRender]);
 
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
@@ -37,7 +39,7 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
         return () => document.removeEventListener('keydown', handleEscape);
     }, [isOpen, handleClose]);
 
-    if (!isOpen) return null;
+    if (!shouldRender) return null;
     if (typeof window === 'undefined') return null;
 
     return createPortal(
@@ -45,31 +47,27 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             className={cn(
                 'fixed inset-0 z-50',
                 'flex items-end sm:items-center justify-center',
-                animations.fadeIn
+                isExiting ? animations.fadeOut : animations.fadeIn
             )}
         >
-            {/* Backdrop */}
             <div 
                 className="absolute inset-0 bg-black/50" 
                 onClick={handleClose} 
             />
             
-            {/* Modal */}
             <div 
                 className={cn(
                     'relative w-full shadow-xl flex flex-col',
                     'bg-(--color-card)',
                     'max-h-[90vh] rounded-t-2xl',
                     'sm:max-w-lg sm:rounded-xl sm:m-4 sm:max-h-[85vh]',
-                    'animate-slide-in-bottom sm:animate-scale-in'
+                    isExiting ? 'animate-slide-out-bottom sm:animate-scale-out' : 'animate-slide-in-bottom sm:animate-scale-in'
                 )}
             >
-                {/* Drag indicator - mobile only */}
                 <div className="flex-shrink-0 flex justify-center pt-3 sm:hidden">
                     <div className="h-1 w-10 rounded-full bg-[--color-border]" />
                 </div>
                 
-                {/* Header */}
                 <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-[--color-border]">
                     <h2 className="text-lg font-semibold text-[--color-foreground]">{title}</h2>
                     <button
@@ -84,7 +82,6 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
                     </button>
                 </div>
                 
-                {/* Content */}
                 <div className="flex-1 overflow-y-auto overscroll-contain px-4 pb-6 sm:px-6">
                     {children}
                 </div>
