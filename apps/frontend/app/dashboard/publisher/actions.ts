@@ -46,11 +46,6 @@ export async function createAdSlot(_prevState: ActionState, formData: FormData):
   const fieldErrors = validateAdSlotForm(values);
   if (fieldErrors) return { fieldErrors, values };
 
-  console.log('=== ACTION DEBUG ===');
-  console.log('values:', values);
-  console.log('fieldErrors:', fieldErrors);
-  
-
   const { error } = await apiRequest('/api/ad-slots', {
     method: 'POST',
     body: JSON.stringify(buildPayload(values, true)),

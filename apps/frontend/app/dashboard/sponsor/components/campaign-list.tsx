@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { CampaignForm } from './campaign-form';
 import { CampaignCard } from './campaign-card';
 import type { Campaign } from '@/lib/types';
@@ -27,6 +27,9 @@ export function CampaignList({ initialCampaigns }: CampaignListProps) {
   const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
   const { show } = useToast();
   const router = useRouter()
+  useEffect(() => {
+    setCampaigns(initialCampaigns);
+  }, [initialCampaigns]);
 
   const handleCreateSuccess = () => {
     setShowCreateModal(false);

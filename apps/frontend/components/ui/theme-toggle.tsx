@@ -1,31 +1,33 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 import type { Theme } from '@/lib/theme';
 import { getSystemTheme } from '@/lib/theme';
 
+function getThemeSnapshot(): Theme {
+    if (typeof window === 'undefined') return 'light';
+    return (localStorage.getItem('theme') as Theme) || getSystemTheme();
+}
+
+function getServerSnapshot(): Theme {
+    return 'light';
+}
+
+function subscribeToTheme(callback: () => void): () => void {
+    window.addEventListener('storage', callback);
+    return () => window.removeEventListener('storage', callback);
+}
+
 export function ThemeToggle({ className = '' }: { className?: string }) {
-    const [theme, setTheme] = useState<Theme>('light');
-    const [mounted, setMounted] = useState(false);
+    const theme = useSyncExternalStore(subscribeToTheme, getThemeSnapshot, getServerSnapshot);
 
-    useEffect(() => {
-        setMounted(true);
-        const stored = localStorage.getItem('theme') as Theme | null;
-        const initial = stored || getSystemTheme();
-        setTheme(initial);
-    }, []);
-
-    const toggle = () => {
+    const toggle = useCallback(() => {
         const next = theme === 'light' ? 'dark' : 'light';
-        setTheme(next);
         document.documentElement.classList.toggle('dark', next === 'dark');
         localStorage.setItem('theme', next);
         document.cookie = `theme=${next};path=/;max-age=31536000`;
-    };
-
-    if (!mounted) {
-        return <div className={`h-9 w-9 ${className}`} />;
-    }
+        window.dispatchEvent(new Event('storage'));
+    }, [theme]);
 
     return (
         <button
