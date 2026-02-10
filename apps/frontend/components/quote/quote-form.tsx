@@ -5,7 +5,6 @@ import { requestQuote } from './actions';
 import { initialActionState, type ActionState } from '@/lib/types';
 import { FormField, TextAreaField, SelectField } from '../ui/form/form-field';
 import { SubmitButton } from '../ui/form/submit-button';
-import { FormAlert } from '../ui/form/form-alerts';
 import { useToast } from '../notification/toast';
 
 interface QuoteFormProps {
@@ -60,8 +59,6 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
         <span className="font-medium text-[--color-foreground]">{adSlotName}</span>
         {basePrice && <span className="text-[--color-muted]"> (${basePrice}/mo)</span>}
       </div>
-
-      <FormAlert error={state.error} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField name="companyName" label="Company" required error={state.fieldErrors?.companyName} defaultValue={getValue('companyName')} />

@@ -1,8 +1,6 @@
 'use client';
 
 import type { Campaign } from "@/lib/types";
-import { DeleteButton } from "@/app/components/DeleteButton";
-import { deleteCampaign } from "../actions";
 import { Card, CardHeader, CardContent, CardFooter } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -76,7 +74,15 @@ export function CampaignCard({ campaign, onEdit, onDeleted }: CampaignCardProps)
             Edit
           </button>
         )}
-        <DeleteButton id={campaign.id} name={campaign.name} action={deleteCampaign} onDeleted={onDeleted} />
+        {onDeleted && (
+          <button
+            type="button"
+            onClick={onDeleted}
+            className="text-sm text-red-600 hover:text-red-800"
+          >
+            Delete
+          </button>
+        )}
       </CardFooter>
     </Card>
   );

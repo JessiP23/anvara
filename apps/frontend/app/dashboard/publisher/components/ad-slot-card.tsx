@@ -1,7 +1,5 @@
 'use client';
 
-import { DeleteButton } from "@/app/components/DeleteButton";
-import { deleteAdSlot } from "../actions";
 import type { AdSlot } from "@/lib/types";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { TypeBadge, Badge } from "@/components/ui/badge";
@@ -65,7 +63,15 @@ export function AdSlotCard({ adSlot, onEdit, onDeleted }: AdSlotCardProps) {
             Edit
           </button>
         )}
-        <DeleteButton id={adSlot.id} name={adSlot.name} action={deleteAdSlot} onDeleted={onDeleted} />
+        {onDeleted && (
+          <button
+            type="button"
+            onClick={onDeleted}
+            className="text-sm text-red-600 hover:text-red-800"
+          >
+            Delete
+          </button>
+        )}
       </CardFooter>
     </Card>
   );
