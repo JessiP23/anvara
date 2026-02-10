@@ -55,28 +55,42 @@
   --radius-xl: 1.5rem;
 }
 
-/* Dark mode - ready for toggle implementation */
 .dark {
-  --color-background: hsl(30 10% 10%);
-  --color-foreground: hsl(40 30% 96%);
-  --color-muted: hsl(30 15% 60%);
-  --color-border: hsl(30 10% 20%);
-  --color-card: hsl(30 10% 14%);
-  --color-card-hover: hsl(30 10% 18%);
+  /* Midnight Blue palette */
+  --color-background: hsl(222 47% 5%);
+  --color-foreground: hsl(210 40% 98%);
+  --color-muted: hsl(215 20% 55%);
+  --color-border: hsl(217 33% 17%);
+  --color-card: hsl(222 47% 10%);
+  --color-card-hover: hsl(222 47% 14%);
 
-  /* Button colors - inverted for dark mode */
-  --btn-primary-bg: hsl(40 30% 96%);
-  --btn-primary-text: hsl(30 10% 12%);
-  --btn-primary-hover: hsl(40 25% 90%);
+  /* Keep your terracotta accent */
+  --color-primary: hsl(12 76% 61%);
+  --color-secondary: hsl(35 90% 55%);
 
-  --btn-secondary-bg: hsl(30 10% 18%);
-  --btn-secondary-text: hsl(40 30% 96%);
-  --btn-secondary-border: hsl(30 10% 25%);
-  --btn-secondary-hover: hsl(30 10% 22%);
+  /* Status colors - slightly muted for dark */
+  --color-success: hsl(142 60% 50%);
+  --color-warning: hsl(38 92% 50%);
+  --color-error: hsl(0 72% 55%);
 
-  --btn-accent-bg: hsl(12 60% 52%);
+  /* Buttons - inverted for dark mode */
+  --btn-primary-bg: hsl(210 40% 98%);
+  --btn-primary-text: hsl(222 47% 8%);
+  --btn-primary-hover: hsl(210 35% 92%);
+
+  --btn-secondary-bg: hsl(222 47% 14%);
+  --btn-secondary-text: hsl(210 40% 98%);
+  --btn-secondary-border: hsl(217 33% 25%);
+  --btn-secondary-hover: hsl(222 47% 18%);
+
+  --btn-accent-bg: hsl(12 76% 55%);
   --btn-accent-text: hsl(0 0% 100%);
-  --btn-accent-hover: hsl(12 55% 58%);
+  --btn-accent-hover: hsl(12 70% 60%);
+
+  /* Input fields */
+  --input-bg: hsl(222 47% 8%);
+  --input-border: hsl(217 33% 20%);
+  --input-focus: hsl(12 76% 55%);
 }
 
 /* Cross-hatch pattern - signature background */
@@ -95,11 +109,32 @@
   background-size: 48px 48px;
 }
 
-/* Peach glow effect */
+.dark .cross-hatch {
+  background-image:
+    linear-gradient(
+      to right,
+      hsl(210 40% 96% / 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      hsl(210 40% 96% / 0.05) 1px,
+      transparent 1px
+    );
+}
+
 .peach-glow {
   background: radial-gradient(
     ellipse 60% 50% at 50% 40%,
     hsl(20 80% 90% / 0.4) 0%,
+    transparent 70%
+  );
+}
+
+.dark .peach-glow {
+  background: radial-gradient(
+    ellipse 60% 50% at 50% 40%,
+    hsl(12 60% 50% / 0.08) 0%,
     transparent 70%
   );
 }

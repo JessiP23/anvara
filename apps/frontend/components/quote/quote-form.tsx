@@ -55,10 +55,10 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
     <form action={formAction} className="space-y-4">
       <input type="hidden" name="adSlotId" value={adSlotId} />
 
-      <div className="rounded-lg bg-gray-50 p-3 text-sm">
-        <span className="text-gray-500">Quote for:</span>{' '}
-        <span className="font-medium text-gray-900">{adSlotName}</span>
-        {basePrice && <span className="text-gray-500"> (${basePrice}/mo)</span>}
+      <div className="rounded-lg bg-[--color-background] p-3 text-sm">
+        <span className="text-[--color-muted]">Quote for:</span>{' '}
+        <span className="font-medium text-[--color-foreground]">{adSlotName}</span>
+        {basePrice && <span className="text-[--color-muted]"> (${basePrice}/mo)</span>}
       </div>
 
       <FormAlert error={state.error} />

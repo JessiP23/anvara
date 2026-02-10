@@ -38,37 +38,31 @@ export function CampaignForm({ campaign, onSuccess, onCancel }: CampaignFormProp
     }, [state.success, onSuccess]);
 
     const formatDate = (d?: string | Date) => (d ? new Date(d).toISOString().split('T')[0] : '');
-
-    const getValue = (field: string) => {
-        if (state.values?.[field] !== undefined) return state.values[field];
-        if (campaign) {
-            if (field === 'startDate' || field === 'endDate') return formatDate(campaign[field as keyof Campaign] as string);
-            return String(campaign[field as keyof Campaign] || '');
-        }
-        return '';
-    }
+    const errorKey = JSON.stringify(state.fieldErrors || {});
 
     return (
-        <form action={formAction} className="space-y-4">
+        <form action={formAction} noValidate className="space-y-4">
             {isEditing && <input type="hidden" name="id" value={campaign.id} />}
 
             <FormAlert error={state.error} success={state.success} successMessage={isEditing ? 'Campaign Updated!' : 'Campaign Created!'} />
 
-            <FormField name='name' label='Name' required error={state.fieldErrors?.name} defaultValue={getValue('name')} />
-            <TextAreaField name='description' label='Description' required rows={3} error={state.fieldErrors?.description} defaultValue={getValue('description')} />
-            <FormField name='budget' label='Budget ($)' type="number" required min={1} error={state.fieldErrors?.budget} defaultValue={getValue('budget')} />
+            <FormField key={`name-${errorKey}`} name='name' label='Name' required error={state.fieldErrors?.name} defaultValue={state.values?.name ?? campaign?.name ?? ''} />
+            <TextAreaField key={`description-${errorKey}`} name='description' label='Description' required rows={3} error={state.fieldErrors?.description} defaultValue={state.values?.description ?? campaign?.description ?? ''} />
+            <FormField key={`budget-${errorKey}`} name='budget' label='Budget ($)' type="number" required min={1} error={state.fieldErrors?.budget} defaultValue={state.values?.budget ?? (campaign?.budget ? String(campaign.budget) : '')} />
 
             <div className='grid grid-cols-2 gap-4'>
-                <FormField name='startDate' label='Start Date' type="date" required error={state.fieldErrors?.startDate} defaultValue={getValue('startDate')} />
-                <FormField name='endDate' label='End Date' type="date" required error={state.fieldErrors?.endDate} defaultValue={getValue('endDate')} />
+                <FormField key={`startDate-${errorKey}`} name='startDate' label='Start Date' type="date" required error={state.fieldErrors?.startDate} defaultValue={state.values?.startDate ?? (campaign?.startDate ? formatDate(campaign.startDate) : '')} />
+                <FormField key={`endDate-${errorKey}`} name='endDate' label='End Date' type="date" required error={state.fieldErrors?.endDate} defaultValue={state.values?.endDate ?? (campaign?.endDate ? formatDate(campaign.endDate) : '')} />
             </div>
 
             {isEditing && (
                 <SelectField 
+                    key={`status-${errorKey}`}
                     name="status"
                     label="Status"
                     options={CAMPAIGN_STATUSES}
                     defaultValue={campaign.status}
+                    error={state.fieldErrors?.status}
                 />
             )}
 

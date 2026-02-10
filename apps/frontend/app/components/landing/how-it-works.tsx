@@ -9,10 +9,7 @@ const steps = [
 
 export function HowItWorks() {
   return (
-    <section aria-labelledby="how-it-works-heading" className="relative overflow-hidden bg-gradient-to-b from-[hsl(230_30%_97%)] via-[hsl(240_30%_98%)] to-[--color-background] py-28 sm:py-36">
-      {/* Subtle pattern overlay */}
-      <div aria-hidden="true" className="cross-hatch pointer-events-none absolute inset-0 opacity-30" />
-
+    <section aria-labelledby="how-it-works-heading" className="cross-hatch relative overflow-hidden bg-[--color-background] py-28 sm:py-36">
       <div className="relative mx-auto max-w-6xl px-6">
         {/* Section header */}
         <header className="mx-auto mb-16 max-w-2xl text-center">
@@ -32,16 +29,7 @@ export function HowItWorks() {
 
         {/* Process image */}
         <figure className="relative mx-auto max-w-5xl">
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -left-20 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full bg-[--color-primary]/5 blur-3xl"
-          />
-          <div
-            aria-hidden="true"
-            className="pointer-events-none absolute -right-20 top-1/2 h-64 w-64 -translate-y-1/2 rounded-full bg-[--color-secondary]/5 blur-3xl"
-          />
-
-          <div className="relative overflow-hidden rounded-3xl">
+          <div className="relative overflow-hidden rounded-3xl border border-[--color-border]">
             <Image
               src="/image2.png"
               alt="Four-step process diagram showing account creation, browsing listings, connecting with partners, and launching campaigns"

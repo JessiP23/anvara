@@ -57,7 +57,8 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             {/* Modal */}
             <div 
                 className={cn(
-                    'relative w-full bg-white shadow-xl flex flex-col',
+                    'relative w-full shadow-xl flex flex-col',
+                    'bg-(--color-card)',
                     'max-h-[90vh] rounded-t-2xl',
                     'sm:max-w-lg sm:rounded-xl sm:m-4 sm:max-h-[85vh]',
                     'animate-slide-in-bottom sm:animate-scale-in'
@@ -65,16 +66,16 @@ export function Modal({ isOpen, onClose, title, children }: ModalProps) {
             >
                 {/* Drag indicator - mobile only */}
                 <div className="flex-shrink-0 flex justify-center pt-3 sm:hidden">
-                    <div className="h-1 w-10 rounded-full bg-gray-300" />
+                    <div className="h-1 w-10 rounded-full bg-[--color-border]" />
                 </div>
                 
                 {/* Header */}
-                <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-gray-100 bg-white rounded-t-2xl sm:rounded-t-xl">
-                    <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+                <div className="flex-shrink-0 flex items-center justify-between px-4 py-3 sm:px-6 sm:py-4 border-b border-[--color-border]">
+                    <h2 className="text-lg font-semibold text-[--color-foreground]">{title}</h2>
                     <button
                         type="button"
                         onClick={handleClose}
-                        className="flex h-10 w-10 items-center justify-center rounded-full text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 active:scale-95"
+                        className="flex h-10 w-10 items-center justify-center rounded-full text-[--color-muted] transition-colors hover:bg-[--color-background] hover:text-[--color-foreground] active:scale-95"
                         aria-label="Close"
                     >
                         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

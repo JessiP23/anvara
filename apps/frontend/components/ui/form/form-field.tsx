@@ -41,20 +41,19 @@ export function FormField({ label, name, type='text', placeholder, defaultValue,
             type={type}
             placeholder={placeholder}
             defaultValue={defaultValue}
-            required={required}
             autoComplete={autoComplete}
             inputMode={resolvedInputMode}
             min={min}
             max={max}
             step={step}
             className={cn(
-                'block w-full rounded-lg border px-4 text-base',
-                'h-12 sm:h-11',
-                'bg-[--color-background] text-[--color-foreground]',
-                'placeholder:text-[--color-muted]',
-                'outline-none transition-colors',
-                'focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20',
-                error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-[--color-border]'
+              'block w-full rounded-lg border px-4 text-base',
+              'h-12 sm:h-11',
+              'bg-[--color-background] text-[--color-foreground]',
+              'placeholder:text-[--color-muted]',
+              'outline-none transition-colors',
+              'focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20',
+              error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-[--color-border]'
             )}
         />
         
@@ -91,24 +90,24 @@ export function TextAreaField({
   return (
     <div className="space-y-1.5">
         <label htmlFor={name} className="block text-sm font-medium text-[--color-foreground]">
-            {label}
-            {required && <span className="ml-1 text-red-500">*</span>}
+          {label}
+          {required && <span className="ml-1 text-red-500">*</span>}
         </label>
         <textarea
-            id={name}
-            name={name}
-            placeholder={placeholder}
-            defaultValue={defaultValue}
-            required={required}
-            rows={rows}
-            className={cn(
-                'block w-full rounded-lg border px-4 py-3 text-base',
-                    'bg-[--color-background] text-[--color-foreground]',
-                    'placeholder:text-[--color-muted]',
-                    'outline-none transition-colors resize-none',
-                    'focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20',
-                    error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-[--color-border]'
-            )}
+          id={name}
+          name={name}
+          placeholder={placeholder}
+          defaultValue={defaultValue}
+          required={required}
+          rows={rows}
+          className={cn(
+            'block w-full rounded-lg border px-4 py-3 text-base',
+            'bg-[--color-background] text-[--color-foreground]',
+            'placeholder:text-[--color-muted]',
+            'outline-none transition-colors resize-none',
+            'focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20',
+            error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-[--color-border]'
+          )}
         />
       
       {error && (
@@ -137,32 +136,32 @@ export function SelectField({
 }: SelectFieldProps) {
   return (
     <div className="space-y-1.5">
-        <label htmlFor={name} className="block text-sm font-medium text-[--color-foreground]">
-            {label}
-            {required && <span className="ml-1 text-red-500">*</span>}
-        </label>
-        <select
-            id={name}
-            name={name}
-            defaultValue={defaultValue}
-            required={required}
-            className={cn(
-                'block w-full rounded-lg border px-4 text-base appearance-none',
-                'h-12 sm:h-11',
-                'bg-[--color-background] text-[--color-foreground]',
-                'outline-none transition-colors cursor-pointer',
-                'focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20',
-                error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-[--color-border]'
-            )}
-        >
-            {options.map(({ value, label }) => (
-                <option key={value} value={value}>{label}</option>
-            ))}
-        </select>
-      
-        {error && (
-            <p className="text-sm text-red-500">{error}</p>
+      <label htmlFor={name} className="block text-sm font-medium text-[--color-foreground]">
+        {label}
+        {required && <span className="ml-1 text-red-500">*</span>}
+      </label>
+      <select
+        id={name}
+        name={name}
+        defaultValue={defaultValue}
+        required={required}
+        className={cn(
+          'block w-full rounded-lg border px-4 text-base',
+          'h-12 sm:h-11',
+          'bg-[--color-background] text-[--color-foreground]',
+          'outline-none transition-colors',
+          'focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20',
+          error ? 'border-red-500 focus:border-red-500 focus:ring-red-500/20' : 'border-[--color-border]'
         )}
+      >
+        {options.map(({ value, label }) => (
+          <option key={value} value={value}>{label}</option>
+        ))}
+      </select>
+      
+      {error && (
+        <p className="text-sm text-red-500">{error}</p>
+      )}
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { authClient } from '@/auth-client';
 import { Modal } from '@/components/ui/modal/genericModal';
 import { navLinks } from '@/app/components/nav';
 import type { UserRole } from '@/lib/types';
+import { ThemeToggle } from '../ui/theme-toggle';
 
 interface MenuDrawerProps {
     isOpen: boolean;
@@ -56,6 +57,7 @@ export function MenuDrawer({ isOpen, onClose, userRole }: MenuDrawerProps) {
                                 {session.user.email}
                             </p>
                         </div>
+                        <ThemeToggle/>
                     </div>
                 )}
 

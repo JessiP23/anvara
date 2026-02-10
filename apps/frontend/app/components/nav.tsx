@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils';
 import { useEffect, useState } from 'react';
 import { getUserRole } from '@/lib/auth-helpers';
 import type { UserRole } from '@/lib/types';
+import { ThemeToggle } from '@/components/ui/theme-toggle';
 
 export const navLinks = [
   { href: '/marketplace', label: 'Marketplace', role: undefined },
@@ -63,6 +64,8 @@ export function Nav() {
               {label}
             </Link>
           ))}
+
+          <ThemeToggle />
           
           {session?.user ? (
             <button onClick={handleSignOut} className="btn-secondary text-sm">

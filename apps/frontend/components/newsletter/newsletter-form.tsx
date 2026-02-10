@@ -34,9 +34,9 @@ export function NewsletterForm() {
 
   if (state.success) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-center">
-        <p className="font-medium text-green-800">You&apos;re subscribed!</p>
-        <p className="mt-1 text-sm text-green-600">
+      <div className="rounded-lg border border-[--color-success]/30 bg-[--color-success]/10 p-4 text-center">
+        <p className="font-medium text-[--color-success]">You&apos;re subscribed!</p>
+        <p className="mt-1 text-sm text-[--color-muted]">
           We&apos;ll send you the latest deals and updates.
         </p>
       </div>
@@ -54,7 +54,7 @@ export function NewsletterForm() {
           id="email"
           name="email"
           placeholder="Enter your email"
-          className="w-full rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm text-black shadow-sm transition-all placeholder:text-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20"
+          className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-4 py-3 text-sm text-[--color-foreground] shadow-sm transition-all placeholder:text-[--color-muted] focus:border-[--color-primary] focus:outline-none focus:ring-2 focus:ring-[--color-primary]/20"
         />
         {state.fieldErrors?.email && (
           <p className="mt-1.5 text-xs text-red-600">{state.fieldErrors.email}</p>

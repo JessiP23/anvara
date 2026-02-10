@@ -5,17 +5,6 @@ export function Hero() {
     <section aria-labelledby="hero-heading" className="cross-hatch relative overflow-hidden py-20 sm:py-32">
       {/* Peach glow behind headline */}
       <div aria-hidden="true" className="peach-glow pointer-events-none absolute inset-0" />
-
-      {/* Decorative blurs */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -right-20 top-20 h-72 w-72 rounded-full bg-[--color-primary] opacity-[0.03] blur-3xl"
-      />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute -left-20 bottom-20 h-60 w-60 rounded-full bg-[--color-secondary] opacity-[0.04] blur-3xl"
-      />
-
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         {/* Badge */}
         <p className="mb-8 inline-flex items-center gap-2 rounded-full border border-[--color-border] bg-[--color-card] px-4 py-1.5 text-sm font-medium text-[--color-foreground]">

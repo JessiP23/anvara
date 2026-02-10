@@ -68,11 +68,11 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[--color-background]">
-      <div className="w-full max-w-md rounded-lg border border-[--color-border] p-6 shadow-sm">
-        <h1 className="mb-6 text-2xl font-bold">Login to Anvara</h1>
+      <div className="w-full max-w-md rounded-xl border border-[--color-border] bg-[--color-card] p-6 shadow-sm">
+        <h1 className="mb-6 text-2xl font-bold text-[--color-foreground]">Login to Anvara</h1>
 
         {error && (
-          <div className="mb-4 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600">
+          <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-500">
             {error}
           </div>
         )}
@@ -85,7 +85,7 @@ export default function LoginPage() {
             <select
               value={role}
               onChange={(e) => setRole(e.target.value as 'sponsor' | 'publisher')}
-              className="mt-1 w-full rounded border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground] outline-none transition-colors focus:border-[--color-primary]" 
+              className="mt-1 w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground] outline-none transition-colors focus:border-[--color-primary] focus:ring-2 focus:ring-[--color-primary]/20"
             >
               <option value="sponsor">Sponsor (sponsor@example.com)</option>
               <option value="publisher">Publisher (publisher@example.com)</option>

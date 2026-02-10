@@ -46,7 +46,7 @@ export async function createCampaign(_prevState: ActionState, formData: FormData
     const data = parseCampaignForm(formData);
     const fieldErrors = validateCampaignForm(data);
 
-    const values = {
+    const values: Record<string, string> = {
         name: data.name || '',
         description: data.description || '',
         budget: data.budget || '',
@@ -72,14 +72,22 @@ export async function updateCampaign(_prevState: ActionState, formData: FormData
     if (!data.id) return { error: 'Missing campaign ID' };
 
     const fieldErrors = validateCampaignForm(data);
-    if (fieldErrors) return { fieldErrors };
+    const values: Record<string, string> = {
+        name: data.name || '',
+        description: data.description || '',
+        budget: data.budget || '',
+        startDate: data.startDate || '',
+        endDate: data.endDate || '',
+        status: data.status || '',
+    }
+    if (fieldErrors) return { fieldErrors, values };
 
     const { error } = await apiRequest(`/api/campaigns/${data.id}`, {
         method: 'PUT',
         body: JSON.stringify(buildCampaignPayload(data)),
     });
 
-    if (error) return { error };
+    if (error) return { error, values };
 
     revalidatePath('/dashboard/sponsor');
     return { success: true };

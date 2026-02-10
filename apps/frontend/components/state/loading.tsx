@@ -8,19 +8,19 @@ interface LoadingStateProps {
 }
 
 function Skeleton({ className = '' }: {className?: string}) {
-    return <div className={`animate-pulse rounded bg-gray-200 ${className}`} />
+    return <div className={`animate-pulse rounded bg-[--color-border] ${className}`} />
 }
 
 function CardSkeleton() {
     return (
-        <div className="rounded-lg border border-[--color-border] p-4">
+        <div className="rounded-lg border border-[--color-border] bg-[--color-card] p-4">
             <div className="mb-3 flex items-start justify-between">
                 <Skeleton className="h-5 w-32" />
                 <Skeleton className="h-5 w-16 rounded-full" />
             </div>
             <Skeleton className="mb-2 h-4 w-full" />
             <Skeleton className="mb-4 h-4 w-3/4" />
-            <div className="flex items-center justify-between border-t pt-3">
+            <div className="flex items-center justify-between border-t border-[--color-border] pt-3">
                 <Skeleton className="h-4 w-20" />
                 <Skeleton className="h-4 w-24" />
             </div>
