@@ -10,7 +10,7 @@ interface UseExitAnimationOptions {
 export function useExitAnimation({ isOpen, duration = 500 }: UseExitAnimationOptions) {
     const [shouldRender, setShouldRender] = useState(isOpen);
     const [isExiting, setIsExiting] = useState(false);
-    const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+    const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     useEffect(() => {
         if (timeoutRef.current) {
