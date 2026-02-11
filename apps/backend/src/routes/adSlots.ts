@@ -21,8 +21,6 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
     const effectivePublisherId =
       req.user?.role === 'PUBLISHER' && !publisherId ? req.user.publisherId : getParam(publisherId);
 
-    console.log('[Pagination] Request', { cursor: cursor ??  'INITIAL', limit, filters: { publisherId: effectivePublisherId, type: available } });
-
     const adSlots = await prisma.adSlot.findMany({
       where: {
         ...(effectivePublisherId && { publisherId: effectivePublisherId }),
@@ -34,15 +32,6 @@ router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
       include: adSlotInclude,
       orderBy: { createdAt: 'desc' },
     });
-
-    const response = buildPaginatedResponse(adSlots, limit);
-    console.log('[Pagination] Response:', {
-      itemsReturned: response.items.length,
-      hasMore: response.hasMore,
-      nextCursor: response.nextCursor ?? 'NONE',
-      firstItemId: response.items[0]?.id ?? 'EMPTY',
-      lastItemId: response.items[response.items.length - 1]?.id ?? 'EMPTY',
-    })
 
     res.json(buildPaginatedResponse(adSlots, limit));
   } catch (error) {

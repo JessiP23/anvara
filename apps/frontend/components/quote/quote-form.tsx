@@ -25,7 +25,7 @@ const BUDGETS = [
 ];
 
 export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel, perfillEmail }: QuoteFormProps) {
-  const [state, formAction] = useActionState<ActionState, FormData>(requestQuote, initialActionState);
+  const [state, formAction] = useActionState(requestQuote, initialActionState);
   const { show } = useToast();
   const prevSuccess = useRef(false);
   const prevError = useRef<string | undefined>(undefined);
@@ -51,7 +51,7 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
   };
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} noValidate className="space-y-4">
       <input type="hidden" name="adSlotId" value={adSlotId} />
 
       <div className="rounded-lg bg-[--color-background] p-3 text-sm">

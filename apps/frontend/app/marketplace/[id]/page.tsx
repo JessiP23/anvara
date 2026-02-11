@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AdSlotPage({ params }: Props) {
   const { id } = await params;
-  const adSlot = getServerAdSlot(id);
+  const adSlot = await getServerAdSlot(id);
 
   if (!adSlot) {
     notFound();
