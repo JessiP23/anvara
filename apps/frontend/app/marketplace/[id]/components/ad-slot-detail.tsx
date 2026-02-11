@@ -2,12 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { getAdSlot, bookAdSlot, unbookAdSlot } from '@/lib/api';
-import { getUserRole } from '@/lib/auth-helpers';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { bookAdSlot, unbookAdSlot } from '@/lib/api';
 import { authClient } from '@/auth-client';
-import type { AdSlot, User, RoleInfo } from '@/lib/types';
+import { queryKeys } from '@/lib/query-keys';
 import { QuoteButton } from '@/components/quote/quote-button';
-import { LoadingState } from '@/components/state/loading';
+import { useToast } from '@/components/notification/toast';
+import type { AdSlot } from '@/lib/types';
 
 const typeColors: Record<string, string> = {
   DISPLAY: 'bg-blue-100 text-blue-700',
@@ -17,88 +18,43 @@ const typeColors: Record<string, string> = {
 };
 
 interface Props {
-  id: string;
-  initialAdSlot?: AdSlot;
+  // update, no required fetched, is already passed from the server
+  adSlot: AdSlot;
 }
 
-export function AdSlotDetail({ id, initialAdSlot }: Props) {
-  const [adSlot, setAdSlot] = useState<AdSlot | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState<User | null>(null);
-  const [roleInfo, setRoleInfo] = useState<RoleInfo | null>(null);
-  const [roleLoading, setRoleLoading] = useState(true);
-  const [message, setMessage] = useState('');
-  const [booking, setBooking] = useState(false);
-  const [bookingSuccess, setBookingSuccess] = useState(false);
-  const [bookingError, setBookingError] = useState<string | null>(null);
+export function AdSlotDetail({ adSlot: initialAdSlot }: Props) {
+  const [adSlot, setAdSlot] = useState<AdSlot>(initialAdSlot);
+  const { data: session } = authClient.useSession();
+  const { show } = useToast();
+  const queryClient = useQueryClient();
 
-  useEffect(() => {
-    // Fetch if not initial data
-    if (!initialAdSlot) {
-      getAdSlot<AdSlot>(id)
-        .then(setAdSlot)
-        .catch(() => setAdSlot(null))
-        .finally(() => setLoading(false));
+  // update - moving to react query, booking mutation
+  const bookMutation = useMutation({
+    mutationFn: (message?: string) => bookAdSlot(adSlot.id, message),
+    onSuccess: () => {
+      setAdSlot((prev) => ({ ...prev, isAvailable: false }));
+      queryClient.invalidateQueries({ queryKey: queryKeys.adSlots.all });
+      show('Placement booked!', 'success');
+    },
+    onError: (error) => {
+      show(error.message || 'Failed to book', 'error');
+    },
+  });
+
+  const unbookMutation = useMutation({
+    mutationFn: () => unbookAdSlot(adSlot.id),
+    onSuccess: () => {
+      setAdSlot((prev) => ({ ...prev, isAvailable: true }));
+      queryClient.invalidateQueries({ queryKey: queryKeys.adSlots.all });
+      show('Booking removed', 'success');
+    },
+    onError: (error) => {
+      show(error.message || 'Failed to unbook', 'error');
     }
+  })
 
-    // Check user session and fetch role
-    authClient
-      .getSession()
-      .then(async ({ data }) => {
-        if (data?.user) {
-          const sessionUser = data.user as User;
-          setUser(sessionUser);
-
-          // Fetch role info from backend
-          const role = await getUserRole(sessionUser.id);
-          setRoleInfo(role);
-        }
-      })
-      .catch(() => setRoleInfo(null))
-      .finally(() => setRoleLoading(false));
-  }, [id, initialAdSlot]);
-
-  const handleBooking = async () => {
-    if (!roleInfo?.sponsorId || !adSlot) return;
-
-    setBooking(true);
-    setBookingError(null);
-
-    try {
-      await bookAdSlot(adSlot.id, message || undefined);
-      setBookingSuccess(true);
-      setAdSlot({ ...adSlot, isAvailable: false });
-    } catch (err) {
-      setBookingError(err instanceof Error ? err.message : 'Failed to book placement');
-    } finally {
-      setBooking(false);
-    }
-  };
-
-  const handleUnbook = async () => {
-    if (!adSlot) return;
-
-    try {
-      await unbookAdSlot(adSlot.id);
-      setBookingSuccess(false);
-      setAdSlot({ ...adSlot, isAvailable: true });
-      setMessage('');
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Failed to unbook:', err);
-    }
-  };
-
-  if (loading) {
-    return <LoadingState message='Loading ad slot details...' />
-  }
-
-  if (!adSlot) {
-    return null;
-  }
-
-  const isSponsor = roleInfo?.role === 'sponsor' && roleInfo?.sponsorId;
-  const canBook = adSlot.isAvailable && !bookingSuccess;
+  const isSponsor = session?.user;
+  const canBook = adSlot.isAvailable && !bookMutation.isSuccess;
 
   return (
     <div className="space-y-6">
@@ -111,23 +67,7 @@ export function AdSlotDetail({ id, initialAdSlot }: Props) {
           <div>
             <h1 className="text-2xl font-bold text-[--color-foreground]">{adSlot.name}</h1>
             {adSlot.publisher && (
-              <p className="text-[--color-muted]">
-                by {adSlot.publisher.name}
-                {adSlot.publisher.website && (
-                  <>
-                    {' '}
-                    ·{' '}
-                    <a
-                      href={adSlot.publisher.website}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-[--color-primary] hover:underline"
-                    >
-                      {adSlot.publisher.website}
-                    </a>
-                  </>
-                )}
-              </p>
+              <p className="text-[--color-muted]">by {adSlot.publisher.name}</p>
             )}
           </div>
           <span className={`rounded px-3 py-1 text-sm ${typeColors[adSlot.type] || 'bg-gray-100'}`}>
@@ -135,8 +75,9 @@ export function AdSlotDetail({ id, initialAdSlot }: Props) {
           </span>
         </div>
 
-        {adSlot.description && <p className="mb-6 text-[--color-muted]">{adSlot.description}</p>}
-
+        {adSlot.description && (
+          <p className="mb-6 text-[--color-muted]">{adSlot.description}</p>
+        )}
         <div className="flex items-center justify-between border-t border-[--color-border] pt-4">
           <div>
             <span
@@ -144,12 +85,13 @@ export function AdSlotDetail({ id, initialAdSlot }: Props) {
             >
               {adSlot.isAvailable ? '● Available' : '○ Currently Booked'}
             </span>
-            {!adSlot.isAvailable && !bookingSuccess && (
+            {!adSlot.isAvailable && (
               <button
-                onClick={handleUnbook}
-                className="ml-3 text-sm text-[--color-primary] underline hover:opacity-80"
+                onClick={() => unbookMutation.mutate()}
+                disabled={unbookMutation.isPending}
+                className="ml-3 text-sm text-[--color-primary] underline hover:opacity-80 disabled:opacity-50"
               >
-                Reset listing
+                {unbookMutation.isPending ? 'Resetting...' : 'Reset listing'}
               </button>
             )}
           </div>
@@ -163,78 +105,32 @@ export function AdSlotDetail({ id, initialAdSlot }: Props) {
 
         {canBook && (
           <div className="mt-6 border-t border-[--color-border] pt-6">
-            <h2 className="mb-4 text-lg font-semibold text-[--color-foreground]">Request This Placement</h2>
-
-            {roleLoading ? (
-              <LoadingState message='Loading...' />
-            ) : isSponsor ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-1 block text-sm font-medium text-[--color-muted]">
-                    Your Company
-                  </label>
-                  <p className="text-[--color-foreground]">{roleInfo.name || user?.name}</p>
-                </div>
-                <div>
-                  <label
-                    htmlFor="message"
-                    className="mb-1 block text-sm font-medium text-[--color-muted]"
-                  >
-                    Message to Publisher (optional)
-                  </label>
-                  <textarea
-                    id="message"
-                    value={message}
-                    onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Tell the publisher about your campaign goals..."
-                    className="w-full rounded-lg border border-[--color-border] bg-[--color-background] px-3 py-2 text-[--color-foreground] placeholder:text-[--color-muted] focus:border-[--color-primary] focus:outline-none"
-                    rows={3}
-                  />
-                </div>
-                {bookingError && <p className="text-sm text-[--color-error]">{bookingError}</p>}
-                <button
-                  onClick={handleBooking}
-                  disabled={booking}
-                  className="btn-accent btn-full"                
-                >
-                  {booking ? 'Booking...' : 'Book This Placement'}
-                </button>
-                <QuoteButton 
-                  adSlotId={adSlot.id}
-                  adSlotName={adSlot.name}
-                  basePrice={adSlot.basePrice}
-                />
-              </div>
+            <h2 className="mb-4 text-lg font-semibold text-[--color-foreground]">
+              Request This Placement
+            </h2>
+            {isSponsor ? (
+              <QuoteButton
+                adSlotId={adSlot.id}
+                adSlotName={adSlot.name}
+                basePrice={adSlot.basePrice}
+              />
             ) : (
-              <div>
-                <button
-                  disabled
-                  className="btn-secondary btn-full opacity-50"               
-                >
-                  Request This Placement
-                </button>
-                <p className="mt-2 text-center text-sm text-[--color-muted]">
-                  {user
-                    ? 'Only sponsors can request placements'
-                    : 'Log in as a sponsor to request this placement'}
-                </p>
-              </div>
+              <p className="text-[--color-muted]">
+                <Link href="/login" className="text-[--color-primary] underline">
+                  Sign in
+                </Link>{' '}
+                as a sponsor to book this placement.
+              </p>
             )}
           </div>
         )}
 
-        {bookingSuccess && (
+        {bookMutation.isSuccess && (
           <div className="mt-6 rounded-lg border border-green-200 bg-green-50 p-4">
             <h3 className="font-semibold text-green-800">Placement Booked!</h3>
             <p className="mt-1 text-sm text-green-700">
-              Your request has been submitted. The publisher will be in touch soon.
+              Your request has been submitted.
             </p>
-            <button
-              onClick={handleUnbook}
-              className="mt-3 text-sm text-green-700 underline hover:text-green-800"
-            >
-              Remove Booking (reset for testing)
-            </button>
           </div>
         )}
       </div>

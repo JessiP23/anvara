@@ -53,13 +53,33 @@
   --radius: 0.625rem;
   --radius-lg: 1rem;
   --radius-xl: 1.5rem;
+
+  --badge-success-bg: hsl(142 50% 90%);
+  --badge-success-text: hsl(142 60% 30%);
+  --badge-success-dot: hsl(142 70% 40%);
+
+  --badge-warning-bg: hsl(38 80% 90%);
+  --badge-warning-text: hsl(38 80% 30%);
+  --badge-warning-dot: hsl(38 90% 45%);
+
+  --badge-error-bg: hsl(0 70% 92%);
+  --badge-error-text: hsl(0 65% 40%);
+  --badge-error-dot: hsl(0 70% 50%);
+
+  --badge-info-bg: hsl(210 70% 92%);
+  --badge-info-text: hsl(210 70% 35%);
+  --badge-info-dot: hsl(210 80% 50%);
+
+  --badge-default-bg: hsl(220 15% 92%);
+  --badge-default-text: hsl(220 10% 40%);
+  --badge-default-dot: hsl(220 10% 50%);
 }
 
 .dark {
   /* Midnight Blue palette */
   --color-background: hsl(222 47% 5%);
   --color-foreground: hsl(210 40% 98%);
-  --color-muted: hsl(215 20% 55%);
+  --color-muted: hsl(215 20% 10%)
   --color-border: hsl(217 33% 17%);
   --color-card: hsl(222 47% 10%);
   --color-card-hover: hsl(222 47% 14%);
@@ -91,6 +111,27 @@
   --input-bg: hsl(222 47% 8%);
   --input-border: hsl(217 33% 20%);
   --input-focus: hsl(12 76% 55%);
+
+  /* Badge/status */
+  --badge-success-bg: hsl(142 40% 15%);
+  --badge-success-text: hsl(142 70% 60%);
+  --badge-success-dot: hsl(142 70% 55%);
+
+  --badge-warning-bg: hsl(38 50% 15%);
+  --badge-warning-text: hsl(38 90% 60%);
+  --badge-warning-dot: hsl(38 90% 55%);
+
+  --badge-error-bg: hsl(0 50% 15%);
+  --badge-error-text: hsl(0 70% 65%);
+  --badge-error-dot: hsl(0 70% 55%);
+
+  --badge-info-bg: hsl(210 50% 15%);
+  --badge-info-text: hsl(210 80% 65%);
+  --badge-info-dot: hsl(210 80% 55%);
+
+  --badge-default-bg: hsl(220 30% 18%);
+  --badge-default-text: hsl(220 20% 70%);
+  --badge-default-dot: hsl(220 20% 50%);
 }
 
 /* Cross-hatch pattern - signature background */
