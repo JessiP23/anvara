@@ -46,12 +46,12 @@ export function EntityList<T extends { id: string; name: string }>({
     const handleCreateSuccess = useCallback(() => {
         setShowCreateModal(false);
         router.refresh();
-    }, [entityName, router, show]);
+    }, [router]);
 
     const handleEditSuccess = useCallback(() => {
         setEditingItem(null);
         router.refresh();
-    }, [entityName, router, show]);
+    }, [router]);
 
     const handleDelete = useCallback((item: T) => {
         setItemToDelete(item);
@@ -68,7 +68,7 @@ export function EntityList<T extends { id: string; name: string }>({
             return newSet;
         });
         show(`${entityName} Deleted!`, 'success');
-    }, [entityName, show]);
+    }, [entityName, exitingIds, show]);
 
     const handleConfirmDelete = useCallback(async () => {
         if (!itemToDelete) return;
