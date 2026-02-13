@@ -2,10 +2,9 @@
 
 import { useActionState, useEffect, useRef } from 'react';
 import { requestQuote } from './actions';
-import { initialActionState, type ActionState } from '@/lib/types';
+import { initialActionState } from '@/lib/types';
 import { FormField, TextAreaField, SelectField } from '../ui/form/form-field';
 import { SubmitButton } from '../ui/form/submit-button';
-import { FormAlert } from '../ui/form/form-alerts';
 import { useToast } from '../notification/toast';
 
 interface QuoteFormProps {
@@ -26,7 +25,7 @@ const BUDGETS = [
 ];
 
 export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel, perfillEmail }: QuoteFormProps) {
-  const [state, formAction] = useActionState<ActionState, FormData>(requestQuote, initialActionState);
+  const [state, formAction] = useActionState(requestQuote, initialActionState);
   const { show } = useToast();
   const prevSuccess = useRef(false);
   const prevError = useRef<string | undefined>(undefined);
@@ -52,7 +51,7 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
   };
 
   return (
-    <form action={formAction} className="space-y-4">
+    <form action={formAction} noValidate className="space-y-4">
       <input type="hidden" name="adSlotId" value={adSlotId} />
 
       <div className="rounded-lg bg-[--color-background] p-3 text-sm">
@@ -60,8 +59,6 @@ export function QuoteForm({ adSlotId, adSlotName, basePrice, onSuccess, onCancel
         <span className="font-medium text-[--color-foreground]">{adSlotName}</span>
         {basePrice && <span className="text-[--color-muted]"> (${basePrice}/mo)</span>}
       </div>
-
-      <FormAlert error={state.error} />
 
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField name="companyName" label="Company" required error={state.fieldErrors?.companyName} defaultValue={getValue('companyName')} />

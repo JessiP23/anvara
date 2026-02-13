@@ -1,11 +1,11 @@
 'use client';
 
-import { useActionState, useEffect, useRef } from 'react';
+import { useActionState } from 'react';
 import { createAdSlot, updateAdSlot } from '../actions';
 import { initialActionState, type ActionState, type AdSlot } from '@/lib/types';
 import { FormField, TextAreaField, SelectField } from '@/components/ui/form/form-field';
 import { SubmitButton } from '@/components/ui/form/submit-button';
-import { useToast } from '@/components/notification/toast';
+import { useFormSuccess } from '@/lib/hooks/use-form-success';
 
 const AD_SLOT_TYPES = [
     { value: '', label: 'Select type' },
@@ -26,22 +26,15 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
     const isEditing = !!adSlot;
     const action = isEditing ? updateAdSlot : createAdSlot;
     const [state, formAction] = useActionState<ActionState, FormData>(action, initialActionState);
-    const { show } = useToast();
-    const prevSuccess = useRef(false);
 
-    useEffect(() => {
-        if (state.success && !prevSuccess.current) {
-            prevSuccess.current = true;
-            show(isEditing ? 'Ad slot updated!' : 'Ad slot created!', 'success');
-            onSuccess?.();
-        }
-        if (state.error) {
-            show(state.error, 'error');
-        }
-        if (!state.success) {
-            prevSuccess.current = false;
-        }
-    }, [state, show, isEditing, onSuccess]);
+    useFormSuccess({
+        success: state.success,
+        error: state.error,
+        successMessage: isEditing ? 'Ad Slot updated!' : 'Ad Slot created!',
+        onSuccess,
+    })
+
+    const getValue = (field: string) => state.values?.[field] ?? (adSlot?.[field as keyof AdSlot] ?? '');
 
     return (
         <form action={formAction} noValidate className="space-y-4">
@@ -53,15 +46,15 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
                 required
                 placeholder="e.g., Homepage Banner"
                 error={state.fieldErrors?.name}
-                defaultValue={state.values?.name ?? adSlot?.name ?? ''}
+                defaultValue={getValue('name') as string}
             />
-<SelectField
+            <SelectField
                 name="type"
                 label="Type"
                 required
                 options={AD_SLOT_TYPES}
                 error={state.fieldErrors?.type}
-                defaultValue={state.values?.type ?? adSlot?.type ?? ''}
+                defaultValue={getValue('type') as string}
             />
 
             <FormField
@@ -73,7 +66,7 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
                 step={0.01}
                 placeholder="500"
                 error={state.fieldErrors?.basePrice}
-                defaultValue={state.values?.basePrice ?? (adSlot?.basePrice ? String(adSlot.basePrice) : '')}
+                defaultValue={getValue('basePrice') as string}
             />
 
             <TextAreaField
@@ -83,7 +76,7 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
                 rows={3}
                 placeholder="Describe the ad placement..."
                 error={state.fieldErrors?.description}
-                defaultValue={state.values?.description ?? adSlot?.description ?? ''}
+                defaultValue={getValue('description') as string}
             />
 
             <div className="grid grid-cols-2 gap-4">
@@ -93,7 +86,7 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
                     type="number"
                     min={1}
                     placeholder="728"
-                    defaultValue={state.values?.width ?? (adSlot?.width ? String(adSlot.width) : '')}
+                    defaultValue={getValue('width') as string}
                 />
                 <FormField
                     name="height"
@@ -101,7 +94,7 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
                     type="number"
                     min={1}
                     placeholder="90"
-                    defaultValue={state.values?.height ?? (adSlot?.height ? String(adSlot.height) : '')}
+                    defaultValue={getValue('height') as string}
                 />
             </div>
 
@@ -111,7 +104,7 @@ export function AdSlotForm({ adSlot, onSuccess, onCancel }: AdSlotFormProps) {
                 required
                 placeholder="e.g., header, sidebar, footer"
                 error={state.fieldErrors?.position}
-                defaultValue={state.values?.position ?? adSlot?.position ?? ''}
+                defaultValue={getValue('position') as string}
             />
 
             {isEditing && (

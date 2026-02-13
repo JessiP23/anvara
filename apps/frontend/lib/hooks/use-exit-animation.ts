@@ -33,7 +33,7 @@ export function useExitAnimation({ isOpen, duration = 500 }: UseExitAnimationOpt
                 clearTimeout(timeoutRef.current);
             }
         }
-    }, [isOpen]);
+    }, [isOpen, duration]);
 
     return { shouldRender, isExiting };
 }

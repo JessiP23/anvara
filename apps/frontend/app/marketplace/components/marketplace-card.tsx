@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { AdSlot } from '@/lib/types';
-import { TypeBadge } from '@/components/ui/badge';
+import { Badge, TypeBadge } from '@/components/ui/badge';
 
 interface MarketplaceCardProps {
   slot: AdSlot;
@@ -75,23 +75,15 @@ export function MarketplaceCard({ slot }: MarketplaceCardProps) {
         <div className="flex-1" />
 
         <div className="flex items-end justify-between border-t border-[--color-border] pt-4">
-          <div>
-            <div
-              className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium ${
-                slot.isAvailable
-                  ? 'bg-green-50 text-green-700'
-                  : 'bg-gray-100 text-[--color-muted]'
-              }`}
-            >
-              <span className={`h-1.5 w-1.5 rounded-full ${slot.isAvailable ? 'bg-green-500' : 'bg-gray-400'}`} />
-              {slot.isAvailable ? 'Available' : 'Booked'}
-            </div>
-          </div>
-          <div className="text-right">
-            <p className="text-2xl font-bold text-[--color-foreground]">
+          <Badge variant={slot.isAvailable ? 'success': 'default'} dot>
+            <span className={`h-1.5 w-1.5 rounded-full ${slot.isAvailable ? 'bg-green-500' : 'bg-gray-400'}`} />
+            {slot.isAvailable ? 'Available' : 'Booked'}
+          </Badge>
+          <div className='text-right'>
+            <p className='text-2xl font-bold text-[--color-foreground]'>
               ${Number(slot.basePrice).toLocaleString()}
             </p>
-            <p className="text-xs text-[--color-muted]">per month</p>
+            <p className='text-xs text-[--color-muted]'>per month</p>
           </div>
         </div>
       </div>

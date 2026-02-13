@@ -1,17 +1,8 @@
 'use client';
-
-import { useState, useCallback, useEffect } from 'react';
+import { EntityList } from '@/components/ui/entity-list';
 import { CampaignForm } from './campaign-form';
 import { CampaignCard } from './campaign-card';
 import type { Campaign } from '@/lib/types';
-import { useToast } from '@/components/notification/toast';
-import { EmptyState } from '@/components/state/empty';
-import { Modal } from '@/components/ui/modal/genericModal';
-import { useRouter } from 'next/navigation';
-import { ConfirmModal } from '@/components/ui/modal/confirm-modal';
-import { SectionHeader } from '@/components/ui/typography';
-import { SwipeableCard } from '@/components/ui/swipeable-card';
-import { TrashIcon } from '@/components/ui/icons';
 import { deleteCampaign } from '../actions';
 
 interface CampaignListProps{
@@ -19,165 +10,17 @@ interface CampaignListProps{
 }
 
 export function CampaignList({ initialCampaigns }: CampaignListProps) {
-  const [campaigns, setCampaigns] = useState<Campaign[]>(initialCampaigns);
-  const [showCreateModal, setShowCreateModal] = useState(false);
-  const [editingCampaign, setEditingCampaign] = useState<Campaign | null>(null);
-  const [existingIds, setExistingIds] = useState<Set<string>>(new Set());
-  const [deletingId, setDeletingId] = useState<string | null>(null);
-  const [campaignToDelete, setCampaignToDelete] = useState<Campaign | null>(null);
-  const { show } = useToast();
-  const router = useRouter()
-  useEffect(() => {
-    setCampaigns(initialCampaigns);
-  }, [initialCampaigns]);
-
-  const handleCreateSuccess = () => {
-    setShowCreateModal(false);
-    router.refresh();
-    show('Campaign Created!', 'success');
-  }
-
-  const handleEditSuccess = () => {
-    setEditingCampaign(null);
-    router.refresh();
-    show('Campaign Updated!', 'success');
-  }
-
-  const handleCampaignDeleted = useCallback((campaignId: string) => {
-    setExistingIds((prev) => new Set(prev).add(campaignId));
-  }, []);
-
-  const handleAnimationEnd = useCallback((campaignId: string) => {
-    setCampaigns(prev => prev.filter(c => c.id !== campaignId));
-    setExistingIds(prev => {
-      const newSet = new Set(prev);
-      newSet.delete(campaignId);
-      return newSet;
-    });
-    show('Campaign Deleted!', 'success')
-  }, [show]);
-
-  const handleDeleteRequest = useCallback((campaign: Campaign) => {
-    setCampaignToDelete(campaign);
-  }, []);
-
-  const handleConfirmDelete = useCallback(async () => {
-    if (!campaignToDelete) return;
-    setDeletingId(campaignToDelete.id);
-    const formData = new FormData();
-    formData.append('id', campaignToDelete.id);
-    const result = await deleteCampaign({ success: false }, formData);
-    if (result.success) {
-      handleCampaignDeleted(campaignToDelete.id);
-      setCampaignToDelete(null);
-    } else {
-      show(result.error || 'Failed to delete campaign', 'error');
-    }
-    setDeletingId(null);
-  }, [campaignToDelete, handleCampaignDeleted, show]);
-
-  return (
-    <div className="space-y-6">
-      <SectionHeader
-        title='Campaigns'
-        description={`${campaigns.length} total`}
-        action={
-          <button
-            type="button"
-            onClick={() => setShowCreateModal(true)}
-            className="btn-accent"
-          >
-            New Campaign
-          </button>
-        }
-      />
-
-      <Modal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        title='Create New Campaign'
-      >
-        <CampaignForm
-          onSuccess={handleCreateSuccess}
-          onCancel={() => setShowCreateModal(false)}
-        />
-      </Modal>
-
-      <Modal
-        isOpen={!!editingCampaign}
-        onClose={() => setEditingCampaign(null)}
-        title='Edit Campaign'
-      >
-        {editingCampaign && (
-          <CampaignForm
-            campaign={editingCampaign}
-            onSuccess={handleEditSuccess}
-            onCancel={() => setEditingCampaign(null)}
-          />
-        )}
-      </Modal>
-
-      <ConfirmModal 
-        isOpen={!!campaignToDelete}
-        onClose={() => setCampaignToDelete(null)}
-        title='Delete Campaign'
-        message={`Are you sure you want to delete "${campaignToDelete?.name}"? This action cannot be undone.`}
-        onConfirm={handleConfirmDelete}
-        confirmLabel='Delete'
-        cancelLabel='Keep'
-        variant='danger'
-        isLoading={deletingId === campaignToDelete?.id}
-      />
-
-      {campaigns.length === 0 ? (
-        <EmptyState 
-          title="No Campaigns yet"
-          message="Create your first campaign"
-          action={{ label: "Create Campaign", onClick: () => setShowCreateModal(true) }}
-        />
-      ): (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 stagger-children">
-          {campaigns.map((campaign) => {
-            const isDeleting = deletingId === campaign.id;
-            const isExiting = existingIds.has(campaign.id);
-
-            return (
-              <div
-                key={campaign.id}
-                className={isExiting ? 'animate-fade-out-down' : ''}
-                onAnimationEnd={() => {
-                  if (isExiting) handleAnimationEnd(campaign.id);
-                }}
-              >
-                {/* Mobile: Swipeable with delete action */}
-                <div className="md:hidden">
-                  <SwipeableCard
-                    rightAction={{
-                      icon: <TrashIcon className="h-6 w-6 text-white" />,
-                      label: 'Delete',
-                      color: 'bg-red-500',
-                      onClick: () => handleDeleteRequest(campaign),
-                    }}
-                    disabled={isDeleting}
-                  >
-                    <CampaignCard
-                      campaign={campaign}
-                      onEdit={() => setEditingCampaign(campaign)}
-                      onDeleted={() => handleDeleteRequest(campaign)}
-                    />
-                  </SwipeableCard>
-                </div>
-                <div className="hidden md:block">
-                  <CampaignCard
-                    campaign={campaign}
-                    onEdit={() => setEditingCampaign(campaign)}
-                    onDeleted={() => handleDeleteRequest(campaign)}
-                  />
-                </div>
-              </div>
-          )})}
-        </div>
+  return(
+    <EntityList 
+      items={initialCampaigns}
+      entityName='Campaign'
+      deleteAction={deleteCampaign}
+      renderCard={(campaign, { onEdit, onDelete }) => (
+        <CampaignCard campaign={campaign} onDeleted={onDelete} onEdit={onEdit} />
       )}
-    </div>
+      renderForm={({ item, onSuccess, onCancel }) => (
+        <CampaignForm campaign={item} onSuccess={onSuccess} onCancel={onCancel} />
+      )}
+    />
   )
 }

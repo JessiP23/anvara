@@ -24,19 +24,15 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AdSlotPage({ params }: Props) {
   const { id } = await params;
-
-  if (!id || id.length < 5) {
-    notFound();
-  }
-
   const adSlot = await getServerAdSlot(id);
+
   if (!adSlot) {
     notFound();
   }
 
   return (
     <main className="mx-auto max-w-6xl p-4">
-      <AdSlotDetail id={id} />
+      <AdSlotDetail adSlot={adSlot} />
     </main>
   );
 }
