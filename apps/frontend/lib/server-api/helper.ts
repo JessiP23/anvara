@@ -24,6 +24,7 @@ async function fetchServerPaginated<T>(endpoint: string, limit = PAGINATION.DEFA
         params.set('cursor', cursor);
     }
     const result = await serverFetch<PaginatedResponse<T>>(`${endpoint}?${params}`);
+    console.log('result:', result);
     return result ?? { items: [], nextCursor: null, hasMore: false };
 }
 

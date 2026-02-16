@@ -7,11 +7,15 @@ import type { AuthRequest } from '../types/auth.types.js';
 import { Prisma } from '../generated/prisma/client.js';
 
 const router: IRouter = Router();
+router.use(requireAuth, requireSponsor);
 
 // GET /api/campaigns - List all campaigns
-router.get('/', requireAuth, requireSponsor, async (req: AuthRequest, res: Response) => {
+router.get('/', async (req: AuthRequest, res: Response) => {
   try {
     const { status } = req.query;
+    console.log('status:', status)
+    const testReq = req;
+    console.log('req req:', testReq)
 
     // Data scoping: Only return campaigns belonging to this sponsor
     const campaigns = await prisma.campaign.findMany({
@@ -25,6 +29,7 @@ router.get('/', requireAuth, requireSponsor, async (req: AuthRequest, res: Respo
       },
       orderBy: { createdAt: 'desc' },
     });
+    console.log('campaigns from campaigns:', campaigns)
 
     res.json(campaigns);
   } catch (error) {
@@ -34,7 +39,7 @@ router.get('/', requireAuth, requireSponsor, async (req: AuthRequest, res: Respo
 });
 
 // GET /api/campaigns/:id - Get single campaign with details
-router.get('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Response) => {
+router.get('/:id', async (req: AuthRequest, res: Response) => {
   try {
     const id = getParam(req.params.id);
 
@@ -65,7 +70,7 @@ router.get('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Re
 });
 
 // POST /api/campaigns - Create new campaign
-router.post('/', requireAuth, requireSponsor, async (req: AuthRequest, res: Response) => {
+router.post('/', async (req: AuthRequest, res: Response) => {
   try {
     const { name, description, budget, cpmRate, cpcRate, startDate, endDate, targetCategories, targetRegions } =
       req.body;
@@ -111,7 +116,7 @@ const campaignInclude = {
 const pickDefined = <T extends Record<string, unknown>>(obj: T): Partial<T> => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
 
 // Update campaign details (name, budget, dates, status, etc.)
-router.put('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Response) => {
+router.put('/:id', async (req: AuthRequest, res: Response) => {
   try {
     const { status, budget, startDate, endDate } = req.body;
 
@@ -147,7 +152,7 @@ router.put('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Re
   }
 })
 
-router.delete('/:id', requireAuth, requireSponsor, async (req: AuthRequest, res: Response) => {
+router.delete('/:id', async (req: AuthRequest, res: Response) => {
   try {
     await prisma.campaign.delete({
       where: { id: getParam(req.params.id), sponsorId: req.user!.sponsorId! },

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { bookAdSlot, unbookAdSlot } from '@/lib/api';
@@ -18,16 +18,9 @@ interface Props {
 export function AdSlotDetail({ adSlot: initialAdSlot }: Props) {
   const [adSlot, setAdSlot] = useState<AdSlot>(initialAdSlot);
   const [message, setMessage] = useState('');
-  const [mounted, setMounted] = useState(false);
   const { data: session, isPending } = authClient.useSession();
   const { show } = useToast();
   const queryClient = useQueryClient();
-
-  // Prevent hydration mismatch
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    setMounted(true);
-  }, []);
 
   const user = session?.user;
   const isSponsor = !!user;
@@ -136,7 +129,7 @@ export function AdSlotDetail({ adSlot: initialAdSlot }: Props) {
             </h2>
 
             {/* Wait for client mount to avoid hydration mismatch */}
-            {!mounted || isPending ? (
+            {isPending ? (
               <div className="flex items-center justify-center py-8">
                 <div className="h-6 w-6 animate-spin rounded-full border-2 border-[--color-primary] border-t-transparent" />
               </div>
