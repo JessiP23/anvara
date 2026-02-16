@@ -11,7 +11,6 @@ const adSlotInclude = {publisher: { select: { id: true, name: true, category: tr
 const pickDefined = <T extends Record<string, unknown>>(obj: T): Partial<T> => Object.fromEntries(Object.entries(obj).filter(([, v]) => v !== undefined)) as Partial<T>;
 
 // GET /api/ad-slots - List available ad slots
-// IMPORTANT: If needed to be public just switch to OptionalAuth
 router.get('/', requireAuth, async (req: AuthRequest, res: Response) => {
   try {
     const { publisherId, type, available } = req.query;

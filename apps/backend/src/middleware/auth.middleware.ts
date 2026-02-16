@@ -8,6 +8,9 @@ export async function requireAuth(
     next: NextFunction
 ): Promise<void> {
     const sessionToken = extractSessionToken(req.headers.cookie);
+    console.log('sessionToken: ', sessionToken)
+    const sessionHost = req.headers.host;
+    console.log('SessionHost:', sessionHost)
 
     if (!sessionToken) {
         res.status(401).json({ error: 'Authentication required' });
@@ -15,6 +18,7 @@ export async function requireAuth(
     }
 
     const user = await validateSession(sessionToken);
+    console.log('user:', user)
 
     if (!user) {
         res.status(401).json({ error: 'Invalid or expired session' });

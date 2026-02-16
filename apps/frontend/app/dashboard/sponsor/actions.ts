@@ -44,7 +44,9 @@ function buildCampaignPayload(data: ReturnType<typeof parseCampaignForm>) {
 
 export async function createCampaign(_prevState: ActionState, formData: FormData): Promise<ActionState> {
     const data = parseCampaignForm(formData);
+    console.log('data: ', data)
     const fieldErrors = validateCampaignForm(data);
+    console.log('fieldErrors: ', fieldErrors)
 
     const values: Record<string, string> = {
         name: data.name || '',

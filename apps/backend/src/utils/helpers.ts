@@ -42,6 +42,9 @@ export function buildPaginatedResponse<T extends {id: string }> (items: T[], lim
   const hasMore = items.length > limit;
   const data = hasMore ? items.slice(0, limit) : items;
   const nextCursor = hasMore && data.length > 0 ? data[data.length - 1].id : null;
+  console.log('data:', data)
+  console.log('nextCursor:', nextCursor)
+  console.log('hasMore:', hasMore)
   return { items: data, nextCursor, hasMore };
 }
 
