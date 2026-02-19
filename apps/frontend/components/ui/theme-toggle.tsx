@@ -16,7 +16,7 @@ function getServerSnapshot(): Theme {
 function subscribeToTheme(callback: () => void): () => void {
     const handler = () => {
         const currentTheme = localStorage.getItem('theme') as Theme || getSystemTheme();
-        document.documentelement.classList.toggle('dark', currentTheme === 'dark');
+        document.documentElement.classList.toggle('dark', currentTheme === 'dark');
         callback();
     }
     window.addEventListener('storage', handler);
